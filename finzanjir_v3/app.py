@@ -63,7 +63,7 @@ elif page=="Sun'iy bank laboratoriyasi":
         lab.start_run(resume=True); st.rerun()
     if y.button("Yangilash",use_container_width=True): st.rerun()
     confirm=st.checkbox("Navbat va natijalarni o'chirishga roziman")
-    if z.button("RESET — yangi sikl",disabled=not confirm,use_container_width=True):
+    if z.button("RESET — yangi sikl",disabled=(not confirm or meta.get("run_state")=="RUNNING"),use_container_width=True):
         lab.reset_run(confirmed=confirm); st.rerun()
     st.caption("PAUSE/STOP navbatda qolgan hodisalarni o'chirmaydi. RESUME ularni davom ettiradi. RESET alohida tasdiq talab qiladi.")
     if meta.get("last_error"): st.error("Jarayon xatosi: "+meta["last_error"])
