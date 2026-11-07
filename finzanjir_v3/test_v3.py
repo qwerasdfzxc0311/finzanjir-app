@@ -46,6 +46,25 @@ class SyntheticLabTests(unittest.TestCase):
         outcome,_=lab._classify(p,missing,errors)
         self.assertEqual(outcome,"HUMAN_REVIEW")
 
+    def test_pause_stop_keep_queued_data(self):
+        lab.generate_dataset()
+        before=lab.snapshot()["counts"].get("QUEUED",0)
+        lab.pause_run()
+        self.assertEqual(lab.snapshot()["counts"].get("QUEUED",0),before)
+        lab.stop_run()
+        self.assertEqual(lab.snapshot()["counts"].get("QUEUED",0),before)
+
+    def test_duplicate_delivery_is_marked_for_deduplication(self):
+        lab.generate_dataset()
+        with lab.connect() as c:
+            row=c.execute("SELECT * FROM bank_events WHERE scenario='duplicate_or_transport' LIMIT 1").fetchone()
+        lab._process_one(row)
+        with lab.connect() as c:
+            result=json.loads(c.execute("SELECT result FROM bank_events WHERE event_id=?",(row["event_id"],)).fetchone()["result"])
+        self.assertTrue(result["duplicate_delivery_detected"])
+        self.assertEqual(result["idempotency_key"],row["event_id"])
+        self.assertEqual(result["duplicate_delivery_action"],"DEDUPLICATED_BY_EVENT_ID")
+
     def test_signal_is_not_verdict(self):
         p=lab._make_payload(1,"suspicious_combo",__import__("random").Random(2))
         p["scenario"]="suspicious_combo"
