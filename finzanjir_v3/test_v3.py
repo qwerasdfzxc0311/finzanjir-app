@@ -65,6 +65,27 @@ class SyntheticLabTests(unittest.TestCase):
         self.assertEqual(result["idempotency_key"],row["event_id"])
         self.assertEqual(result["duplicate_delivery_action"],"DEDUPLICATED_BY_EVENT_ID")
 
+    def test_human_review_prepares_but_does_not_send_bank_response(self):
+        lab.generate_dataset()
+        with lab.connect() as c:
+            row=c.execute("SELECT * FROM bank_events WHERE scenario='ato' LIMIT 1").fetchone()
+        lab._process_one(row)
+        case=lab.snapshot()["cases"][0]
+        lab.review_case(case["case_id"],"REFER_TO_BANK","Test reviewer confirms referral is appropriate")
+        updated=lab.snapshot()["cases"][0]
+        self.assertEqual(updated["status"],"REFERRAL_READY")
+        self.assertEqual(updated["bank_response_status"],"READY_NOT_SENT")
+
+    def test_data_quality_queue_can_request_missing_bank_data(self):
+        lab.generate_dataset()
+        with lab.connect() as c:
+            row=c.execute("SELECT * FROM bank_events WHERE scenario='missing_data' LIMIT 1").fetchone()
+        lab._process_one(row)
+        ticket=lab.snapshot()["data_reviews"][0]
+        lab.review_data_ticket(ticket["review_id"],"REQUEST_BANK_DATA","Please resend missing authorized fields")
+        updated=lab.snapshot()["data_reviews"][0]
+        self.assertEqual(updated["status"],"WAITING_BANK_DATA")
+
     def test_signal_is_not_verdict(self):
         p=lab._make_payload(1,"suspicious_combo",__import__("random").Random(2))
         p["scenario"]="suspicious_combo"
