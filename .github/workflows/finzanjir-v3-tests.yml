@@ -1,0 +1,18 @@
+name: FINZANJIR v3 tests
+on:
+  push:
+    branches: [finzanjir-v3-synthetic-ai-uz]
+  pull_request:
+    branches: [finzanjir-v3-synthetic-ai-uz]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install "streamlit>=1.36,<2"
+      - run: python -m unittest discover -s finzanjir_v3 -p "test_*.py" -v
