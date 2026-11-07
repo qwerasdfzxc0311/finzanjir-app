@@ -73,6 +73,9 @@ def init_lab():
         for column,definition in migrations.items():
             if column not in existing:
                 c.execute(f"ALTER TABLE lab_cases ADD COLUMN {column} {definition}")
+        review_columns={r["name"] for r in c.execute("PRAGMA table_info(lab_data_reviews)")}
+        if "review_type" not in review_columns:
+            c.execute("ALTER TABLE lab_data_reviews ADD COLUMN review_type TEXT NOT NULL DEFAULT 'DATA_QUALITY'")
         for k,v in defaults.items():
             c.execute("INSERT OR IGNORE INTO lab_meta(key,value) VALUES(?,?)",(k,v))
     if not _startup_checked:
@@ -236,7 +239,9 @@ def _classify(p, missing, errors):
             signals.append("Qurilma bir nechta sintetik bank manbasida uchraydi")
     if len(signals)>=2 or p.get("scenario") in ("ato","social_engineering","money_mule"):
         return "HUMAN_REVIEW", {"signals":signals,"reason":"Bir nechta indikator yoki ssenariy belgisi mavjud; bu aybdorlik isboti emas."}
-    return "MONITOR", {"signals":signals,"reason":"Hozircha Case ochish mezoni aniqlanmadi; bu xavf yo'q degani emas."}
+    if len(signals)==1:
+        return "RECHECK", {"signals":signals,"reason":"Yakka indikator yetarli xulosa bermaydi; qoida va qo'shimcha kontekst qayta tekshirilsin."}
+    return "MONITOR", {"signals":signals,"reason":"Hozircha signal aniqlanmadi; bu xavf yo'q degani emas."}
 
 def _process_one(row):
     p=json.loads(row["payload"])
