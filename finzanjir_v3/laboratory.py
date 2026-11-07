@@ -304,10 +304,14 @@ def start_run(resume=False):
             _worker.start()
 
 def pause_run():
+    if get_meta().get("run_state")=="EMERGENCY_STOP":
+        raise RuntimeError("KILL SWITCH faol; recovery talab qilinadi")
     set_meta(run_state="PAUSED")
     audit("RUN_PAUSED","Processing paused; unprocessed queue retained")
 
 def stop_run():
+    if get_meta().get("run_state")=="EMERGENCY_STOP":
+        raise RuntimeError("KILL SWITCH faol; recovery talab qilinadi")
     set_meta(run_state="STOPPED")
     audit("RUN_STOPPED","Processing stopped; unprocessed queue retained")
 
@@ -325,6 +329,8 @@ def recover_emergency(confirmed=False, note=""):
     
 def reset_run(confirmed=False):
     if not confirmed: raise ValueError("Reset uchun tasdiq kerak")
+    if get_meta().get("run_state")=="EMERGENCY_STOP":
+        raise RuntimeError("KILL SWITCH faol; avval recovery talab qilinadi")
     with connect() as c:
         c.execute("DELETE FROM bank_events")
         c.execute("DELETE FROM lab_cases")
