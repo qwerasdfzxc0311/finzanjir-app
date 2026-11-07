@@ -2,6 +2,7 @@ from __future__ import annotations
 import sys, json
 from pathlib import Path
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE.parent/"finzanjir_v2"))
 sys.path.insert(0,str(HERE))
@@ -21,9 +22,11 @@ div[data-testid="stMetric"]{background:#142137;border:1px solid #293b57;padding:
 st.title("🛡️ FINZANJIR")
 st.caption("v3 development branch • Uzbek-first • offline knowledge retrieval • synthetic bank lab")
 st.warning("Bu faqat sintetik sinov muhiti. Haqiqiy bankka ulanmagan, haqiqiy pul yoki mijoz ma'lumotini olmaydi. Signal yoki Case aybdorlik isboti emas. Avtomatik bloklash mavjud emas.")
-page=st.sidebar.radio("Ish bo'limlari",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","FINZANJIR AI (o'zbekcha)","AI sinovlari","Arxitektura va chegaralar"])
+page=st.sidebar.radio("Ish bo'limlari",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Arxitektura va chegaralar"])
 st.sidebar.divider()
 st.sidebar.caption("Tashqi AI API ishlatilmaydi. AI hozircha dalilga asoslangan lokal qidiruv; generativ LLM emas.")
+if page in ("Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case"):
+    st_autorefresh(interval=1200,key="finzanjir-live-refresh")
 
 if page=="Boshqaruv paneli":
     snap=lab.snapshot(); meta=snap["meta"]; counts=snap["counts"]
