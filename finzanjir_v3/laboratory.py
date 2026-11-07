@@ -220,7 +220,11 @@ def _process_one(row):
     outcome,detail=_classify(p,missing,errors)
     result={"outcome":outcome,"detail":detail,"source_bank":p["bank_id"],
             "event_id":p["event_id"],"processed_at":datetime.now(timezone.utc).isoformat(),
-            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),\n            "duplicate_delivery_detected":bool(p.get("duplicate_delivery",False)),\n            "delivery_attempts_simulated":int(p.get("delivery_attempts",1)),\n            "idempotency_key":p["event_id"],\n            "duplicate_delivery_action":"DEDUPLICATED_BY_EVENT_ID" if p.get("duplicate_delivery") else "SINGLE_DELIVERY",
+            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),
+            "duplicate_delivery_detected":bool(p.get("duplicate_delivery",False)),
+            "delivery_attempts_simulated":int(p.get("delivery_attempts",1)),
+            "idempotency_key":p["event_id"],
+            "duplicate_delivery_action":"DEDUPLICATED_BY_EVENT_ID" if p.get("duplicate_delivery") else "SINGLE_DELIVERY",
             "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas; bank APIga yuborilmadi."}
     with connect() as c:
         c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
