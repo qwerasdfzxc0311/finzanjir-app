@@ -45,3 +45,17 @@ A true generative offline model (for example Qwen GGUF through a local runtime) 
 ## Important limitations
 
 This is a prototype test harness, not a bank integration or production system. Scenario labels are not used by the classifier; outcomes are derived from synthetic payload fields. Duplicate transport is metadata-only (two attempts indicated), not a real webhook retry/delivery test. The scenario labels are synthetic expected labels and require expert validation. The rule outcomes are not measured fraud probabilities. No cards, accounts, or transactions are blocked.
+
+
+## Private visitor feedback and analytics
+
+- Public visitors may submit optional feedback anonymously; name and contact fields are optional.
+- Feedback is not shown to other visitors. It is only displayed in the author-only panel after password verification.
+- The author panel stays disabled unless Streamlit Secrets contains both visitor_analytics.admin_password_hash and visitor_analytics.session_hmac_secret. No default password exists.
+- Generate a PBKDF2 password hash in a trusted local Python environment by importing visitor_analytics and calling make_password_hash("your-strong-password"). Store only the returned hash in Streamlit Secrets. Never commit plaintext passwords or secrets.
+- session_hmac_secret must be a long random secret (at least 32 random bytes encoded as text).
+- The module records page views, a random per-app-session pseudonym, approximate device/OS/browser family, and last activity. It does not store IP addresses, GPS, raw user-agent strings, or browser fingerprinting data.
+- Device brand/model detection is approximate and may be masked. Counts represent app sessions, not verified unique people.
+- Browser close/exit time cannot be reliably determined; last activity is shown. Code copying cannot be reliably detected.
+- Streamlit-hosted local SQLite storage may be ephemeral. Before public real-world use, configure durable private storage, access controls, backups, retention/deletion policy, and a suitable privacy notice after legal review.
+- This is a prototype, not production-secure until deployment configuration and access-control tests are completed.
