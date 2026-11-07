@@ -246,8 +246,10 @@ def _process_one(row):
             "duplicate_delivery_action":"DEDUPLICATED_BY_EVENT_ID" if p.get("duplicate_delivery") else "SINGLE_DELIVERY",
             "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas; bank APIga yuborilmadi."}
     with connect() as c:
-        c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
-                  (json.dumps(result,ensure_ascii=False),result["processed_at"],p["event_id"]))
+        changed=c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
+                          (json.dumps(result,ensure_ascii=False),result["processed_at"],p["event_id"])).rowcount
+        if not changed:
+            return "DUPLICATE_IGNORED"
         if outcome == "HUMAN_REVIEW":
             cid="LAB-CASE-"+uuid.uuid4().hex[:10].upper()
             c.execute("INSERT OR IGNORE INTO lab_cases(case_id,event_id,bank_id,status,reason,created_at) VALUES(?,?,?,?,?,?)",
