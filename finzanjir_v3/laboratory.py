@@ -349,10 +349,10 @@ def snapshot():
     with connect() as c:
         counts={r["state"]:r["n"] for r in c.execute("SELECT state,COUNT(*) n FROM bank_events GROUP BY state")}
         totals=c.execute("SELECT COUNT(*) FROM bank_events").fetchone()[0]
-        rows=c.execute("SELECT * FROM bank_events ORDER BY processed_at DESC LIMIT 30").fetchall()
+        rows=c.execute("SELECT * FROM bank_events ORDER BY processed_at DESC LIMIT 500").fetchall()
         banks=[dict(r) for r in c.execute("SELECT bank_id,COUNT(*) total,SUM(CASE WHEN state='PROCESSED' THEN 1 ELSE 0 END) processed FROM bank_events GROUP BY bank_id")]
         audit_rows=[dict(r) for r in c.execute("SELECT * FROM lab_audit ORDER BY id DESC LIMIT 30")]
-        cases=[dict(r) for r in c.execute("SELECT * FROM lab_cases ORDER BY created_at DESC LIMIT 100")]
+        cases=[dict(r) for r in c.execute("SELECT * FROM lab_cases ORDER BY created_at DESC LIMIT 500")]
         data_reviews=[dict(r) for r in c.execute("SELECT * FROM lab_data_reviews ORDER BY created_at DESC LIMIT 100")]
     return {"meta":meta,"counts":counts,"total":totals,"recent":[dict(r) for r in rows],"banks":banks,"audit":audit_rows,"cases":cases,"data_reviews":data_reviews}
 
