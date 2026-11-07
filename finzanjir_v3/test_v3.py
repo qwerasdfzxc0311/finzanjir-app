@@ -38,6 +38,16 @@ class SyntheticLabTests(unittest.TestCase):
         lab.generate_dataset()
         self.assertEqual(len(lab.snapshot()["banks"]),4)
 
+    def test_single_signal_routes_to_recheck(self):
+        lab.generate_dataset()
+        with lab.connect() as c:
+            row=c.execute("SELECT * FROM bank_events WHERE scenario='ambiguous_single_signal' LIMIT 1").fetchone()
+        lab._process_one(row)
+        ticket=lab.snapshot()["data_reviews"][0]
+        self.assertEqual(ticket["review_type"],"UNRESOLVED_SIGNAL")
+        lab.review_data_ticket(ticket["review_id"],"RECHECK_RULES","Re-run rule with added context")
+        self.assertEqual(lab.snapshot()["data_reviews"][0]["status"],"READY_FOR_RECHECK")
+
     def test_missing_data_routes_to_review(self):
         p=lab._make_payload(1,"missing_data",__import__("random").Random(2))
         p["scenario"]="missing_data"
