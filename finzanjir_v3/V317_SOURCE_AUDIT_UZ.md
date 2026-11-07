@@ -42,7 +42,8 @@ Yangi branch: finzanjir-v3-synthetic-ai-uz
 - Sun'iy banklar: to'rtta manba nomi va 400 sintetik hodisa; real bank emas.
 - Duplicate delivery: bir event ID bilan takroriy yetkazish urinishlari test metama'lumotida ifodalanadi; bank webhook transporti bilan real ikki martalik yuborish hali ulanmagan.
 - Bank javobi: referral/data request paketlari faqat READY_NOT_SENT yoki navbat holatida; haqiqiy bankka yuborilmaydi.
-- L11: PAUSE/STOP/RESUME/RESET, navbatni saqlash va process restart aniqlanganda PAUSE recovery.
+- L11: PAUSE/STOP/RESUME/RESET, favqulodda KILL SWITCH, tasdiqlangan recovery, navbatni saqlash va process restart aniqlanganda PAUSE recovery.
+- Yo'nalishlar: HUMAN_REVIEW (bir nechta indikator), DATA_REVIEW (yetishmayotgan/zid maydon), RECHECK (bitta noaniq indikator), MONITOR (signal topilmadi).
 - 400 holatning kutilgan yorliqlari muhandislik ssenariy taxminlari; bank ekspertlari bilan tekshirilishi shart.
 - Cloud deployment va Android offline deployment ikki alohida muhit. Streamlit Cloud'da ishlash telefon internetisiz offline ishlash degani emas.
 
