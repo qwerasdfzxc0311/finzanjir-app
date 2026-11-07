@@ -8,6 +8,8 @@ sys.path.insert(0,str(HERE.parent/"finzanjir_v2"))
 sys.path.insert(0,str(HERE))
 import laboratory as lab
 import offline_ai
+import visitor_analytics as visitors
+import visitor_pages
 
 st.set_page_config(page_title="FINZANJIR v3 | Laboratoriya",page_icon="🛡️",layout="wide")
 lab.init_lab()
@@ -22,7 +24,17 @@ div[data-testid="stMetric"]{background:#142137;border:1px solid #293b57;padding:
 st.title("🛡️ FINZANJIR")
 st.caption("v3 development branch • Uzbek-first • offline knowledge retrieval • synthetic bank lab")
 st.warning("Bu faqat sintetik sinov muhiti. Haqiqiy bankka ulanmagan, haqiqiy pul yoki mijoz ma'lumotini olmaydi. Signal yoki Case aybdorlik isboti emas. Avtomatik bloklash mavjud emas.")
-page=st.sidebar.radio("Ish bo'limlari",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Arxitektura va chegaralar"])
+page=st.sidebar.radio("Ish bo'limlari",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Tashrifchi fikri","Muallif analitikasi","Arxitektura va chegaralar"])
+# Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
+if "visitor_session_id" not in st.session_state:
+    import uuid
+    st.session_state["visitor_session_id"] = uuid.uuid4().hex
+try:
+    visitor_secret = st.secrets["visitor_analytics"]["session_hmac_secret"]
+    visitor_ua = st.context.headers.get("User-Agent", "")
+    visitors.record_page_view(st.session_state["visitor_session_id"], page, visitor_ua, visitor_secret)
+except Exception:
+    pass
 st.sidebar.divider()
 st.sidebar.caption("Tashqi AI API ishlatilmaydi. AI hozircha dalilga asoslangan lokal qidiruv; generativ LLM emas.")
 if page in ("Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case"):
@@ -261,3 +273,10 @@ elif page=="Arxitektura va chegaralar":
     """)
 st.divider()
 st.caption("FINZANJIR v3 development • Uzbek-first • no external AI provider • synthetic-only testing")
+
+
+# Separate public feedback page and author-only analytics panel.
+if page == "Tashrifchi fikri":
+    visitor_pages.render_feedback()
+elif page == "Muallif analitikasi":
+    visitor_pages.render_admin()
