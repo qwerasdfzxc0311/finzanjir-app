@@ -21,11 +21,12 @@ Requirements:
 - START / PAUSE / STOP / RESUME / RESET controls.
 - SQLite queue and audit trail.
 - Missing or contradictory fields route to DATA_REVIEW.
+- A single unresolved indicator routes to RECHECK.
 - Multi-indicator cases route to HUMAN_REVIEW.
-- Other events route to MONITOR.
+- No detected indicator routes to MONITOR.
 - A response package is prepared for demonstration; no real bank API call is made.
 
-Pause and stop retain queued events. Resume continues the remaining queue. Reset requires explicit confirmation.
+Pause and stop retain queued events. Resume continues the remaining queue. L11 emergency KILL SWITCH locks normal controls until an operator explicitly confirms recovery. Reset requires explicit confirmation and is blocked during emergency stop.
 
 ## Offline Uzbek AI
 
