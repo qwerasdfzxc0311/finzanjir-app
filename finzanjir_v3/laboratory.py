@@ -63,6 +63,16 @@ def init_lab():
         """)
         defaults = {"run_state":"IDLE", "generated":"0", "processed":"0", "last_error":"",
                     "run_id":"", "started_at":"", "finished_at":""}
+        existing={r["name"] for r in c.execute("PRAGMA table_info(lab_cases)")}
+        migrations={
+          "review_outcome":"TEXT NOT NULL DEFAULT ''",
+          "review_note":"TEXT NOT NULL DEFAULT ''",
+          "bank_response_status":"TEXT NOT NULL DEFAULT 'NOT_READY'",
+          "updated_at":"TEXT NOT NULL DEFAULT ''"
+        }
+        for column,definition in migrations.items():
+            if column not in existing:
+                c.execute(f"ALTER TABLE lab_cases ADD COLUMN {column} {definition}")
         for k,v in defaults.items():
             c.execute("INSERT OR IGNORE INTO lab_meta(key,value) VALUES(?,?)",(k,v))
     if not _startup_checked:
