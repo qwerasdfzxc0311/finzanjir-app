@@ -50,6 +50,15 @@ class SyntheticLabTests(unittest.TestCase):
         lab.review_data_ticket(ticket["review_id"],"RECHECK_RULES","Re-run rule with added context")
         self.assertEqual(lab.snapshot()["data_reviews"][0]["status"],"READY_FOR_RECHECK")
 
+    def test_scenario_label_does_not_change_classification(self):
+        p=lab._make_payload(17,"ato",__import__("random").Random(9))
+        p["scenario"]="ato"
+        missing,errors=lab._validate(p)
+        first=lab._classify(p,missing,errors)[0]
+        p["scenario"]="normal"
+        second=lab._classify(p,missing,errors)[0]
+        self.assertEqual(first,second)
+
     def test_missing_data_routes_to_review(self):
         p=lab._make_payload(1,"missing_data",__import__("random").Random(2))
         p["scenario"]="missing_data"
@@ -101,7 +110,7 @@ class SyntheticLabTests(unittest.TestCase):
             result=json.loads(c.execute("SELECT result FROM bank_events WHERE event_id=?",(row["event_id"],)).fetchone()["result"])
         self.assertTrue(result["duplicate_delivery_detected"])
         self.assertEqual(result["idempotency_key"],row["event_id"])
-        self.assertEqual(result["duplicate_delivery_action"],"DEDUPLICATED_BY_EVENT_ID")
+        self.assertEqual(result["duplicate_delivery_action"],"SIMULATED_TWO_ATTEMPTS_IDEMPOTENCY_NOT_TRANSPORT_TESTED")
 
     def test_human_review_prepares_but_does_not_send_bank_response(self):
         lab.generate_dataset()
