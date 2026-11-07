@@ -32,7 +32,12 @@ if "visitor_session_id" not in st.session_state:
 try:
     visitor_secret = st.secrets["visitor_analytics"]["session_hmac_secret"]
     visitor_ua = st.context.headers.get("User-Agent", "")
-    visitors.record_page_view(st.session_state["visitor_session_id"], page, visitor_ua, visitor_secret)
+    import time
+    now = time.time()
+    last = st.session_state.get("visitor_last_page_event", {})
+    if last.get("page") != page or now - last.get("time", 0) >= 30:
+        visitors.record_page_view(st.session_state["visitor_session_id"], page, visitor_ua, visitor_secret)
+        st.session_state["visitor_last_page_event"] = {"page": page, "time": now}
 except Exception:
     pass
 st.sidebar.divider()
