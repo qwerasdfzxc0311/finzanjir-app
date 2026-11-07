@@ -119,7 +119,7 @@ elif page=="Hodisalar va Case":
         for ticket in snap["data_reviews"]:
             with st.expander(ticket["review_id"]+" · "+ticket["status"]):
                 st.write(ticket["reason"])
-                choice=st.selectbox("Data Review natijasi",["REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","CLOSED_INCONCLUSIVE"],key="data-"+ticket["review_id"])
+                choice=st.selectbox("Data Review natijasi",["REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","RECHECK_RULES","CLOSED_INCONCLUSIVE"],key="data-"+ticket["review_id"])
                 note=st.text_area("Tekshiruv izohi",key="data-note-"+ticket["review_id"])
                 if st.button("Qayta tekshiruv holatini saqlash",key="data-save-"+ticket["review_id"]):
                     lab.review_data_ticket(ticket["review_id"],choice,note); st.success("Holat saqlandi."); st.rerun()
