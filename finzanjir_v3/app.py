@@ -52,20 +52,27 @@ elif page=="Sun'iy bank laboratoriyasi":
     progress=(counts.get("PROCESSED",0)/max(1,snap["total"]))
     st.progress(min(1.0,progress),text=f"{counts.get('PROCESSED',0)} / {snap['total']} hodisa")
     x,y,z=st.columns(3)
-    if x.button("▶ START — boshlash",type="primary",use_container_width=True):
+    if x.button("▶ START — boshlash",type="primary",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.start_run(resume=False); st.rerun()
     if y.button("Ⅱ PAUSE — vaqtincha to'xtatish",use_container_width=True):
         lab.pause_run(); st.rerun()
     if z.button("■ STOP — to'liq to'xtatish",use_container_width=True):
         lab.stop_run(); st.rerun()
     x,y,z=st.columns(3)
-    if x.button("↻ RESUME — davom ettirish",use_container_width=True):
+    if x.button("↻ RESUME — davom ettirish",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.start_run(resume=True); st.rerun()
     if y.button("Yangilash",use_container_width=True): st.rerun()
     confirm=st.checkbox("Navbat va natijalarni o'chirishga roziman")
     if z.button("RESET — yangi sikl",disabled=(not confirm or meta.get("run_state")=="RUNNING"),use_container_width=True):
         lab.reset_run(confirmed=confirm); st.rerun()
     st.caption("PAUSE/STOP navbatda qolgan hodisalarni o'chirmaydi. RESUME ularni davom ettiradi. RESET alohida tasdiq talab qiladi.")
+    st.divider()
+    k1,k2=st.columns(2)
+    if k1.button("⛔ KILL SWITCH — favqulodda to'xtatish",type="secondary",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
+        lab.emergency_stop("Operator favqulodda to'xtatishni faollashtirdi"); st.rerun()
+    recovery_ok=st.checkbox("Favqulodda holat ko'rib chiqildi; navbatni saqlab tiklashga ruxsat beraman")
+    if k2.button("Emergency Recovery — qulfni yechish",use_container_width=True,disabled=(not recovery_ok or meta.get("run_state")!="EMERGENCY_STOP")):
+        lab.recover_emergency(confirmed=recovery_ok,note="Operator UI orqali recovery tasdiqladi"); st.rerun()
     if meta.get("last_error"): st.error("Jarayon xatosi: "+meta["last_error"])
     st.subheader("Banklar bo'yicha qabul holati")
     if snap["banks"]: st.dataframe(snap["banks"],use_container_width=True,hide_index=True)
