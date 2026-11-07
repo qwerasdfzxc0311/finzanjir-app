@@ -89,7 +89,9 @@ elif page=="Hodisalar va Case":
             result={}
             try: result=json.loads(r["result"]) if r["result"] else {}
             except Exception: pass
-            display.append({"Hodisa":r["event_id"],"Bank":r["bank_id"],"Ssenariy":r["scenario"],"Kutilgan":r["expected"],"Amaldagi":result.get("outcome","—"),"Holat":r["state"]})
+            detail=result.get("detail",{})
+            quality=("Yetishmayotgan: "+", ".join(detail.get("missing",[]))+"; xato: "+", ".join(detail.get("errors",[]))) if result.get("outcome")=="DATA_REVIEW" else "Tekshirildi"
+            display.append({"Hodisa":r["event_id"],"Bank":r["bank_id"],"Ssenariy":r["scenario"],"Kutilgan":r["expected"],"Amaldagi":result.get("outcome","—"),"Ma'lumot sifati":quality,"Bank javobi":result.get("bank_response","—"),"Dublikat":result.get("duplicate_delivery_action","—"),"Holat":r["state"]})
         st.dataframe(display,use_container_width=True,hide_index=True)
     else: st.info("Hali hodisa kelmagan. Laboratoriyada START bosing.")
     evaluation=lab.evaluate()
