@@ -59,6 +59,17 @@ class SyntheticLabTests(unittest.TestCase):
         outcome,_=lab._classify(p,missing,errors)
         self.assertEqual(outcome,"HUMAN_REVIEW")
 
+    def test_kill_switch_requires_explicit_recovery(self):
+        lab.generate_dataset()
+        lab.emergency_stop("test incident")
+        with self.assertRaises(RuntimeError):
+            lab.start_run(resume=True)
+        with self.assertRaises(ValueError):
+            lab.recover_emergency(confirmed=False)
+        lab.recover_emergency(confirmed=True,note="reviewed")
+        self.assertEqual(lab.get_meta()["run_state"],"STOPPED")
+        self.assertEqual(lab.snapshot()["counts"].get("QUEUED",0),400)
+
     def test_pause_stop_keep_queued_data(self):
         lab.generate_dataset()
         before=lab.snapshot()["counts"].get("QUEUED",0)
