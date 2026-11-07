@@ -84,8 +84,8 @@ def assess(eid,path=DB_PATH):
  if t:
   recent=[e for e in hist if dt(e["event_time"]) and abs((t-dt(e["event_time"])).total_seconds())<=300]
   if len(recent)>=2:add("SIG-002",f"5 daqiqada jami {len(recent)+1} ta hodisa.",["event_time","customer_ref"],"high")
-  incoming=[e for e in hist if dt(e["event_time"]) and 0<=(t-dt(e["event_time"])).total_seconds()<=600]
-  if incoming:add("SIG-003","Oldingi 10 daqiqada shu mijozga kirim qaydi bor; oqimni tekshirish kerak.",["event_time","customer_ref"],"low")
+  # Direction is not part of the current event schema, so do not infer an incoming/outgoing flow.
+  unknown.append("Kirim/chiqim yo'nalishi maydoni yo'q; SIG-003 hozircha hisoblanmaydi.")
  else:unknown.append("Vaqt formati noto'g'ri; vaqt qoidalari cheklangan.")
  recipients={e["recipient_ref"] for e in hist if e["recipient_ref"]}
  if x["recipient_ref"] and recipients and x["recipient_ref"] not in recipients:add("SIG-004","Qabul qiluvchi mijoz tarixida uchramagan.",["recipient_ref","customer_ref"])
