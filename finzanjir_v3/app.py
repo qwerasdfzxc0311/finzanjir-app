@@ -85,6 +85,12 @@ elif page=="Hodisalar va Case":
             display.append({"Hodisa":r["event_id"],"Bank":r["bank_id"],"Ssenariy":r["scenario"],"Kutilgan":r["expected"],"Amaldagi":result.get("outcome","—"),"Holat":r["state"]})
         st.dataframe(display,use_container_width=True,hide_index=True)
     else: st.info("Hali hodisa kelmagan. Laboratoriyada START bosing.")
+    evaluation=lab.evaluate()
+    st.subheader("Kutilgan va amaldagi yo'nalishlar taqqoslanishi")
+    st.metric("Taqqoslash uchun qayta ishlangan hodisalar",evaluation["processed"])
+    if evaluation["confusion"]:
+        st.dataframe([{"Kutilgan yo'nalish → Amaldagi yo'nalish":k,"Soni":v} for k,v in evaluation["confusion"].items()],use_container_width=True,hide_index=True)
+    st.caption("Kutilgan yorliqlar ham sintetik taxmin. Bu jadval aniqlik/precision/recall isboti emas; mutaxassis tasdiqlagan ground-truth talab qilinadi.")
     st.subheader("Human Review uchun ochilgan sintetik Case'lar")
     if snap.get("cases"):
         st.dataframe(snap["cases"],use_container_width=True,hide_index=True)
