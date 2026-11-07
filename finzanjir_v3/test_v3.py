@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 import laboratory as lab
 import offline_ai
+import visitor_analytics as visitors
 
 class SyntheticLabTests(unittest.TestCase):
     def setUp(self):
@@ -140,6 +141,38 @@ class SyntheticLabTests(unittest.TestCase):
         outcome,detail=lab._classify(p,missing,errors)
         self.assertEqual(outcome,"HUMAN_REVIEW")
         self.assertIn("aybdorlik isboti emas",detail["reason"])
+
+    def test_private_feedback_storage(self):
+        old = visitors.VISITOR_DB
+        visitors.VISITOR_DB = Path(self.tmp.name) / "visitors.sqlite3"
+        try:
+            visitors.save_feedback({"missing": "Test taklif"})
+            snap = visitors.admin_snapshot()
+            self.assertEqual(snap["feedback_count"], 1)
+            self.assertEqual(snap["feedback"][0]["missing"], "Test taklif")
+            self.assertEqual(snap["feedback"][0]["name"], "")
+        finally:
+            visitors.VISITOR_DB = old
+
+    def test_admin_password_hash(self):
+        encoded = visitors.make_password_hash("Strong-Test-Password")
+        self.assertTrue(visitors.verify_admin_password("Strong-Test-Password", encoded))
+        self.assertFalse(visitors.verify_admin_password("wrong-password", encoded))
+
+    def test_visitor_session_is_pseudonymous_and_device_detection_approximate(self):
+        old = visitors.VISITOR_DB
+        visitors.VISITOR_DB = Path(self.tmp.name) / "visitors.sqlite3"
+        try:
+            visitors.record_page_view("random-session-id", "Bosh sahifa",
+                "Mozilla/5.0 (Linux; Android 14; SAMSUNG SM-S918B) Chrome/120.0", "test-secret")
+            snap = visitors.admin_snapshot()
+            self.assertEqual(snap["visitors"], 1)
+            self.assertIn("Samsung", snap["devices"][0]["device_family"])
+            with visitors._connect() as c:
+                stored = c.execute("SELECT session_key FROM visits").fetchone()[0]
+            self.assertNotEqual(stored, "random-session-id")
+        finally:
+            visitors.VISITOR_DB = old
 
     def test_offline_ai_has_no_external_provider(self):
         self.assertIn("offline",offline_ai.answer("FINZANJIR nima?")["mode"])
