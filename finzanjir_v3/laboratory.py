@@ -68,7 +68,8 @@ def init_lab():
           "review_outcome":"TEXT NOT NULL DEFAULT ''",
           "review_note":"TEXT NOT NULL DEFAULT ''",
           "bank_response_status":"TEXT NOT NULL DEFAULT 'NOT_READY'",
-          "updated_at":"TEXT NOT NULL DEFAULT ''",\n          "review_type":"TEXT NOT NULL DEFAULT 'DATA_QUALITY'"
+          "updated_at":"TEXT NOT NULL DEFAULT ''",
+          "review_type":"TEXT NOT NULL DEFAULT 'DATA_QUALITY'"
         }
         for column,definition in migrations.items():
             if column not in existing:
