@@ -88,8 +88,28 @@ elif page=="Hodisalar va Case":
     st.subheader("Human Review uchun ochilgan sintetik Case'lar")
     if snap.get("cases"):
         st.dataframe(snap["cases"],use_container_width=True,hide_index=True)
+        for case in snap["cases"]:
+            with st.expander(case["case_id"]+" · "+case["status"]):
+                st.write(case["reason"])
+                st.caption("Bankka yuborish faqat inson ko'rigidan keyin javob paketi sifatida tayyorlanadi; haqiqiy API jo'natmasi yo'q.")
+                choice=st.selectbox("Inson ko'rigi natijasi",["REFER_TO_BANK","NO_FRAUD_INDICATION","NEEDS_MORE_INFO","INCONCLUSIVE"],key="human-"+case["case_id"])
+                note=st.text_area("Asos / izoh",key="note-"+case["case_id"])
+                if st.button("Human Review natijasini saqlash",key="save-"+case["case_id"]):
+                    lab.review_case(case["case_id"],choice,note); st.success("Natija auditga yozildi."); st.rerun()
     else:
         st.info("Hozircha Human Review Case yo'q.")
+    st.subheader("Yetishmayotgan ma'lumotlar — qayta tekshiruv")
+    if snap.get("data_reviews"):
+        st.dataframe(snap["data_reviews"],use_container_width=True,hide_index=True)
+        for ticket in snap["data_reviews"]:
+            with st.expander(ticket["review_id"]+" · "+ticket["status"]):
+                st.write(ticket["reason"])
+                choice=st.selectbox("Data Review natijasi",["REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","CLOSED_INCONCLUSIVE"],key="data-"+ticket["review_id"])
+                note=st.text_area("Tekshiruv izohi",key="data-note-"+ticket["review_id"])
+                if st.button("Qayta tekshiruv holatini saqlash",key="data-save-"+ticket["review_id"]):
+                    lab.review_data_ticket(ticket["review_id"],choice,note); st.success("Holat saqlandi."); st.rerun()
+    else:
+        st.info("Qayta tekshiruv navbati hozircha bo'sh.")
     st.caption("Hodisa tafsilotlari sintetik; natijalar prototip qoidalari bilan hisoblangan.")
 
 elif page=="FINZANJIR AI (o'zbekcha)":
