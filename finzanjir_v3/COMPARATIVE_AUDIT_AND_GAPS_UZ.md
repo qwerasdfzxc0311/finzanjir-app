@@ -98,3 +98,25 @@ P3 — integratsiya:
 - UI ish jarayonini o'zi yangilab ko'rsatadi.
 - Har bir qatlamning statusi aniq va isbotlangan darajada ko'rsatiladi.
 - CI testlar o'tadi; Cloud runtime va real Android/AI hali alohida tekshiriladi.
+
+## 7. Ushbu audit davomida bajarilgan o'zgarishlar
+
+- Eski branchlar o'zgartirilmadi; ish faqat finzanjir-v3-synthetic-ai-uz branchida davom etdi.
+- v2 dan Signal reyestri, pseudonim aloqalar grafigi, Audit jurnali va 16 qatlam holati sahifalari xavfsiz cheklovlari bilan qaytarildi.
+- Dashboard, laboratoriya va hodisalar sahifalariga avtomatik yangilanish qo'shildi.
+- Classifier ichidan scenario nomiga qarab Human Review berish olib tashlandi; tasnif payload maydonlari/signallari asosida qoladi.
+- Buni tekshiruvchi regression test qo'shildi.
+- Dublikat ssenariy izohi aniqlandi: ikki delivery attempt faqat sintetik metama'lumot; haqiqiy transport/webhook retry hali yo'q.
+- CI endi v3 requirements.txt ni o'rnatadi, shunda Cloud UI refresh dependency ham test/build muhitida mavjud bo'ladi.
+
+## 8. Auditdan keyingi tekshiruv natijasi
+
+GitHub Actions run: 42355931242
+- Python compile: PASS
+- Unit/regression: 17 test PASS
+- 400 event pipeline: PASS
+- Scenario-label independence: PASS
+- Emergency stop/recovery: PASS
+- Human review / bank response not-sent boundary: PASS
+
+Bu CI natijasi source-level testdir. Streamlit Cloud'da brauzer orqali real ishga tushirish, uzoq muddatli worker barqarorligi, Android offline runtime va bank integratsiyasi hali alohida tekshirilishi kerak.
