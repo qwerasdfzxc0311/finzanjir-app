@@ -85,6 +85,11 @@ elif page=="Hodisalar va Case":
             display.append({"Hodisa":r["event_id"],"Bank":r["bank_id"],"Ssenariy":r["scenario"],"Kutilgan":r["expected"],"Amaldagi":result.get("outcome","—"),"Holat":r["state"]})
         st.dataframe(display,use_container_width=True,hide_index=True)
     else: st.info("Hali hodisa kelmagan. Laboratoriyada START bosing.")
+    st.subheader("Human Review uchun ochilgan sintetik Case'lar")
+    if snap.get("cases"):
+        st.dataframe(snap["cases"],use_container_width=True,hide_index=True)
+    else:
+        st.info("Hozircha Human Review Case yo'q.")
     st.caption("Hodisa tafsilotlari sintetik; natijalar prototip qoidalari bilan hisoblangan.")
 
 elif page=="FINZANJIR AI (o'zbekcha)":
