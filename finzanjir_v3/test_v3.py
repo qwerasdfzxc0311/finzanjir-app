@@ -72,6 +72,8 @@ class SyntheticLabTests(unittest.TestCase):
         with lab.connect() as c:
             row=c.execute("SELECT * FROM bank_events WHERE scenario='duplicate_or_transport' LIMIT 1").fetchone()
         lab._process_one(row)
+        duplicate_result=lab._process_one(row)
+        self.assertEqual(duplicate_result,"DUPLICATE_IGNORED")
         with lab.connect() as c:
             result=json.loads(c.execute("SELECT result FROM bank_events WHERE event_id=?",(row["event_id"],)).fetchone()["result"])
         self.assertTrue(result["duplicate_delivery_detected"])
