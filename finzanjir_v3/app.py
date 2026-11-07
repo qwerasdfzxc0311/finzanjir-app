@@ -54,16 +54,16 @@ elif page=="Sun'iy bank laboratoriyasi":
     x,y,z=st.columns(3)
     if x.button("▶ START — boshlash",type="primary",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.start_run(resume=False); st.rerun()
-    if y.button("Ⅱ PAUSE — vaqtincha to'xtatish",use_container_width=True):
+    if y.button("Ⅱ PAUSE — vaqtincha to'xtatish",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.pause_run(); st.rerun()
-    if z.button("■ STOP — to'liq to'xtatish",use_container_width=True):
+    if z.button("■ STOP — to'liq to'xtatish",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.stop_run(); st.rerun()
     x,y,z=st.columns(3)
     if x.button("↻ RESUME — davom ettirish",use_container_width=True,disabled=meta.get("run_state")=="EMERGENCY_STOP"):
         lab.start_run(resume=True); st.rerun()
     if y.button("Yangilash",use_container_width=True): st.rerun()
     confirm=st.checkbox("Navbat va natijalarni o'chirishga roziman")
-    if z.button("RESET — yangi sikl",disabled=(not confirm or meta.get("run_state")=="RUNNING"),use_container_width=True):
+    if z.button("RESET — yangi sikl",disabled=(not confirm or meta.get("run_state") in ("RUNNING","EMERGENCY_STOP")),use_container_width=True):
         lab.reset_run(confirmed=confirm); st.rerun()
     st.caption("PAUSE/STOP navbatda qolgan hodisalarni o'chirmaydi. RESUME ularni davom ettiradi. RESET alohida tasdiq talab qiladi.")
     st.divider()
