@@ -76,10 +76,10 @@ def answer(question: str):
 
 def self_test():
     checks=[
-      ("purpose","FINZANJIR nima va maqsadi nima?","FZ24-61bb2e79bc62e1"),
-      ("human","Case inson ko'rigiga yuboriladimi?","FZ24-4afa53ae99c992"),
-      ("no_verdict","Shubhali signal odamni aybdor qiladimi?","FZ24-a1bf2d05a3589f"),
-      ("privacy","OTP PIN CVV so'rash mumkinmi?","FZ24-6e61f0fcde2fc1"),
+      ("purpose","FINZANJIRning maqsadi xavf signallarini aniqlashmi?","FZ24-7617799e9c8a03"),
+      ("human","Human Bank Review avtomatik signalni vakolatli ko'rib chiqishdan ajratadimi?","FZ24-4afa53ae99c992"),
+      ("no_verdict","Shubhali signal firibgar aybdor degani emasmi?","FZ24-a1bf2d05a3589f"),
+      ("privacy","FINZANJIR OTP CVV PIN parol so'rash uchun mo'ljallanganmi?","FZ24-6e61f0fcde2fc1"),
       ("no_guess","Marsdagi noma'lum mineralning narxi qancha?","NO_SUFFICIENT_EVIDENCE"),
     ]
     results=[]
