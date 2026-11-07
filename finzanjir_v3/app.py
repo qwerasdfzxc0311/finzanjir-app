@@ -157,6 +157,35 @@ elif page=="Signal reyestri":
       ("SIG-016","Rozilik doirasi noaniq","consent_scope, event_scope")
     ]
     st.dataframe([{"Signal ID":a,"Signal":b,"Kerakli maydonlar":c} for a,b,c in rows],use_container_width=True,hide_index=True)
+
+elif page=="Aloqalar grafigi":
+    st.subheader("Sintetik pseudonim aloqalar grafigi")
+    st.caption("Atribut mosligi faqat tekshirishga yordam beradi; shaxsning aybdorligi yoki firibgarligini isbotlamaydi.")
+    snap=lab.snapshot()
+    rows=snap["recent"]
+    if rows:
+        chosen=st.selectbox("Asosiy hodisa",[r["event_id"] for r in rows],key="graph-event")
+        root=next(r for r in rows if r["event_id"]==chosen)
+        rp=json.loads(root["payload"])
+        related=[]
+        for r in rows:
+            if r["event_id"]==chosen: continue
+            p=json.loads(r["payload"])
+            matches=[label for key,label in (("customer_id","Mijoz"),("device_id","Qurilma"),("recipient_id","Qabul qiluvchi")) if rp.get(key) and rp.get(key)==p.get(key)]
+            if matches: related.append((r,p,matches))
+        dot=['graph G { node [style=filled];','"ROOT" [label="Hodisa '+chosen+'",fillcolor="gold"];']
+        for i,(r,p,matches) in enumerate(related[:30]):
+            node="R"+str(i)
+            dot.append('"'+node+'" [label="'+r["event_id"]+' / '+p.get("bank_id","")+'",fillcolor="lightblue"];')
+            dot.append('"ROOT" -- "'+node+'" [label="'+", ".join(matches)+'"];')
+        dot.append("}")
+        st.graphviz_chart("\n".join(dot),use_container_width=True)
+        st.metric("Mos atributli hodisalar",len(related))
+        if related:
+            st.dataframe([{"Hodisa":r["event_id"],"Bank":p.get("bank_id"),"Moslik":", ".join(m),"Mijoz":p.get("customer_id"),"Qurilma":p.get("device_id"),"Qabul qiluvchi":p.get("recipient_id")} for r,p,m in related],use_container_width=True,hide_index=True)
+    else:
+        st.info("Avval laboratoriyada sintetik hodisalarni yarating.")
+
 elif page=="Audit jurnali":
     st.subheader("Audit jurnali")
     snap=lab.snapshot()
