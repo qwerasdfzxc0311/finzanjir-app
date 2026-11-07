@@ -74,6 +74,14 @@ elif page=="Sun'iy bank laboratoriyasi":
     if k2.button("Emergency Recovery — qulfni yechish",use_container_width=True,disabled=(not recovery_ok or meta.get("run_state")!="EMERGENCY_STOP")):
         lab.recover_emergency(confirmed=recovery_ok,note="Operator UI orqali recovery tasdiqladi"); st.rerun()
     if meta.get("last_error"): st.error("Jarayon xatosi: "+meta["last_error"])
+    st.subheader("400 ta sinov holati taqsimoti")
+    distribution={}
+    for event_row in snap["recent"]:
+        key=event_row["scenario"]
+        distribution[key]=distribution.get(key,0)+1
+    if distribution:
+        st.dataframe([{"Ssenariy":k,"Hodisalar":v} for k,v in sorted(distribution.items())],use_container_width=True,hide_index=True)
+    st.caption("Run ID: "+str(meta.get("run_id","—")))
     st.subheader("Banklar bo'yicha qabul holati")
     if snap["banks"]: st.dataframe(snap["banks"],use_container_width=True,hide_index=True)
     st.subheader("Jarayon auditi")
@@ -129,7 +137,7 @@ elif page=="Hodisalar va Case":
 
 elif page=="FINZANJIR AI (o'zbekcha)":
     st.subheader("Lokal bilim yordamchisi")
-    st.info("Internetdagi AI xizmatiga so'rov yuborilmaydi. Bu bosqichda matn generatsiyasi emas, V317 bilim kartalaridan o'zbekcha dalil qidirish va parchalarni ko'rsatish ishlaydi.")
+    st.info("Internetdagi AI xizmatiga so'rov yuborilmaydi. Bu bosqichda matn generatsiyasi emas, V317 manbasidan ajratilgan 33 ta o'zbekcha candidate bilim kartasidan dalil qidirish va parchalarni ko'rsatish ishlaydi.")
     q=st.text_area("Savolingizni o'zbek tilida yozing",placeholder="Masalan: Shubhali signal mijozni aybdor qiladimi?")
     if st.button("Bilimdan qidirish",type="primary",disabled=not q.strip()):
         result=offline_ai.answer(q)
@@ -160,7 +168,7 @@ elif page=="Arxitektura va chegaralar":
     - AI: o'zbekcha offline evidence retrieval; tashqi model/API yo'q.
     - Bilimlar: V317 ZIPdan ajratilgan candidate yozuvlar; tasdiqlangan bilim bilan aralashtirilmaydi.
     - Inson ko'rigi: shubhali holatni Case nomzodiga yo'naltirish tamoyili.
-    - L11: favqulodda to'xtatish, navbatni saqlash va tiklash bo'yicha laboratoriya boshqaruvlari.
+    - L11: KILL SWITCH, PAUSE/STOP, navbatni saqlash va tasdiqlangan recovery boshqaruvlari.
 
     **Hali bajarilmagan / tasdiqlanmagan:**
     - Haqiqiy bank API, imzolangan webhook, autentifikatsiya va bank ACK/NACK.
