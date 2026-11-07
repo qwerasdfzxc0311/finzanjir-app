@@ -264,7 +264,7 @@ def _process_one(row):
 def _worker_loop():
     while True:
         state=get_meta().get("run_state","IDLE")
-        if state in ("PAUSED","STOPPED","IDLE","READY","COMPLETED","ERROR"):
+        if state in ("PAUSED","STOPPED","EMERGENCY_STOP","IDLE","READY","COMPLETED","ERROR"):
             return
         if state != "RUNNING":
             time.sleep(.2); continue
@@ -289,6 +289,8 @@ def start_run(resume=False):
     global _worker
     init_lab()
     state=get_meta().get("run_state")
+    if state=="EMERGENCY_STOP":
+        raise RuntimeError("KILL SWITCH faol. Avval favqulodda holatni tasdiqlangan recovery orqali yeching.")
     if not resume and state in ("IDLE","READY","COMPLETED","STOPPED","ERROR"):
         with connect() as c:
             queued=c.execute("SELECT COUNT(*) FROM bank_events WHERE state='QUEUED'").fetchone()[0]
@@ -309,6 +311,18 @@ def stop_run():
     set_meta(run_state="STOPPED")
     audit("RUN_STOPPED","Processing stopped; unprocessed queue retained")
 
+def emergency_stop(reason="Operator emergency stop"):
+    set_meta(run_state="EMERGENCY_STOP",last_error=reason)
+    audit("KILL_SWITCH_ACTIVATED",reason)
+
+def recover_emergency(confirmed=False, note=""):
+    if not confirmed:
+        raise ValueError("Recovery uchun aniq tasdiq kerak")
+    if get_meta().get("run_state")!="EMERGENCY_STOP":
+        raise RuntimeError("KILL SWITCH faol emas")
+    set_meta(run_state="STOPPED",last_error="Emergency holat operator tomonidan ko'rib chiqildi: "+note)
+    audit("EMERGENCY_RECOVERY_APPROVED",note or "Operator tasdig'i")
+    
 def reset_run(confirmed=False):
     if not confirmed: raise ValueError("Reset uchun tasdiq kerak")
     with connect() as c:
