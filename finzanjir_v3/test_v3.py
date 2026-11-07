@@ -21,6 +21,19 @@ class SyntheticLabTests(unittest.TestCase):
         snap=lab.snapshot()
         self.assertEqual(snap["total"],400)
 
+    def test_full_400_event_pipeline(self):
+        lab.generate_dataset(seed=317)
+        with lab.connect() as c:
+            rows=c.execute("SELECT * FROM bank_events WHERE state='QUEUED' ORDER BY event_id").fetchall()
+        self.assertEqual(len(rows),400)
+        for row in rows:
+            lab._process_one(row)
+        snap=lab.snapshot()
+        self.assertEqual(snap["counts"].get("PROCESSED",0),400)
+        self.assertGreater(len(snap["cases"]),0)
+        self.assertGreater(len(snap["data_reviews"]),0)
+        self.assertEqual(lab.evaluate()["processed"],400)
+
     def test_four_synthetic_banks(self):
         lab.generate_dataset()
         self.assertEqual(len(lab.snapshot()["banks"]),4)
