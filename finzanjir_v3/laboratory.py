@@ -32,6 +32,10 @@ def init_lab():
           expected TEXT NOT NULL, payload TEXT NOT NULL, state TEXT NOT NULL,
           result TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL, processed_at TEXT
         );
+        CREATE TABLE IF NOT EXISTS lab_cases (
+          case_id TEXT PRIMARY KEY, event_id TEXT NOT NULL UNIQUE, bank_id TEXT NOT NULL,
+          status TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL
+        );
         CREATE TABLE IF NOT EXISTS lab_audit (
           id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, detail TEXT NOT NULL,
           created_at TEXT NOT NULL
@@ -135,6 +139,7 @@ def generate_dataset(seed=317):
     for scenario,count in ALLOCATIONS:
         for _ in range(count):
             p=_make_payload(idx,scenario,rng)
+            p["scenario"] = scenario
             expected = "DATA_REVIEW" if scenario in ("missing_data","contradictory") else (
                 "HUMAN_REVIEW" if scenario in ("suspicious_combo","ato","social_engineering","money_mule","device_anomaly") else "MONITOR")
             rows.append((p["event_id"],p["bank_id"],scenario,expected,json.dumps(p,ensure_ascii=False)))
@@ -186,10 +191,15 @@ def _process_one(row):
     outcome,detail=_classify(p,missing,errors)
     result={"outcome":outcome,"detail":detail,"source_bank":p["bank_id"],
             "event_id":p["event_id"],"processed_at":datetime.now(timezone.utc).isoformat(),
-            "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas."}
+            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),
+            "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas; bank APIga yuborilmadi."}
     with connect() as c:
         c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
                   (json.dumps(result,ensure_ascii=False),result["processed_at"],p["event_id"]))
+        if outcome == "HUMAN_REVIEW":
+            cid="LAB-CASE-"+uuid.uuid4().hex[:10].upper()
+            c.execute("INSERT OR IGNORE INTO lab_cases(case_id,event_id,bank_id,status,reason,created_at) VALUES(?,?,?,?,?,?)",
+                      (cid,p["event_id"],p["bank_id"],"OPEN",detail.get("reason","Human review talab qilinadi"),result["processed_at"]))
     return outcome
 
 def _worker_loop():
@@ -256,7 +266,8 @@ def snapshot():
         rows=c.execute("SELECT * FROM bank_events ORDER BY processed_at DESC LIMIT 30").fetchall()
         banks=[dict(r) for r in c.execute("SELECT bank_id,COUNT(*) total,SUM(CASE WHEN state='PROCESSED' THEN 1 ELSE 0 END) processed FROM bank_events GROUP BY bank_id")]
         audit_rows=[dict(r) for r in c.execute("SELECT * FROM lab_audit ORDER BY id DESC LIMIT 30")]
-    return {"meta":meta,"counts":counts,"total":totals,"recent":[dict(r) for r in rows],"banks":banks,"audit":audit_rows}
+        cases=[dict(r) for r in c.execute("SELECT * FROM lab_cases ORDER BY created_at DESC LIMIT 100")]
+    return {"meta":meta,"counts":counts,"total":totals,"recent":[dict(r) for r in rows],"banks":banks,"audit":audit_rows,"cases":cases}
 
 def evaluate():
     with connect() as c:
