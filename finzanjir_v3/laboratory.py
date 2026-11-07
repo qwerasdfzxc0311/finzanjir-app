@@ -12,7 +12,7 @@ _worker = None
 _startup_checked = False
 TOTAL = 400
 ALLOCATIONS = [
-    ("normal", 100), ("suspicious_combo", 70), ("ato", 45),
+    ("normal", 80), ("ambiguous_single_signal", 20), ("suspicious_combo", 70), ("ato", 45),
     ("social_engineering", 40), ("money_mule", 40), ("device_anomaly", 35),
     ("missing_data", 30), ("contradictory", 20), ("duplicate_or_transport", 20),
 ]
@@ -53,7 +53,7 @@ def init_lab():
           review_id TEXT PRIMARY KEY, event_id TEXT NOT NULL UNIQUE, bank_id TEXT NOT NULL,
           status TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL,
           review_outcome TEXT NOT NULL DEFAULT '', review_note TEXT NOT NULL DEFAULT '',
-          updated_at TEXT NOT NULL DEFAULT ''
+          updated_at TEXT NOT NULL DEFAULT '', review_type TEXT NOT NULL DEFAULT 'DATA_QUALITY'
         );
         CREATE TABLE IF NOT EXISTS lab_audit (
           id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, detail TEXT NOT NULL,
@@ -68,7 +68,7 @@ def init_lab():
           "review_outcome":"TEXT NOT NULL DEFAULT ''",
           "review_note":"TEXT NOT NULL DEFAULT ''",
           "bank_response_status":"TEXT NOT NULL DEFAULT 'NOT_READY'",
-          "updated_at":"TEXT NOT NULL DEFAULT ''"
+          "updated_at":"TEXT NOT NULL DEFAULT ''",\n          "review_type":"TEXT NOT NULL DEFAULT 'DATA_QUALITY'"
         }
         for column,definition in migrations.items():
             if column not in existing:
@@ -115,6 +115,10 @@ def _make_payload(i:int, scenario:str, rng:random.Random):
     if scenario == "normal":
         amount = rng.choice([45000,80000,120000,180000,250000])
         consent = "transfer"
+    elif scenario == "ambiguous_single_signal":
+        amount = 2200000
+        consent = "transfer"
+        session = 90
     elif scenario == "suspicious_combo":
         amount = rng.choice([3500000,5200000,8700000])
         recipient = f"NEW-REC-{i}"
@@ -176,6 +180,7 @@ def generate_dataset(seed=317):
             p=_make_payload(idx,scenario,rng)
             p["scenario"] = scenario
             expected = "DATA_REVIEW" if scenario in ("missing_data","contradictory") else (
+                "RECHECK" if scenario=="ambiguous_single_signal" else
                 "HUMAN_REVIEW" if scenario in ("suspicious_combo","ato","social_engineering","money_mule","device_anomaly") else "MONITOR")
             rows.append((p["event_id"],p["bank_id"],scenario,expected,json.dumps(p,ensure_ascii=False)))
             idx += 1
@@ -239,7 +244,7 @@ def _process_one(row):
     outcome,detail=_classify(p,missing,errors)
     result={"outcome":outcome,"detail":detail,"source_bank":p["bank_id"],
             "event_id":p["event_id"],"processed_at":datetime.now(timezone.utc).isoformat(),
-            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),
+            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "RECHECK_REQUIRED" if outcome=="RECHECK" else "MONITORING_RESULT_READY"),
             "duplicate_delivery_detected":bool(p.get("duplicate_delivery",False)),
             "delivery_attempts_simulated":int(p.get("delivery_attempts",1)),
             "idempotency_key":p["event_id"],
@@ -257,8 +262,12 @@ def _process_one(row):
         elif outcome == "DATA_REVIEW":
             rid="DATA-REVIEW-"+uuid.uuid4().hex[:10].upper()
             reason="Yetishmayotgan maydonlar: "+", ".join(detail.get("missing",[]))+"; tekshiruv xatolari: "+", ".join(detail.get("errors",[]))
-            c.execute("INSERT OR IGNORE INTO lab_data_reviews(review_id,event_id,bank_id,status,reason,created_at) VALUES(?,?,?,?,?,?)",
-                      (rid,p["event_id"],p["bank_id"],"OPEN",reason,result["processed_at"]))
+            c.execute("INSERT OR IGNORE INTO lab_data_reviews(review_id,event_id,bank_id,status,reason,created_at,review_type) VALUES(?,?,?,?,?,?,?)",
+                      (rid,p["event_id"],p["bank_id"],"OPEN",reason,result["processed_at"],"DATA_QUALITY"))
+        elif outcome == "RECHECK":
+            rid="RECHECK-"+uuid.uuid4().hex[:10].upper()
+            c.execute("INSERT OR IGNORE INTO lab_data_reviews(review_id,event_id,bank_id,status,reason,created_at,review_type) VALUES(?,?,?,?,?,?,?)",
+                      (rid,p["event_id"],p["bank_id"],"OPEN",detail.get("reason","Noaniq signal qayta tekshirilsin"),result["processed_at"],"UNRESOLVED_SIGNAL"))
     return outcome
 
 def _worker_loop():
@@ -353,10 +362,10 @@ def review_case(case_id, outcome, note=""):
     audit("HUMAN_REVIEW_RECORDED",f"{case_id}: {outcome}; bank_status={bank_status}")
 
 def review_data_ticket(review_id, outcome, note=""):
-    allowed={"REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","CLOSED_INCONCLUSIVE"}
+    allowed={"REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","RECHECK_RULES","CLOSED_INCONCLUSIVE"}
     if outcome not in allowed:
         raise ValueError("Noto'g'ri Data Review natijasi")
-    status="WAITING_BANK_DATA" if outcome=="REQUEST_BANK_DATA" else "READY_FOR_RECHECK" if outcome=="DATA_RECEIVED_RECHECK" else "CLOSED"
+    status="WAITING_BANK_DATA" if outcome=="REQUEST_BANK_DATA" else "READY_FOR_RECHECK" if outcome in ("DATA_RECEIVED_RECHECK","RECHECK_RULES") else "CLOSED"
     stamp=datetime.now(timezone.utc).isoformat()
     with connect() as c:
         changed=c.execute("UPDATE lab_data_reviews SET status=?,review_outcome=?,review_note=?,updated_at=? WHERE review_id=?",
