@@ -138,6 +138,54 @@ elif page=="Hodisalar va Case":
         st.info("Qayta tekshiruv navbati hozircha bo'sh.")
     st.caption("Hodisa tafsilotlari sintetik; natijalar prototip qoidalari bilan hisoblangan.")
 
+
+elif page=="Signal reyestri":
+    st.subheader("Signal reyestri — tarixiy qoidalar")
+    st.warning("Bu v2 dan saqlangan muhandislik reyestri. Hozirgi v3 classifier barcha qoidalarni bajarmaydi; vaznlar tasdiqlangan risk ehtimoli emas.")
+    rows=[
+      ("SIG-001","Odatdan yuqori summa","amount, customer_ref"),
+      ("SIG-002","Qisqa vaqtda takroriy operatsiya","event_time, customer_ref"),
+      ("SIG-003","Kirimdan keyin tez chiqim","direction, amount, event_time"),
+      ("SIG-004","Yangi qabul qiluvchi","recipient_ref, customer_ref"),
+      ("SIG-005","O'xshash summali takroriy o'tkazmalar","amount, event_time"),
+      ("SIG-006","Yangi qurilma","device_ref, customer_ref"),
+      ("SIG-007","Tarixdan farqli joylashuv","location, event_time"),
+      ("SIG-008","Bir qurilmada bir nechta mijoz","device_ref, customer_ref"),
+      ("SIG-010","Odatdan tashqari vaqt","event_time, customer_ref"),
+      ("SIG-011","Juda qisqa sessiya","session_seconds"),
+      ("SIG-012","Parol tiklangach tez o'tkazma","password_reset_time, event_time"),
+      ("SIG-016","Rozilik doirasi noaniq","consent_scope, event_scope")
+    ]
+    st.dataframe([{"Signal ID":a,"Signal":b,"Kerakli maydonlar":c} for a,b,c in rows],use_container_width=True,hide_index=True)
+elif page=="Audit jurnali":
+    st.subheader("Audit jurnali")
+    snap=lab.snapshot()
+    st.caption("Oxirgi 30 ta laboratoriya yozuvi. Hozircha o'zgarmas yoki imzolangan audit emas.")
+    if snap["audit"]: st.dataframe(snap["audit"],use_container_width=True,hide_index=True)
+    else: st.info("Audit yozuvlari hali yo'q.")
+elif page=="16 qatlam holati":
+    st.subheader("16 qatlam — amaldagi prototip holati")
+    st.warning("Statuslar faqat ushbu branchdagi mavjud kodni bildiradi; 16 qatlam to'liq bajarilgan degani emas.")
+    layers=[
+      ("L01","Dalil va manba","Qisman","Event ID, sintetik manba va payload; imzo tekshiruvi yo'q."),
+      ("L02","Ma'lumot sifati","Demo","Majburiy maydon, summa, vaqt, yo'nalish va zidlik tekshiruvi."),
+      ("L03","Signal tahlili","Demo","Oddiy indikatorlar; v2 reyestrining hammasi ko'chmagan."),
+      ("L04","Inson nazorati","Demo","Human Review qaydi; IAM/SSO/RBAC yo'q."),
+      ("L05","Qoidalar boshqaruvi","Yo'q","Tasdiqlash va versiya rollout yo'q."),
+      ("L06","Maxfiylik","Qisman","Sintetik pseudonim ma'lumot; production encryption yo'q."),
+      ("L07","Avtomatlashtirish","Demo","400 hodisali worker; retry/backoff yo'q."),
+      ("L08","Case va dalil","Qisman","Case va review qaydi; to'liq provenance yo'q."),
+      ("L09","Fuqaro shaffofligi","Yo'q","Fuqaro portali yo'q; bloklash oqimi qaytarilmaydi."),
+      ("L10","Hayotiy sikl","Qisman","SQLite; retention va backup siyosati yo'q."),
+      ("L11","Hodisaga javob","Demo","PAUSE/STOP/RESUME/RESET/KILL SWITCH."),
+      ("L12","AI ishonchliligi","Qisman","Offline extractive retrieval; generativ model emas."),
+      ("L13","Audit","Qisman","SQLite audit; o'zgarmas audit emas."),
+      ("L14","Banklararo integratsiya","Yo'q","Faqat 4 sun'iy bank; API/webhook yo'q."),
+      ("L15","Aloqalar grafigi","Demo","Sintetik atribut mosligi."),
+      ("L16","KPI va sifat","Qisman","Hisoblagichlar; mustaqil ground-truth yo'q.")
+    ]
+    st.dataframe([{"Qatlam":a,"Nomi":b,"Holat":c,"Cheklov":d} for a,b,c,d in layers],use_container_width=True,hide_index=True)
+
 elif page=="FINZANJIR AI (o'zbekcha)":
     st.subheader("Lokal bilim yordamchisi")
     st.info("Internetdagi AI xizmatiga so'rov yuborilmaydi. Bu bosqichda matn generatsiyasi emas, V317 manbasidan ajratilgan 33 ta o'zbekcha candidate bilim kartasidan dalil qidirish va parchalarni ko'rsatish ishlaydi.")
