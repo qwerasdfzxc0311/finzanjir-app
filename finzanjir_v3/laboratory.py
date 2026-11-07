@@ -121,6 +121,7 @@ def _make_payload(i:int, scenario:str, rng:random.Random):
         consent = "transfer"
     elif scenario == "ambiguous_single_signal":
         amount = 2200000
+        device = f"AMBIG-DEVICE-{i}"
         consent = "transfer"
         session = 90
     elif scenario == "suspicious_combo":
@@ -234,10 +235,8 @@ def _classify(p, missing, errors):
         same=[x for x in linked if x.get("device_id")==p["device_id"]]
         linked_customers={x.get("customer_id") for x in same if x.get("customer_id")}
         linked_banks={x.get("bank_id") for x in same if x.get("bank_id")}
-        if len(linked_customers)>=3:
-            signals.append("Bir qurilmaga bir nechta sintetik mijoz profili bog'langan")
-        if len(linked_banks)>=2:
-            signals.append("Qurilma bir nechta sintetik bank manbasida uchraydi")
+        if len(linked_customers)>=3 and len(linked_banks)>=2:
+            signals.append("Qurilma bir nechta sintetik mijoz va bank manbasida uchraydi")
     if len(signals)>=2 or p.get("scenario") in ("ato","social_engineering","money_mule"):
         return "HUMAN_REVIEW", {"signals":signals,"reason":"Bir nechta indikator yoki ssenariy belgisi mavjud; bu aybdorlik isboti emas."}
     if len(signals)==1:
