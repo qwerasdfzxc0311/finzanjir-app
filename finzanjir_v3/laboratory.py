@@ -227,7 +227,7 @@ def _classify(p, missing, errors):
     if p.get("session_seconds") is not None and p["session_seconds"]<=15: signals.append("Juda qisqa sessiya")
     if p.get("password_reset_time"): signals.append("Parol tiklangach operatsiya")
     if p.get("consent_scope") in ("unknown","none","device_only"): signals.append("Rozilik doirasi tasdiqlanmagan")
-    if p.get("scenario") == "money_mule" or p["recipient_id"].startswith("MULE-"): signals.append("Pul oqimi bo'yicha qo'shimcha tekshiruv")
+    if p["recipient_id"].startswith("MULE-"): signals.append("Pul oqimi bo'yicha qo'shimcha tekshiruv")
     # Cross-bank demo match: a repeated pseudonymous device across several synthetic customers.
     if p.get("device_id"):
         with connect() as c:
@@ -237,7 +237,7 @@ def _classify(p, missing, errors):
         linked_banks={x.get("bank_id") for x in same if x.get("bank_id")}
         if len(linked_customers)>=3 and len(linked_banks)>=2:
             signals.append("Qurilma bir nechta sintetik mijoz va bank manbasida uchraydi")
-    if len(signals)>=2 or p.get("scenario") in ("ato","social_engineering","money_mule"):
+    if len(signals)>=2:
         return "HUMAN_REVIEW", {"signals":signals,"reason":"Bir nechta indikator yoki ssenariy belgisi mavjud; bu aybdorlik isboti emas."}
     if len(signals)==1:
         return "RECHECK", {"signals":signals,"reason":"Yakka indikator yetarli xulosa bermaydi; qoida va qo'shimcha kontekst qayta tekshirilsin."}
@@ -253,7 +253,7 @@ def _process_one(row):
             "duplicate_delivery_detected":bool(p.get("duplicate_delivery",False)),
             "delivery_attempts_simulated":int(p.get("delivery_attempts",1)),
             "idempotency_key":p["event_id"],
-            "duplicate_delivery_action":"DEDUPLICATED_BY_EVENT_ID" if p.get("duplicate_delivery") else "SINGLE_DELIVERY",
+            "duplicate_delivery_action":"SIMULATED_TWO_ATTEMPTS_IDEMPOTENCY_NOT_TRANSPORT_TESTED" if p.get("duplicate_delivery") else "SINGLE_DELIVERY",
             "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas; bank APIga yuborilmadi."}
     with connect() as c:
         changed=c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
