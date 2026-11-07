@@ -18,12 +18,14 @@ Requirements:
 
 - Four fictional bank sources.
 - 400 deterministic synthetic event scenarios.
-- START / PAUSE / STOP / RESUME / RESET controls.
+- START / PAUSE / STOP / RESUME / RESET and emergency KILL SWITCH controls.
 - SQLite queue and audit trail.
 - Missing or contradictory fields route to DATA_REVIEW.
 - A single unresolved indicator routes to RECHECK.
 - Multi-indicator cases route to HUMAN_REVIEW.
 - No detected indicator routes to MONITOR.
+- Historical UX restored safely: signal registry, pseudonymous graph, audit journal and honest 16-layer status panel.
+- Dashboard/lab/events pages auto-refresh while monitoring.
 - A response package is prepared for demonstration; no real bank API call is made.
 
 Pause and stop retain queued events. Resume continues the remaining queue. L11 emergency KILL SWITCH locks normal controls until an operator explicitly confirms recovery. Reset requires explicit confirmation and is blocked during emergency stop.
@@ -42,4 +44,4 @@ A true generative offline model (for example Qwen GGUF through a local runtime) 
 
 ## Important limitations
 
-This is a prototype test harness, not a bank integration or production system. The scenario labels are synthetic expected labels and require expert validation. The rule outcomes are not measured fraud probabilities. No cards, accounts, or transactions are blocked.
+This is a prototype test harness, not a bank integration or production system. Scenario labels are not used by the classifier; outcomes are derived from synthetic payload fields. Duplicate transport is metadata-only (two attempts indicated), not a real webhook retry/delivery test. The scenario labels are synthetic expected labels and require expert validation. The rule outcomes are not measured fraud probabilities. No cards, accounts, or transactions are blocked.
