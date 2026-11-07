@@ -45,7 +45,15 @@ def init_lab():
         );
         CREATE TABLE IF NOT EXISTS lab_cases (
           case_id TEXT PRIMARY KEY, event_id TEXT NOT NULL UNIQUE, bank_id TEXT NOT NULL,
-          status TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL
+          status TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL,
+          review_outcome TEXT NOT NULL DEFAULT '', review_note TEXT NOT NULL DEFAULT '',
+          bank_response_status TEXT NOT NULL DEFAULT 'NOT_READY', updated_at TEXT NOT NULL DEFAULT ''
+        );
+        CREATE TABLE IF NOT EXISTS lab_data_reviews (
+          review_id TEXT PRIMARY KEY, event_id TEXT NOT NULL UNIQUE, bank_id TEXT NOT NULL,
+          status TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL,
+          review_outcome TEXT NOT NULL DEFAULT '', review_note TEXT NOT NULL DEFAULT '',
+          updated_at TEXT NOT NULL DEFAULT ''
         );
         CREATE TABLE IF NOT EXISTS lab_audit (
           id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, detail TEXT NOT NULL,
@@ -165,6 +173,7 @@ def generate_dataset(seed=317):
     with connect() as c:
         c.execute("DELETE FROM bank_events")
         c.execute("DELETE FROM lab_cases")
+        c.execute("DELETE FROM lab_data_reviews")
         c.execute("DELETE FROM lab_audit")
         for eid,bank,scenario,expected,payload in rows:
             c.execute("INSERT INTO bank_events(event_id,bank_id,scenario,expected,payload,state,created_at) VALUES(?,?,?,?,?,'QUEUED',?)",
@@ -233,6 +242,11 @@ def _process_one(row):
             cid="LAB-CASE-"+uuid.uuid4().hex[:10].upper()
             c.execute("INSERT OR IGNORE INTO lab_cases(case_id,event_id,bank_id,status,reason,created_at) VALUES(?,?,?,?,?,?)",
                       (cid,p["event_id"],p["bank_id"],"OPEN",detail.get("reason","Human review talab qilinadi"),result["processed_at"]))
+        elif outcome == "DATA_REVIEW":
+            rid="DATA-REVIEW-"+uuid.uuid4().hex[:10].upper()
+            reason="Yetishmayotgan maydonlar: "+", ".join(detail.get("missing",[]))+"; tekshiruv xatolari: "+", ".join(detail.get("errors",[]))
+            c.execute("INSERT OR IGNORE INTO lab_data_reviews(review_id,event_id,bank_id,status,reason,created_at) VALUES(?,?,?,?,?,?)",
+                      (rid,p["event_id"],p["bank_id"],"OPEN",reason,result["processed_at"]))
     return outcome
 
 def _worker_loop():
@@ -288,8 +302,36 @@ def reset_run(confirmed=False):
     with connect() as c:
         c.execute("DELETE FROM bank_events")
         c.execute("DELETE FROM lab_cases")
+        c.execute("DELETE FROM lab_data_reviews")
     set_meta(run_state="IDLE",generated=0,processed=0,last_error="",run_id="",started_at="",finished_at="")
     audit("RUN_RESET","Dataset cleared after explicit confirmation")
+
+def review_case(case_id, outcome, note=""):
+    allowed={"REFER_TO_BANK","NO_FRAUD_INDICATION","NEEDS_MORE_INFO","INCONCLUSIVE"}
+    if outcome not in allowed:
+        raise ValueError("Noto'g'ri Human Review natijasi")
+    status="REFERRAL_READY" if outcome=="REFER_TO_BANK" else "CLOSED" if outcome in ("NO_FRAUD_INDICATION","INCONCLUSIVE") else "OPEN"
+    bank_status="READY_NOT_SENT" if outcome=="REFER_TO_BANK" else "NOT_REQUIRED"
+    stamp=datetime.now(timezone.utc).isoformat()
+    with connect() as c:
+        changed=c.execute("UPDATE lab_cases SET status=?,review_outcome=?,review_note=?,bank_response_status=?,updated_at=? WHERE case_id=?",
+                          (status,outcome,note,bank_status,stamp,case_id)).rowcount
+        if not changed:
+            raise KeyError("Case topilmadi")
+    audit("HUMAN_REVIEW_RECORDED",f"{case_id}: {outcome}; bank_status={bank_status}")
+
+def review_data_ticket(review_id, outcome, note=""):
+    allowed={"REQUEST_BANK_DATA","DATA_RECEIVED_RECHECK","CLOSED_INCONCLUSIVE"}
+    if outcome not in allowed:
+        raise ValueError("Noto'g'ri Data Review natijasi")
+    status="WAITING_BANK_DATA" if outcome=="REQUEST_BANK_DATA" else "READY_FOR_RECHECK" if outcome=="DATA_RECEIVED_RECHECK" else "CLOSED"
+    stamp=datetime.now(timezone.utc).isoformat()
+    with connect() as c:
+        changed=c.execute("UPDATE lab_data_reviews SET status=?,review_outcome=?,review_note=?,updated_at=? WHERE review_id=?",
+                          (status,outcome,note,stamp,review_id)).rowcount
+        if not changed:
+            raise KeyError("Data Review yozuvi topilmadi")
+    audit("DATA_REVIEW_RECORDED",f"{review_id}: {outcome}")
 
 def snapshot():
     init_lab()
@@ -301,7 +343,8 @@ def snapshot():
         banks=[dict(r) for r in c.execute("SELECT bank_id,COUNT(*) total,SUM(CASE WHEN state='PROCESSED' THEN 1 ELSE 0 END) processed FROM bank_events GROUP BY bank_id")]
         audit_rows=[dict(r) for r in c.execute("SELECT * FROM lab_audit ORDER BY id DESC LIMIT 30")]
         cases=[dict(r) for r in c.execute("SELECT * FROM lab_cases ORDER BY created_at DESC LIMIT 100")]
-    return {"meta":meta,"counts":counts,"total":totals,"recent":[dict(r) for r in rows],"banks":banks,"audit":audit_rows,"cases":cases}
+        data_reviews=[dict(r) for r in c.execute("SELECT * FROM lab_data_reviews ORDER BY created_at DESC LIMIT 100")]
+    return {"meta":meta,"counts":counts,"total":totals,"recent":[dict(r) for r in rows],"banks":banks,"audit":audit_rows,"cases":cases,"data_reviews":data_reviews}
 
 def evaluate():
     with connect() as c:
