@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json, random, sqlite3, threading, time, uuid
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -8,6 +9,7 @@ ROOT = Path(__file__).resolve().parent
 LAB_DB = ROOT / "synthetic_lab.sqlite3"
 _lock = threading.Lock()
 _worker = None
+_startup_checked = False
 TOTAL = 400
 ALLOCATIONS = [
     ("normal", 100), ("suspicious_combo", 70), ("ato", 45),
@@ -16,14 +18,23 @@ ALLOCATIONS = [
 ]
 BANKS = ["SUNIY-BANK-A", "SUNIY-BANK-B", "SUNIY-BANK-C", "SUNIY-BANK-D"]
 
+@contextmanager
 def connect():
     c = sqlite3.connect(str(LAB_DB), timeout=20, check_same_thread=False)
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA journal_mode=WAL")
     c.execute("PRAGMA foreign_keys=ON")
-    return c
+    try:
+        yield c
+        c.commit()
+    except Exception:
+        c.rollback()
+        raise
+    finally:
+        c.close()
 
 def init_lab():
+    global _startup_checked
     with connect() as c:
         c.executescript("""
         CREATE TABLE IF NOT EXISTS lab_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -46,6 +57,12 @@ def init_lab():
                     "run_id":"", "started_at":"", "finished_at":""}
         for k,v in defaults.items():
             c.execute("INSERT OR IGNORE INTO lab_meta(key,value) VALUES(?,?)",(k,v))
+    if not _startup_checked:
+        state=get_meta().get("run_state")
+        if state=="RUNNING":
+            set_meta(run_state="PAUSED",last_error="Ilova qayta ishga tushgan; xavfsizlik uchun navbat PAUSE holatiga o'tkazildi.")
+            audit("RECOVERY_PAUSED","Process restart detected; queued events retained for manual resume")
+        _startup_checked=True
 
 def get_meta():
     with connect() as c:
