@@ -147,6 +147,7 @@ def generate_dataset(seed=317):
     rng.shuffle(rows)
     with connect() as c:
         c.execute("DELETE FROM bank_events")
+        c.execute("DELETE FROM lab_cases")
         c.execute("DELETE FROM lab_audit")
         for eid,bank,scenario,expected,payload in rows:
             c.execute("INSERT INTO bank_events(event_id,bank_id,scenario,expected,payload,state,created_at) VALUES(?,?,?,?,?,'QUEUED',?)",
@@ -181,6 +182,17 @@ def _classify(p, missing, errors):
     if p.get("password_reset_time"): signals.append("Parol tiklangach operatsiya")
     if p.get("consent_scope") in ("unknown","none","device_only"): signals.append("Rozilik doirasi tasdiqlanmagan")
     if p.get("scenario") == "money_mule" or p["recipient_id"].startswith("MULE-"): signals.append("Pul oqimi bo'yicha qo'shimcha tekshiruv")
+    # Cross-bank demo match: a repeated pseudonymous device across several synthetic customers.
+    if p.get("device_id"):
+        with connect() as c:
+            linked=[json.loads(r["payload"]) for r in c.execute("SELECT payload FROM bank_events WHERE event_id<>?",(p["event_id"],))]
+        same=[x for x in linked if x.get("device_id")==p["device_id"]]
+        linked_customers={x.get("customer_id") for x in same if x.get("customer_id")}
+        linked_banks={x.get("bank_id") for x in same if x.get("bank_id")}
+        if len(linked_customers)>=3:
+            signals.append("Bir qurilmaga bir nechta sintetik mijoz profili bog'langan")
+        if len(linked_banks)>=2:
+            signals.append("Qurilma bir nechta sintetik bank manbasida uchraydi")
     if len(signals)>=2 or p.get("scenario") in ("ato","social_engineering","money_mule"):
         return "HUMAN_REVIEW", {"signals":signals,"reason":"Bir nechta indikator yoki ssenariy belgisi mavjud; bu aybdorlik isboti emas."}
     return "MONITOR", {"signals":signals,"reason":"Hozircha Case ochish mezoni aniqlanmadi; bu xavf yo'q degani emas."}
@@ -191,7 +203,7 @@ def _process_one(row):
     outcome,detail=_classify(p,missing,errors)
     result={"outcome":outcome,"detail":detail,"source_bank":p["bank_id"],
             "event_id":p["event_id"],"processed_at":datetime.now(timezone.utc).isoformat(),
-            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),
+            "bank_response":("HUMAN_REVIEW_REQUIRED" if outcome=="HUMAN_REVIEW" else "REQUEST_MORE_DATA" if outcome=="DATA_REVIEW" else "MONITORING_RESULT_READY"),\n            "duplicate_delivery_flag":bool(p.get("duplicate_delivery",False)),
             "notice":"Sintetik sinov. Real bank ma'lumoti yoki huquqiy xulosa emas; bank APIga yuborilmadi."}
     with connect() as c:
         c.execute("UPDATE bank_events SET state='PROCESSED',result=?,processed_at=? WHERE event_id=? AND state='QUEUED'",
@@ -254,6 +266,7 @@ def reset_run(confirmed=False):
     if not confirmed: raise ValueError("Reset uchun tasdiq kerak")
     with connect() as c:
         c.execute("DELETE FROM bank_events")
+        c.execute("DELETE FROM lab_cases")
     set_meta(run_state="IDLE",generated=0,processed=0,last_error="",run_id="",started_at="",finished_at="")
     audit("RUN_RESET","Dataset cleared after explicit confirmation")
 
