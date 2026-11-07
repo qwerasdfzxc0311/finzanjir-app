@@ -32,7 +32,9 @@ class SyntheticLabTests(unittest.TestCase):
         self.assertEqual(snap["counts"].get("PROCESSED",0),400)
         self.assertGreater(len(snap["cases"]),0)
         self.assertGreater(len(snap["data_reviews"]),0)
-        self.assertEqual(lab.evaluate()["processed"],400)
+        evaluation=lab.evaluate()
+        self.assertEqual(evaluation["processed"],400)
+        self.assertTrue(all(left.strip()==right.strip() for left,right in (key.split("→") for key in evaluation["confusion"])))
 
     def test_four_synthetic_banks(self):
         lab.generate_dataset()
