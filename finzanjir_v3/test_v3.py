@@ -203,11 +203,14 @@ class SyntheticLabTests(unittest.TestCase):
     def test_ai_regression(self):
         self.assertTrue(all(x["passed"] for x in offline_ai.self_test()))
 
-    def test_public_route_is_feedback_only(self):
+    def test_public_demo_home_and_private_author_route(self):
         source = (Path(__file__).with_name("app.py")).read_text(encoding="utf-8")
-        self.assertIn('page = "Tashrifchi fikri"', source)
+        self.assertIn('home_page = "Bosh sahifa"', source)
+        self.assertIn('st.session_state["v3_active_page"] = label', source)
         self.assertIn('page = "Muallif analitikasi"', source)
-        self.assertNotIn('page=st.sidebar.radio("Bo‘limni tanlang"', source)
+        self.assertIn('visitor_pages.render_admin()', source)
+        self.assertIn('visitor_pages.render_feedback()', source)
+        self.assertNotIn('st.sidebar.radio("FINZANJIR bo', source)
 
     def test_feedback_collection_fails_closed_until_all_gates_true(self):
         self.assertFalse(visitors.feedback_collection_enabled({}))
