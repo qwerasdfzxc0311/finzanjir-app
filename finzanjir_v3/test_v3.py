@@ -209,6 +209,17 @@ class SyntheticLabTests(unittest.TestCase):
         self.assertIn('page = "Muallif analitikasi"', source)
         self.assertNotIn('page=st.sidebar.radio("Bo‘limni tanlang"', source)
 
+    def test_feedback_collection_fails_closed_until_all_gates_true(self):
+        self.assertFalse(visitors.feedback_collection_enabled({}))
+        self.assertFalse(visitors.feedback_collection_enabled({
+            "feedback_enabled": True, "durable_storage_confirmed": True
+        }))
+        self.assertTrue(visitors.feedback_collection_enabled({
+            "feedback_enabled": True,
+            "durable_storage_confirmed": True,
+            "privacy_notice_reviewed": True
+        }))
+
     def test_feedback_rejects_empty_submission(self):
         old = visitors.VISITOR_DB
         visitors.VISITOR_DB = Path(self.tmp.name) / "empty-feedback.sqlite3"
