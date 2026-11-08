@@ -1,0 +1,30 @@
+name: FINZANJIR v4 checks
+
+on:
+  push:
+    branches:
+      - finzanjir-v4-unified-workflow-uz
+    paths:
+      - "finzanjir_v4/**"
+      - ".github/workflows/finzanjir-v4-checks.yml"
+  pull_request:
+    branches:
+      - finzanjir-v4-unified-workflow-uz
+    paths:
+      - "finzanjir_v4/**"
+      - ".github/workflows/finzanjir-v4-checks.yml"
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install runtime requirements
+        run: python -m pip install -r requirements.txt
+      - name: Compile v4 source
+        run: python -m compileall -q finzanjir_v4
