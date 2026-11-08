@@ -9,6 +9,8 @@ This checklist is a release gate, not a claim that the prototype is production-r
 - [x] Author analytics is not linked from public navigation.
 - [x] Other visitors' feedback is not rendered on public pages.
 - [x] Feedback collection remains closed unless all three explicit configuration gates are enabled.
+- [x] Tavily search is OFF by default; explicit `enabled = true` is required and an app-level daily request budget is enforced.
+- [ ] Confirm Tavily account is on the free tier with paid overages/pay-as-you-go disabled.
 - [x] Citizen-facing page is informational only; no personal case lookup is exposed.
 - [x] Author analytics is reachable only through the non-public `?view=author` route and requires the configured author password.
 - [x] No default author password exists.
