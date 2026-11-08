@@ -82,3 +82,14 @@ See [DEPLOYMENT_SECURITY_CHECKLIST.md](DEPLOYMENT_SECURITY_CHECKLIST.md). The ch
 ### Feedback collection activation gate
 
 The public feedback form is **closed by default**. It accepts submissions only when all three boolean Streamlit Secrets are explicitly set to true under `visitor_analytics`: `feedback_enabled`, `durable_storage_confirmed`, and `privacy_notice_reviewed`. Do not enable these flags until a durable private database/volume, backups, retention/deletion process, and reviewed privacy notice are actually in place. These flags are an operator acknowledgement, not a technical proof that the hosting filesystem is persistent.
+
+
+## Optional internet research
+
+- The AI page has separate local-knowledge and internet-search modes, plus a comparison mode.
+- Internet search is explicit and user-triggered; it is not silently run in the background.
+- Configure a Tavily API key in Streamlit Secrets under `internet_research.api_key`. Never commit the key or send it in chat.
+- Only the visitor's search query is sent to Tavily; do not enter personal, card, customer, credential, or confidential bank data.
+- The app displays source titles, URLs, and short search excerpts. It does not treat web text as trusted instructions or automatically add it to the FINZANJIR knowledge base.
+- Internet search requires outbound network access from the Streamlit hosting environment and a valid API key; this is not a direct unrestricted browser or a live bank-data connection.
+- Test module: `python -m unittest discover -s finzanjir_v3 -p 'test_internet_research.py'`.
