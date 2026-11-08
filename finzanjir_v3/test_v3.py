@@ -203,6 +203,12 @@ class SyntheticLabTests(unittest.TestCase):
     def test_ai_regression(self):
         self.assertTrue(all(x["passed"] for x in offline_ai.self_test()))
 
+    def test_public_route_is_feedback_only(self):
+        source = (Path(__file__).with_name("app.py")).read_text(encoding="utf-8")
+        self.assertIn('page = "Tashrifchi fikri"', source)
+        self.assertIn('page = "Muallif analitikasi"', source)
+        self.assertNotIn('page=st.sidebar.radio("Bo‘limni tanlang"', source)
+
     def test_feedback_rejects_empty_submission(self):
         old = visitors.VISITOR_DB
         visitors.VISITOR_DB = Path(self.tmp.name) / "empty-feedback.sqlite3"
