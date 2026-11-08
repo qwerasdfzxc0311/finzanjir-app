@@ -158,6 +158,24 @@ class SyntheticLabTests(unittest.TestCase):
         encoded = visitors.make_password_hash("Strong-Test-Password")
         self.assertTrue(visitors.verify_admin_password("Strong-Test-Password", encoded))
         self.assertFalse(visitors.verify_admin_password("wrong-password", encoded))
+        with self.assertRaises(ValueError):
+            visitors.make_password_hash("short")
+
+    def test_admin_login_rate_limit_and_reset(self):
+        old = visitors.VISITOR_DB
+        visitors.VISITOR_DB = Path(self.tmp.name) / "visitors.sqlite3"
+        try:
+            sid, secret = "author-session", "x" * 40
+            self.assertTrue(visitors.admin_login_status(sid, secret, now=1000)["allowed"])
+            for i in range(5):
+                visitors.record_admin_login_attempt(sid, secret, False, now=1000+i)
+            status = visitors.admin_login_status(sid, secret, now=1006)
+            self.assertFalse(status["allowed"])
+            self.assertGreater(status["retry_after"], 0)
+            visitors.record_admin_login_attempt(sid, secret, True, now=2000)
+            self.assertTrue(visitors.admin_login_status(sid, secret, now=2001)["allowed"])
+        finally:
+            visitors.VISITOR_DB = old
 
     def test_visitor_session_is_pseudonymous_and_device_detection_approximate(self):
         old = visitors.VISITOR_DB
