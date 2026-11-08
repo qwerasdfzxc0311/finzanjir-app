@@ -159,3 +159,12 @@ def admin_snapshot():
         feedback = [dict(r) for r in c.execute("SELECT * FROM feedback ORDER BY id DESC LIMIT 500")]
     return {"visitors": visitors, "page_views": page_views, "feedback_count": feedback_count,
             "devices": devices, "popular_pages": popular, "recent_visits": recent, "feedback": feedback}
+
+
+def feedback_collection_enabled(config):
+    """Fail closed until storage and privacy prerequisites are explicitly acknowledged."""
+    if not hasattr(config, "get"):
+        return False
+    return all(config.get(key) is True for key in (
+        "feedback_enabled", "durable_storage_confirmed", "privacy_notice_reviewed"
+    ))
