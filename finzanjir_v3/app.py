@@ -28,15 +28,28 @@ st.title("🛡️ FINZANJIR")
 st.caption("v3 · O‘zbek tilidagi sinov prototipi · haqiqiy bank tizimiga ulanmagan")
 st.warning("MUHIM: bu muhit faqat sun’iy ma’lumotlar bilan ishlaydi. Haqiqiy bank yoki mijoz ma’lumotlari yo‘q. Signal aybdorlik isboti emas; karta yoki operatsiyani avtomatik bloklash funksiyasi mavjud emas.")
 st.markdown('<div class="panel"><b>Bu prototip nima qiladi?</b><br>Sun’iy bank hodisalarini qabul qiladi, ma’lumot sifatini tekshiradi va zarur holatlarni inson ko‘rigiga tayyorlaydi.<br><b>Nima qilmaydi?</b><br>Haqiqiy pulga tegmaydi, bankka buyruq yubormaydi va hech kimni avtomatik aybdor deb topmaydi.</div>',unsafe_allow_html=True)
-# Public visitors are intentionally restricted to the feedback page.
-# The author-only route is opened explicitly with ?view=author and remains password-protected.
+# Ochiq namoyish bo'limlari: tashrifchilar loyihaning ishlashini ko'rishi mumkin.
+# Muallif analitikasi esa alohida URL va parol bilan himoyalangan.
 author_view = st.query_params.get("view","") == "author"
+public_pages = [
+    "Boshqaruv paneli",
+    "Sun'iy bank laboratoriyasi",
+    "Hodisalar va Case",
+    "Signal reyestri",
+    "Aloqalar grafigi",
+    "Audit jurnali",
+    "16 qatlam holati",
+    "FINZANJIR AI (o'zbekcha)",
+    "AI sinovlari",
+    "Arxitektura va chegaralar",
+    "Tashrifchi fikri",
+]
 if author_view:
     page = "Muallif analitikasi"
 else:
-    page = "Tashrifchi fikri"
-    st.markdown("<style>[data-testid='stSidebar']{display:none!important}</style>", unsafe_allow_html=True)
-    st.caption("Tashrifchilar uchun ochiq sahifa: faqat fikr-mulohaza yuborish. Boshqa tashrifchilarning javoblari ko‘rsatilmaydi.")
+    page = st.sidebar.radio("FINZANJIR bo'limlari", public_pages, index=0)
+    st.sidebar.caption("Ochiq namoyish: faqat sintetik ma'lumotlar. Muallifning shaxsiy analitikasi bu menyuda yo'q.")
+    st.caption("Ochiq namoyish rejimi: tashrifchilar loyiha panellari va sintetik ishlash jarayonini ko'rishi mumkin. Boshqa tashrifchilarning maxfiy fikrlari ko'rsatilmaydi.")
 # Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
 if "visitor_session_id" not in st.session_state:
     import uuid
