@@ -1,4 +1,5 @@
-import unittest
+import unittest, tempfile
+from pathlib import Path
 from unittest.mock import patch
 import json
 from io import BytesIO
@@ -23,11 +24,18 @@ class InternetResearchTests(unittest.TestCase):
             def __enter__(self): return self
             def __exit__(self,*args): return False
             def read(self, limit): return json.dumps(body).encode()
-        with patch("internet_research.urlopen", return_value=Response()):
-            rows=internet_research.search_web("test query","test-api-key-123")
+        with tempfile.TemporaryDirectory() as tmp, patch.object(internet_research, "USAGE_DB", Path(tmp) / "usage.sqlite3"):
+            with patch("internet_research.urlopen", return_value=Response()):
+                rows=internet_research.search_web("test query","test-api-key-123")
         self.assertEqual(len(rows),1)
         self.assertEqual(rows[0]["url"],"https://example.org/a")
         self.assertEqual(rows[0]["content"],"Evidence excerpt")
+
+    def test_daily_quota_stops_requests_at_limit(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(internet_research, "USAGE_DB", Path(tmp) / "usage.sqlite3"):
+            self.assertTrue(internet_research.reserve_daily_slot(2))
+            self.assertTrue(internet_research.reserve_daily_slot(2))
+            self.assertFalse(internet_research.reserve_daily_slot(2))
 
 if __name__=="__main__":
     unittest.main()
