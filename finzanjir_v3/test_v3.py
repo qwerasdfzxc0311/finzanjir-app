@@ -203,5 +203,25 @@ class SyntheticLabTests(unittest.TestCase):
     def test_ai_regression(self):
         self.assertTrue(all(x["passed"] for x in offline_ai.self_test()))
 
+    def test_feedback_rejects_empty_submission(self):
+        old = visitors.VISITOR_DB
+        visitors.VISITOR_DB = Path(self.tmp.name) / "empty-feedback.sqlite3"
+        try:
+            with self.assertRaises(ValueError):
+                visitors.save_feedback({})
+            self.assertEqual(visitors.admin_snapshot()["feedback_count"], 0)
+        finally:
+            visitors.VISITOR_DB = old
+
+    def test_feedback_text_is_bounded(self):
+        old = visitors.VISITOR_DB
+        visitors.VISITOR_DB = Path(self.tmp.name) / "bounded-feedback.sqlite3"
+        try:
+            visitors.save_feedback({"improve": "x" * (visitors.MAX_TEXT + 500)})
+            item = visitors.admin_snapshot()["feedback"][0]
+            self.assertEqual(len(item["improve"]), visitors.MAX_TEXT)
+        finally:
+            visitors.VISITOR_DB = old
+
 if __name__=="__main__":
     unittest.main()
