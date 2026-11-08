@@ -28,3 +28,13 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Compile v4 source
         run: python -m compileall -q finzanjir_v4
+      - name: Streamlit UI smoke test
+        run: |
+          python - <<'PY'
+          from streamlit.testing.v1 import AppTest
+          app = AppTest.from_file("finzanjir_v4/app.py", default_timeout=20).run()
+          if app.exception:
+              raise AssertionError("\\n".join(str(item) for item in app.exception))
+          assert len(app.radio) >= 1, "Main navigation radio was not rendered"
+          assert any("Umumiy ko‘rinish" in str(item.value) for item in app.radio), "Dashboard page did not render"
+          PY
