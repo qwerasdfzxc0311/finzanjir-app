@@ -10,9 +10,10 @@ Set the Streamlit main file path to:
 
     finzanjir_v3/app.py
 
-Requirements:
+Requirements (repository root):
 
     streamlit>=1.36,<2
+    streamlit-autorefresh>=1.0.1,<2
 
 ## Synthetic bank laboratory
 
@@ -24,7 +25,9 @@ Requirements:
 - A single unresolved indicator routes to RECHECK.
 - Multi-indicator cases route to HUMAN_REVIEW.
 - No detected indicator routes to MONITOR.
-- Historical UX restored safely: signal registry, pseudonymous graph, audit journal and honest 16-layer status panel.
+- Public card-based home page with open synthetic demo pages.
+- Historical UX restored safely: signal registry, pseudonymous graph, audit journal, KPI panel and honest 16-layer status panel.
+- Separate synthetic interbank attribute-match view and citizen-facing explanation page; no real citizen case lookup.
 - Dashboard/lab/events pages auto-refresh while monitoring.
 - A response package is prepared for demonstration; no real bank API call is made.
 
@@ -49,7 +52,7 @@ This is a prototype test harness, not a bank integration or production system. S
 
 ## Private visitor feedback and analytics
 
-- Public visitors may submit optional feedback anonymously; name and contact fields are optional.
+- Public visitors can open the synthetic demo pages without signing in. Feedback is closed by default until durable storage and privacy requirements are verified; name and contact fields remain optional when enabled.
 - Feedback is not shown to other visitors. It is only displayed in the author-only panel after password verification.
 - The author panel is not listed in public navigation. It is routed through the private ?view=author view and still requires a password; hiding the menu entry is not treated as an access-control boundary.
 - The author panel stays disabled unless Streamlit Secrets contains both visitor_analytics.admin_password_hash and visitor_analytics.session_hmac_secret. No default password exists.
@@ -67,7 +70,9 @@ This is a prototype test harness, not a bank integration or production system. S
 
 ## User interface and author access update
 
-- The default public route shows only the visitor feedback form; public navigation and prototype dashboards are hidden from visitors.
+- The default public route opens a mobile-friendly card-based home page. Synthetic dashboards, lab, case/review, signal registry, graph, audit, KPI, AI and explanation pages are publicly viewable.
+- The author analytics page is not linked from public navigation and is reachable only through `?view=author` plus the configured password gate. Other visitors' feedback is never displayed publicly.
+- The citizen explanation page is informational only; there is no real citizen case lookup or personal-data portal.
 - The author view is reachable through the non-public `?view=author` route and then a password gate. The route itself is not a security control.
 - Public pages now explain the prototype purpose and limitations in plain Uzbek. Technical sections include short explanations of START/PAUSE/STOP/RESET, Signal, and Case.
 - The feedback page is grouped into clear sections and labels; contact details remain optional.
@@ -76,7 +81,7 @@ This is a prototype test harness, not a bank integration or production system. S
 
 ## Deployment security gate
 
-See [DEPLOYMENT_SECURITY_CHECKLIST.md](DEPLOYMENT_SECURITY_CHECKLIST.md). The checklist records the remaining requirements before real public feedback can be accepted. Current status: **not ready for real public feedback** until durable storage, backups, retention/deletion, repository database audit, hosting privacy review, and live browser checks are completed.
+See [DEPLOYMENT_SECURITY_CHECKLIST.md](DEPLOYMENT_SECURITY_CHECKLIST.md). The checklist records the remaining requirements before real public feedback can be accepted. Current status: **synthetic public demonstration may be deployed after the repository data exposure is resolved and live browser checks pass; real feedback collection remains disabled** until durable storage, backups, retention/deletion, and privacy review are completed.
 
 
 ### Feedback collection activation gate
