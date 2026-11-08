@@ -4,6 +4,15 @@ import streamlit as st
 import visitor_analytics as visitors
 
 def render_feedback():
+    try:
+        feedback_config = st.secrets["visitor_analytics"]
+    except Exception:
+        feedback_config = {}
+    if not visitors.feedback_collection_enabled(feedback_config):
+        st.subheader("FINZANJIR haqida fikringiz")
+        st.warning("Fikr yuborish vaqtincha o‘chirilgan. Ma’lumotlar bazasi doimiy saqlanishi va maxfiylik xabarnomasi tekshirilishi tasdiqlanmaguncha javoblar qabul qilinmaydi.")
+        st.caption("Bu himoya chorasi: yuborgan fikringiz yo‘qolib qolmasligi va ma’lumotlaringiz qanday saqlanishi aniq bo‘lishi kerak.")
+        return
     st.subheader("FINZANJIR haqida fikringiz")
     st.write("Fikringiz loyihani yaxshilashga yordam beradi. Savollarning barchasiga javob berish shart emas.")
     with st.container():
