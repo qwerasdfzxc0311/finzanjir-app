@@ -28,10 +28,15 @@ st.title("🛡️ FINZANJIR")
 st.caption("v3 · O‘zbek tilidagi sinov prototipi · haqiqiy bank tizimiga ulanmagan")
 st.warning("MUHIM: bu muhit faqat sun’iy ma’lumotlar bilan ishlaydi. Haqiqiy bank yoki mijoz ma’lumotlari yo‘q. Signal aybdorlik isboti emas; karta yoki operatsiyani avtomatik bloklash funksiyasi mavjud emas.")
 st.markdown('<div class="panel"><b>Bu prototip nima qiladi?</b><br>Sun’iy bank hodisalarini qabul qiladi, ma’lumot sifatini tekshiradi va zarur holatlarni inson ko‘rigiga tayyorlaydi.<br><b>Nima qilmaydi?</b><br>Haqiqiy pulga tegmaydi, bankka buyruq yubormaydi va hech kimni avtomatik aybdor deb topmaydi.</div>',unsafe_allow_html=True)
-page=st.sidebar.radio("Bo‘limni tanlang",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Tashrifchi fikri","Arxitektura va chegaralar"])
+# Public visitors are intentionally restricted to the feedback page.
+# The author-only route is opened explicitly with ?view=author and remains password-protected.
 author_view = st.query_params.get("view","") == "author"
 if author_view:
     page = "Muallif analitikasi"
+else:
+    page = "Tashrifchi fikri"
+    st.markdown("<style>[data-testid='stSidebar']{display:none!important}</style>", unsafe_allow_html=True)
+    st.caption("Tashrifchilar uchun ochiq sahifa: faqat fikr-mulohaza yuborish. Boshqa tashrifchilarning javoblari ko‘rsatilmaydi.")
 # Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
 if "visitor_session_id" not in st.session_state:
     import uuid
