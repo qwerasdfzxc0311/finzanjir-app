@@ -79,8 +79,9 @@ try:
         st.session_state["visitor_last_page_event"] = {"page": page, "time": now}
 except Exception:
     pass
-st.sidebar.divider()
-st.sidebar.caption("Tashqi AI API ishlatilmaydi. AI hozircha dalilga asoslangan lokal qidiruv; generativ LLM emas.")
+if not author_view and page != home_page:
+    st.sidebar.divider()
+    st.sidebar.caption("Lokal AI tashqi model API ishlatmaydi; internet qidiruvi alohida va foydalanuvchi so'rovi bilan ishlaydi.")
 if page in ("Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case"):
     st_autorefresh(interval=1200,key="finzanjir-live-refresh")
 if page == "Muallif analitikasi":
@@ -106,9 +107,9 @@ if page == home_page:
         ("Fuqaro uchun tushuntirish (demo)", "Signal, Case va inson ko'rigi fuqaro uchun sodda tilda."),
         ("Tashrifchi fikri", "Maxfiy fikr yuborish sahifasi; qabul qilish faqat xavfsiz sozlanganda yoqiladi."),
     ]
-    for start in range(0, len(cards), 3):
-        columns = st.columns(3)
-        for column, item in zip(columns, cards[start:start + 3]):
+    for start in range(0, len(cards), 2):
+        columns = st.columns(2)
+        for column, item in zip(columns, cards[start:start + 2]):
             label, description = item
             with column:
                 with st.container(border=True):
