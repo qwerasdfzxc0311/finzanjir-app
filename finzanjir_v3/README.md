@@ -67,8 +67,13 @@ This is a prototype test harness, not a bank integration or production system. S
 
 ## User interface and author access update
 
-- The public navigation contains only visitor-facing and prototype-explanation pages; the author analytics page is not shown as a menu item.
-- The author view is reachable only through the non-public ?view=author route and then a password gate. The route itself is not a security control.
+- The default public route shows only the visitor feedback form; public navigation and prototype dashboards are hidden from visitors.
+- The author view is reachable through the non-public `?view=author` route and then a password gate. The route itself is not a security control.
 - Public pages now explain the prototype purpose and limitations in plain Uzbek. Technical sections include short explanations of START/PAUSE/STOP/RESET, Signal, and Case.
 - The feedback page is grouped into clear sections and labels; contact details remain optional.
 - This is a prototype, not production-secure until deployment configuration and access-control tests are completed.
+
+
+## Deployment security gate
+
+See [DEPLOYMENT_SECURITY_CHECKLIST.md](DEPLOYMENT_SECURITY_CHECKLIST.md). The checklist records the remaining requirements before real public feedback can be accepted. Current status: **not ready for real public feedback** until durable storage, backups, retention/deletion, repository database audit, hosting privacy review, and live browser checks are completed.
