@@ -41,6 +41,9 @@ public_pages = [
     "FINZANJIR AI (o'zbekcha)",
     "AI sinovlari",
     "Arxitektura va chegaralar",
+    "Banklararo tahlil (sintetik)",
+    "KPI dashboard",
+    "Fuqaro uchun tushuntirish (demo)",
     "Tashrifchi fikri",
 ]
 home_page = "Bosh sahifa"
@@ -98,6 +101,9 @@ if page == home_page:
         ("FINZANJIR AI (o'zbekcha)", "Mahalliy bilim qidiruvi va ixtiyoriy internet tadqiqoti."),
         ("AI sinovlari", "O'zbekcha retrieval javoblari uchun regression sinovlari."),
         ("Arxitektura va chegaralar", "Mavjud imkoniyatlar, cheklovlar va keyingi ishlar."),
+        ("Banklararo tahlil (sintetik)", "Sun'iy bank manbalari orasidagi pseudonim atribut mosliklari."),
+        ("KPI dashboard", "Jarayon ko'rsatkichlari; aniqlik yoki real firibgarlik darajasi emas."),
+        ("Fuqaro uchun tushuntirish (demo)", "Signal, Case va inson ko'rigi fuqaro uchun sodda tilda."),
         ("Tashrifchi fikri", "Maxfiy fikr yuborish sahifasi; qabul qilish faqat xavfsiz sozlanganda yoqiladi."),
     ]
     for start in range(0, len(cards), 3):
@@ -249,6 +255,90 @@ elif page=="Signal reyestri":
       ("SIG-016","Rozilik doirasi noaniq","consent_scope, event_scope")
     ]
     st.dataframe([{"Signal ID":a,"Signal":b,"Kerakli maydonlar":c} for a,b,c in rows],use_container_width=True,hide_index=True)
+
+elif page=="Banklararo tahlil (sintetik)":
+    st.subheader("Banklararo tahlil — sintetik atribut mosliklari")
+    st.caption("Bu sahifa banklararo tranzaksiya yo'lini emas, 4 ta sun'iy bank manbasidagi psevdonim atribut mosliklarini ko'rsatadi.")
+    snap = lab.snapshot()
+    device_banks = {}
+    for row in snap["recent"]:
+        try:
+            payload = json.loads(row["payload"])
+        except Exception:
+            continue
+        device = str(payload.get("device_id") or "")
+        bank = str(payload.get("bank_id") or row.get("bank_id") or "")
+        if device and bank:
+            device_banks.setdefault(device, set()).add(bank)
+    edges = {}
+    for banks in device_banks.values():
+        ordered = sorted(banks)
+        for i, left in enumerate(ordered):
+            for right in ordered[i + 1:]:
+                edges[(left, right)] = edges.get((left, right), 0) + 1
+    st.markdown("**Sun'iy bank manbalari**")
+    if snap["banks"]:
+        st.dataframe(snap["banks"], use_container_width=True, hide_index=True)
+    if edges:
+        dot = ["graph Banklararo {", '  graph [overlap=false];', '  node [shape=box, style="rounded,filled", fillcolor="#dbeafe"];']
+        for bank in sorted({x for pair in edges for x in pair}):
+            dot.append('  "' + bank + '";')
+        for (left, right), count in sorted(edges.items()):
+            dot.append('  "' + left + '" -- "' + right + '" [label="' + str(count) + ' moslik"];')
+        dot.append("}")
+        st.graphviz_chart("\n".join(dot), use_container_width=True)
+        st.dataframe([{"Bank manbasi A":k[0],"Bank manbasi B":k[1],"Sintetik qurilma mosliklari":v} for k,v in sorted(edges.items())],use_container_width=True,hide_index=True)
+    else:
+        st.info("Hozircha banklararo atribut mosligi ko'rsatiladigan hodisalar yo'q. Laboratoriyada START bosing.")
+    st.warning("Muhim: bir xil qurilma identifikatori mosligi shaxs aybdorligini isbotlamaydi. Hozirgi sintetik payloadda qabul qiluvchi bank maydoni yo'q; shu sabab A→B→C→D pul o'tkazish zanjiri yoki haqiqiy mablag' oqimi deb ko'rsatilmaydi.")
+    st.caption("Bu tahlil faqat namoyish uchun yaratilgan sintetik identifikatorlardan foydalanadi; real banklar bilan integratsiya yo'q.")
+
+elif page=="KPI dashboard":
+    st.subheader("KPI dashboard — sintetik jarayon ko'rsatkichlari")
+    snap = lab.snapshot()
+    evaluation = lab.evaluate()
+    results = {"HUMAN_REVIEW":0,"DATA_REVIEW":0,"RECHECK":0,"MONITOR":0}
+    for row in snap["recent"]:
+        if row["state"] != "PROCESSED" or not row["result"]:
+            continue
+        try:
+            outcome = json.loads(row["result"]).get("outcome")
+            if outcome in results:
+                results[outcome] += 1
+        except Exception:
+            continue
+    processed = evaluation["processed"]
+    total = snap["total"]
+    a,b,c,d = st.columns(4)
+    a.metric("Sintetik hodisalar", total)
+    b.metric("Qayta ishlangan", processed)
+    c.metric("Human Review Case", len(snap.get("cases",[])))
+    d.metric("Data Review / qayta tekshiruv", len(snap.get("data_reviews",[])))
+    st.progress(min(1.0, processed / max(1,total)), text=f"Jarayon bajarilishi: {processed} / {total}")
+    st.markdown("#### Amaldagi yo'nalishlar")
+    st.dataframe([{"Yo'nalish":"Human Review","Hodisalar":results["HUMAN_REVIEW"]},
+                  {"Yo'nalish":"Data Review","Hodisalar":results["DATA_REVIEW"]},
+                  {"Yo'nalish":"Recheck","Hodisalar":results["RECHECK"]},
+                  {"Yo'nalish":"Monitor","Hodisalar":results["MONITOR"]}],
+                 use_container_width=True, hide_index=True)
+    st.markdown("#### Sintetik kutilgan yorliq va amaldagi yo'nalish")
+    if evaluation["confusion"]:
+        st.dataframe([{"Taqqoslash":k,"Soni":v} for k,v in evaluation["confusion"].items()],use_container_width=True,hide_index=True)
+    st.warning("Bu KPIlar faqat sintetik laboratoriya ish hajmi va yo'nalishlarini ko'rsatadi. Kutilgan yorliqlar ekspert tasdiqlagan ground-truth emas; bu natijalardan aniqlik, precision, recall, false-positive yoki real zarar kamayishi haqida xulosa chiqarib bo'lmaydi.")
+    st.caption("FINZANJIR karta yoki tranzaksiyani avtomatik bloklamaydi. Case — inson ko'rigi uchun tayyorlangan ish yozuvi.")
+
+elif page=="Fuqaro uchun tushuntirish (demo)":
+    st.subheader("Fuqaro uchun tushuntirish — demo")
+    st.write("FINZANJIR konsepsiyasida signal yoki Case fuqaroning aybdorligini anglatmaydi. Maqsad — noaniq holatni dalillar bilan tekshirish va vakolatli inson ko'rigiga tayyorlash.")
+    with st.expander("Signal nima?"):
+        st.write("Signal — operatsiya, qurilma, rozilik doirasi yoki boshqa kontekstda qo'shimcha tekshiruvga sabab bo'ladigan belgi. Bitta signalning o'zi firibgarlik isboti emas.")
+    with st.expander("Case nima?"):
+        st.write("Case — tekshirish uchun yig'ilgan hodisa, dalillar, noma'lum jihatlar va ko'rik qaydlari jamlanmasi. Bu yakuniy huquqiy qaror emas.")
+    with st.expander("Human Review nima?"):
+        st.write("Vakolatli mutaxassis mavjud dalillarni ko'rib chiqadi, yetishmayotgan ma'lumotni so'rashi yoki noaniqlikni saqlashi mumkin. Prototip hozir bankka haqiqiy buyruq yubormaydi.")
+    with st.expander("Karta yoki pul avtomatik bloklanadimi?"):
+        st.write("Yo'q. Ushbu FINZANJIR prototipida karta yoki tranzaksiyani avtomatik bloklash funksiyasi yo'q.")
+    st.info("Bu fuqarolar uchun axborot sahifasi xolos. Hozircha haqiqiy mijoz Case'larini qidirish, shaxsiy ma'lumotlarni ko'rish yoki shikoyat yuborish portali mavjud emas.")
 
 elif page=="Aloqalar grafigi":
     st.subheader("Sintetik pseudonim aloqalar grafigi")
