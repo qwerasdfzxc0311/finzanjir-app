@@ -212,6 +212,14 @@ class SyntheticLabTests(unittest.TestCase):
         self.assertIn('visitor_pages.render_feedback()', source)
         self.assertNotIn('st.sidebar.radio("FINZANJIR bo', source)
 
+    def test_public_demo_has_safe_legacy_sections(self):
+        source = (Path(__file__).with_name("app.py")).read_text(encoding="utf-8")
+        self.assertIn('Banklararo tahlil (sintetik)', source)
+        self.assertIn('KPI dashboard', source)
+        self.assertIn('Fuqaro uchun tushuntirish (demo)', source)
+        self.assertIn('qabul qiluvchi bank maydoni yo', source)
+        self.assertIn('avtomatik bloklash funksiyasi yo', source)
+
     def test_feedback_collection_fails_closed_until_all_gates_true(self):
         self.assertFalse(visitors.feedback_collection_enabled({}))
         self.assertFalse(visitors.feedback_collection_enabled({
