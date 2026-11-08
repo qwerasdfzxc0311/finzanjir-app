@@ -11,7 +11,7 @@ import offline_ai
 import visitor_analytics as visitors
 import visitor_pages
 
-st.set_page_config(page_title="FINZANJIR v3 | Sinov muhiti",page_icon="🛡️",layout="wide",initial_sidebar_state="expanded")
+st.set_page_config(page_title="FINZANJIR v3 | Sinov muhiti",page_icon="🛡️",layout="wide",initial_sidebar_state="collapsed")
 lab.init_lab()
 st.markdown("""
 <style>
@@ -28,8 +28,7 @@ st.title("🛡️ FINZANJIR")
 st.caption("v3 · O‘zbek tilidagi sinov prototipi · haqiqiy bank tizimiga ulanmagan")
 st.warning("MUHIM: bu muhit faqat sun’iy ma’lumotlar bilan ishlaydi. Haqiqiy bank yoki mijoz ma’lumotlari yo‘q. Signal aybdorlik isboti emas; karta yoki operatsiyani avtomatik bloklash funksiyasi mavjud emas.")
 st.markdown('<div class="panel"><b>Bu prototip nima qiladi?</b><br>Sun’iy bank hodisalarini qabul qiladi, ma’lumot sifatini tekshiradi va zarur holatlarni inson ko‘rigiga tayyorlaydi.<br><b>Nima qilmaydi?</b><br>Haqiqiy pulga tegmaydi, bankka buyruq yubormaydi va hech kimni avtomatik aybdor deb topmaydi.</div>',unsafe_allow_html=True)
-# Ochiq namoyish bo'limlari: tashrifchilar loyihaning ishlashini ko'rishi mumkin.
-# Muallif analitikasi esa alohida URL va parol bilan himoyalangan.
+# Ochiq namoyish bo'limlari. Muallif analitikasi alohida URL va parol bilan himoyalangan.
 author_view = st.query_params.get("view","") == "author"
 public_pages = [
     "Boshqaruv paneli",
@@ -44,12 +43,29 @@ public_pages = [
     "Arxitektura va chegaralar",
     "Tashrifchi fikri",
 ]
+home_page = "Bosh sahifa"
 if author_view:
     page = "Muallif analitikasi"
 else:
-    page = st.sidebar.radio("FINZANJIR bo'limlari", public_pages, index=0)
-    st.sidebar.caption("Ochiq namoyish: faqat sintetik ma'lumotlar. Muallifning shaxsiy analitikasi bu menyuda yo'q.")
-    st.caption("Ochiq namoyish rejimi: tashrifchilar loyiha panellari va sintetik ishlash jarayonini ko'rishi mumkin. Boshqa tashrifchilarning maxfiy fikrlari ko'rsatilmaydi.")
+    if st.session_state.get("v3_active_page") not in [home_page, *public_pages]:
+        st.session_state["v3_active_page"] = home_page
+    page = st.session_state["v3_active_page"]
+    if page != home_page:
+        selected = st.sidebar.selectbox("Bo'limga o'tish", public_pages,
+            index=public_pages.index(page), key="v3_sidebar_navigation")
+        if selected != page:
+            st.session_state["v3_active_page"] = selected
+            st.rerun()
+        if st.sidebar.button("← Bosh sahifaga qaytish", use_container_width=True):
+            st.session_state["v3_active_page"] = home_page
+            st.rerun()
+        st.sidebar.caption("Ochiq namoyish: faqat sintetik ma'lumotlar.")
+        st.button("← Bosh sahifa", key="v3_back_home")
+        if st.session_state.get("v3_back_home"):
+            st.session_state["v3_back_home"] = False
+            st.session_state["v3_active_page"] = home_page
+            st.rerun()
+    st.caption("Ochiq namoyish: loyiha panellari va sintetik jarayonlar barcha tashrifchilar uchun ochiq. Muallif analitikasi va boshqa tashrifchilarning maxfiy fikrlari yopiq.")
 # Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
 if "visitor_session_id" not in st.session_state:
     import uuid
@@ -71,6 +87,35 @@ if page in ("Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case")
     st_autorefresh(interval=1200,key="finzanjir-live-refresh")
 if page == "Muallif analitikasi":
     st.sidebar.info("Muallif paneli ommaviy menyuda ko‘rsatilmaydi. Kirish parol bilan himoyalangan.")
+
+if page == home_page:
+    st.subheader("Ochiq namoyish markazi")
+    st.write("Quyidagi bo'limlardan birini tanlab, FINZANJIR prototipining turli qismlarini ko'rishingiz mumkin.")
+    st.info("Bu sinov prototipi: barcha hodisalar sintetik. Haqiqiy bank tizimiga ulanmagan, pul o'tkazmaydi va karta yoki operatsiyalarni avtomatik bloklamaydi.")
+    cards = [
+        ("Boshqaruv paneli", "Umumiy holat, sun'iy hodisalar va jarayon ko'rsatkichlari."),
+        ("Sun'iy bank laboratoriyasi", "4 ta xayoliy bank va 400 ta sintetik hodisa bilan sinov."),
+        ("Hodisalar va Case", "Ma'lumot tekshiruvi, Case va Human Review jarayoni."),
+        ("Signal reyestri", "Signal turlari va ularni tekshirish uchun zarur maydonlar."),
+        ("Aloqalar grafigi", "Sintetik pseudonimlar orasidagi atribut mosliklari."),
+        ("Audit jurnali", "Laboratoriya jarayonida qayd etilgan amallar."),
+        ("16 qatlam holati", "Har bir qatlamning joriy Demo/Qisman/Yo'q holati."),
+        ("FINZANJIR AI (o'zbekcha)", "Mahalliy bilim qidiruvi va ixtiyoriy internet tadqiqoti."),
+        ("AI sinovlari", "O'zbekcha retrieval javoblari uchun regression sinovlari."),
+        ("Arxitektura va chegaralar", "Mavjud imkoniyatlar, cheklovlar va keyingi ishlar."),
+        ("Tashrifchi fikri", "Maxfiy fikr yuborish sahifasi; qabul qilish faqat xavfsiz sozlanganda yoqiladi."),
+    ]
+    for start in range(0, len(cards), 3):
+        columns = st.columns(3)
+        for column, item in zip(columns, cards[start:start + 3]):
+            label, description = item
+            with column:
+                with st.container(border=True):
+                    st.markdown("### " + label)
+                    st.caption(description)
+                    if st.button("Bo'limni ochish", key="v3-home-" + label, use_container_width=True):
+                        st.session_state["v3_active_page"] = label
+                        st.rerun()
 
 if page=="Boshqaruv paneli":
     snap=lab.snapshot(); meta=snap["meta"]; counts=snap["counts"]
