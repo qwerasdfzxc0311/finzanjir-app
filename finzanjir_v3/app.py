@@ -60,11 +60,6 @@ else:
             st.session_state["v3_active_page"] = home_page
             st.rerun()
         st.sidebar.caption("Ochiq namoyish: faqat sintetik ma'lumotlar.")
-        st.button("← Bosh sahifa", key="v3_back_home")
-        if st.session_state.get("v3_back_home"):
-            st.session_state["v3_back_home"] = False
-            st.session_state["v3_active_page"] = home_page
-            st.rerun()
     st.caption("Ochiq namoyish: loyiha panellari va sintetik jarayonlar barcha tashrifchilar uchun ochiq. Muallif analitikasi va boshqa tashrifchilarning maxfiy fikrlari yopiq.")
 # Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
 if "visitor_session_id" not in st.session_state:
