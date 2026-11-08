@@ -11,20 +11,27 @@ import offline_ai
 import visitor_analytics as visitors
 import visitor_pages
 
-st.set_page_config(page_title="FINZANJIR v3 | Laboratoriya",page_icon="🛡️",layout="wide")
+st.set_page_config(page_title="FINZANJIR v3 | Sinov muhiti",page_icon="🛡️",layout="wide",initial_sidebar_state="expanded")
 lab.init_lab()
 st.markdown("""
 <style>
 .stApp{background:#0b1220;color:#e8edf5}
 [data-testid="stSidebar"]{background:#111b2d}
-div[data-testid="stMetric"]{background:#142137;border:1px solid #293b57;padding:12px;border-radius:10px}
-.panel{background:#142137;border:1px solid #293b57;border-radius:12px;padding:14px}
+div[data-testid="stMetric"]{background:#142137;border:1px solid #293b57;padding:14px;border-radius:12px}
+.panel{background:#142137;border:1px solid #293b57;border-radius:14px;padding:16px;line-height:1.65}
+div[data-testid="stExpander"]{border:1px solid #293b57;border-radius:12px}
+.stButton>button{border-radius:10px;min-height:2.7rem;font-weight:600}
+h1,h2,h3{letter-spacing:-.02em}
 </style>
 """,unsafe_allow_html=True)
 st.title("🛡️ FINZANJIR")
-st.caption("v3 development branch • Uzbek-first • offline knowledge retrieval • synthetic bank lab")
-st.warning("Bu faqat sintetik sinov muhiti. Haqiqiy bankka ulanmagan, haqiqiy pul yoki mijoz ma'lumotini olmaydi. Signal yoki Case aybdorlik isboti emas. Avtomatik bloklash mavjud emas.")
-page=st.sidebar.radio("Ish bo'limlari",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Tashrifchi fikri","Muallif analitikasi","Arxitektura va chegaralar"])
+st.caption("v3 · O‘zbek tilidagi sinov prototipi · haqiqiy bank tizimiga ulanmagan")
+st.warning("MUHIM: bu muhit faqat sun’iy ma’lumotlar bilan ishlaydi. Haqiqiy bank yoki mijoz ma’lumotlari yo‘q. Signal aybdorlik isboti emas; karta yoki operatsiyani avtomatik bloklash funksiyasi mavjud emas.")
+st.markdown('<div class="panel"><b>Bu prototip nima qiladi?</b><br>Sun’iy bank hodisalarini qabul qiladi, ma’lumot sifatini tekshiradi va zarur holatlarni inson ko‘rigiga tayyorlaydi.<br><b>Nima qilmaydi?</b><br>Haqiqiy pulga tegmaydi, bankka buyruq yubormaydi va hech kimni avtomatik aybdor deb topmaydi.</div>',unsafe_allow_html=True)
+page=st.sidebar.radio("Bo‘limni tanlang",["Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case","Signal reyestri","Aloqalar grafigi","Audit jurnali","16 qatlam holati","FINZANJIR AI (o'zbekcha)","AI sinovlari","Tashrifchi fikri","Arxitektura va chegaralar"])
+author_view = st.query_params.get("view","") == "author"
+if author_view:
+    page = "Muallif analitikasi"
 # Privacy-minimal, per-app-session analytics. No IP/GPS or raw user-agent is stored.
 if "visitor_session_id" not in st.session_state:
     import uuid
@@ -44,10 +51,15 @@ st.sidebar.divider()
 st.sidebar.caption("Tashqi AI API ishlatilmaydi. AI hozircha dalilga asoslangan lokal qidiruv; generativ LLM emas.")
 if page in ("Boshqaruv paneli","Sun'iy bank laboratoriyasi","Hodisalar va Case"):
     st_autorefresh(interval=1200,key="finzanjir-live-refresh")
+if page == "Muallif analitikasi":
+    st.sidebar.info("Muallif paneli ommaviy menyuda ko‘rsatilmaydi. Kirish parol bilan himoyalangan.")
 
 if page=="Boshqaruv paneli":
     snap=lab.snapshot(); meta=snap["meta"]; counts=snap["counts"]
-    st.subheader("Umumiy holat")
+    st.subheader("Loyiha holati")
+    st.caption("Bu sahifadagi raqamlar faqat sun’iy hodisalarga tegishli.")
+    with st.expander("Ko‘rsatkichlarni qanday tushunish kerak?"):
+        st.write("Jami — yaratilgan sun’iy hodisalar. Qayta ishlangan — tekshiruvdan o‘tganlari. Navbatda — hali ishlanmaganlari. Jarayon holati — laboratoriyaning joriy ish rejimi.")
     a,b,c,d=st.columns(4)
     a.metric("Sintetik hodisalar",snap["total"])
     b.metric("Qayta ishlangan",counts.get("PROCESSED",0))
@@ -63,7 +75,10 @@ if page=="Boshqaruv paneli":
     else: st.info("Hozircha hodisa yo'q.")
 
 elif page=="Sun'iy bank laboratoriyasi":
-    st.subheader("Avtomatik bank ma'lumotlari oqimi")
+    st.subheader("Sun’iy bank laboratoriyasi")
+    st.caption("4 ta xayoliy bankdan kelgandek yaratilgan 400 ta hodisa sinovdan o‘tkaziladi. Bu haqiqiy bank integratsiyasi emas.")
+    with st.expander("Tugmalar nimani anglatadi?"):
+        st.write("START — boshlash. PAUSE — vaqtincha to‘xtatish. STOP — ishlovni to‘xtatib, navbatni saqlash. RESUME — davom ettirish. RESET — sinov ma’lumotlarini o‘chirib, yangi sikl boshlash. KILL SWITCH — favqulodda to‘xtatish; qayta yoqish uchun alohida tasdiq kerak.")
     st.write("4 ta sun'iy bankdan jami 400 ta oldindan belgilangan sintetik holat keladi. Start bosilganda fon jarayoni hodisalarni avtomatik qayta ishlaydi.")
     snap=lab.snapshot(); meta=snap["meta"]; counts=snap["counts"]
     a,b,c,d=st.columns(4)
@@ -108,6 +123,7 @@ elif page=="Sun'iy bank laboratoriyasi":
     if snap["audit"]: st.dataframe(snap["audit"],use_container_width=True,hide_index=True)
 
 elif page=="Hodisalar va Case":
+    st.caption("Case — inson ko‘rib chiqishi uchun ochilgan ish yozuvi. Bu aybdorlik haqida yakuniy qaror emas.")
     snap=lab.snapshot()
     st.subheader("Qayta ishlangan hodisalar")
     rows=snap["recent"]
@@ -158,6 +174,7 @@ elif page=="Hodisalar va Case":
 
 elif page=="Signal reyestri":
     st.subheader("Signal reyestri — tarixiy qoidalar")
+    st.caption("Signal — tekshirishga sabab bo‘ladigan belgi. Bitta signalning o‘zi firibgarlik yoki aybdorlikni anglatmaydi.")
     st.warning("Bu v2 dan saqlangan muhandislik reyestri. Hozirgi v3 classifier barcha qoidalarni bajarmaydi; vaznlar tasdiqlangan risk ehtimoli emas.")
     rows=[
       ("SIG-001","Odatdan yuqori summa","amount, customer_ref"),
@@ -211,6 +228,7 @@ elif page=="Audit jurnali":
     else: st.info("Audit yozuvlari hali yo'q.")
 elif page=="16 qatlam holati":
     st.subheader("16 qatlam — amaldagi prototip holati")
+    st.caption("Holat belgisi har bir qatlam kodda qanchalik amalga oshirilganini bildiradi; bu hali to‘liq tayyor tizim degani.")
     st.warning("Statuslar faqat ushbu branchdagi mavjud kodni bildiradi; 16 qatlam to'liq bajarilgan degani emas.")
     layers=[
       ("L01","Dalil va manba","Qisman","Event ID, sintetik manba va payload; imzo tekshiruvi yo'q."),
@@ -233,7 +251,8 @@ elif page=="16 qatlam holati":
     st.dataframe([{"Qatlam":a,"Nomi":b,"Holat":c,"Cheklov":d} for a,b,c,d in layers],use_container_width=True,hide_index=True)
 
 elif page=="FINZANJIR AI (o'zbekcha)":
-    st.subheader("Lokal bilim yordamchisi")
+    st.subheader("FINZANJIR bilim yordamchisi")
+    st.caption("Savol yozing. Yordamchi mavjud bilim kartalaridan mos parchalarni topadi; yetarli dalil bo‘lmasa, buni ochiq aytadi.")
     st.info("Internetdagi AI xizmatiga so'rov yuborilmaydi. Bu bosqichda matn generatsiyasi emas, V317 manbasidan ajratilgan 33 ta o'zbekcha candidate bilim kartasidan dalil qidirish va parchalarni ko'rsatish ishlaydi.")
     q=st.text_area("Savolingizni o'zbek tilida yozing",placeholder="Masalan: Shubhali signal mijozni aybdor qiladimi?")
     if st.button("Bilimdan qidirish",type="primary",disabled=not q.strip()):
@@ -256,7 +275,8 @@ elif page=="AI sinovlari":
     else: st.error("Kamida bitta sinov o'tmadi. Javoblarni kengaytirishdan oldin retrieval qoidalarini tuzatish kerak.")
 
 elif page=="Arxitektura va chegaralar":
-    st.subheader("Versiya va ishlash chegaralari")
+    st.subheader("Loyiha haqida va cheklovlar")
+    st.caption("Bu bo‘lim prototipning nimalari ishlashi va nimalari hali ishlab chiqilmaganini tushuntiradi.")
     st.markdown("""
     **Yangi branch:** finzanjir-v3-synthetic-ai-uz
 
