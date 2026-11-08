@@ -93,7 +93,16 @@ The public feedback form is **closed by default**. It accepts submissions only w
 
 - The AI page has separate local-knowledge and internet-search modes, plus a comparison mode.
 - Internet search is explicit and user-triggered; it is not silently run in the background.
-- Configure a Tavily API key in Streamlit Secrets under `internet_research.api_key`. Never commit the key or send it in chat.
+- Configure Tavily only in Streamlit Secrets. Example (replace the placeholder locally; never commit or send a real key):
+
+```toml
+[internet_research]
+enabled = true
+api_key = "YOUR_TAVILY_API_KEY"
+max_daily_requests = 25
+```
+
+- Internet search is OFF unless `enabled = true` is explicitly set. The app enforces a default 25-search daily budget (configurable up to 100) using a local SQLite counter. Hosted restarts/ephemeral storage can reset this app-level guard, so it is not a billing cap. Keep Tavily on the free plan and disable pay-as-you-go/paid overages in the Tavily account.
 - Only the visitor's search query is sent to Tavily; do not enter personal, card, customer, credential, or confidential bank data.
 - The app displays source titles, URLs, and short search excerpts. It does not treat web text as trusted instructions or automatically add it to the FINZANJIR knowledge base.
 - Internet search requires outbound network access from the Streamlit hosting environment and a valid API key; this is not a direct unrestricted browser or a live bank-data connection.
