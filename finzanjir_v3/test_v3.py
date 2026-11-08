@@ -220,6 +220,12 @@ class SyntheticLabTests(unittest.TestCase):
         self.assertIn('qabul qiluvchi bank maydoni yo', source)
         self.assertIn('avtomatik bloklash funksiyasi yo', source)
 
+    def test_v3_public_app_contains_no_legacy_blocking_action(self):
+        source = (Path(__file__).with_name("app.py")).read_text(encoding="utf-8")
+        self.assertNotIn("update_case_status", source)
+        self.assertNotIn('"BLOCKED"', source)
+        self.assertIn("avtomatik bloklash funksiyasi mavjud emas", source.lower())
+
     def test_feedback_collection_fails_closed_until_all_gates_true(self):
         self.assertFalse(visitors.feedback_collection_enabled({}))
         self.assertFalse(visitors.feedback_collection_enabled({
