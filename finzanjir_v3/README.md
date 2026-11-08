@@ -77,3 +77,8 @@ This is a prototype test harness, not a bank integration or production system. S
 ## Deployment security gate
 
 See [DEPLOYMENT_SECURITY_CHECKLIST.md](DEPLOYMENT_SECURITY_CHECKLIST.md). The checklist records the remaining requirements before real public feedback can be accepted. Current status: **not ready for real public feedback** until durable storage, backups, retention/deletion, repository database audit, hosting privacy review, and live browser checks are completed.
+
+
+### Feedback collection activation gate
+
+The public feedback form is **closed by default**. It accepts submissions only when all three boolean Streamlit Secrets are explicitly set to true under `visitor_analytics`: `feedback_enabled`, `durable_storage_confirmed`, and `privacy_notice_reviewed`. Do not enable these flags until a durable private database/volume, backups, retention/deletion process, and reviewed privacy notice are actually in place. These flags are an operator acknowledgement, not a technical proof that the hosting filesystem is persistent.
