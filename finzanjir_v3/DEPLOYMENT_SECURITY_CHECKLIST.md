@@ -4,9 +4,12 @@ This checklist is a release gate, not a claim that the prototype is production-r
 
 ## Public and author views
 
-- [x] Default public route displays only the visitor feedback page.
-- [x] Public sidebar navigation is hidden.
+- [x] Default public route opens the card-based public demo home page.
+- [x] Public visitors can open synthetic demo pages without authentication.
+- [x] Author analytics is not linked from public navigation.
 - [x] Other visitors' feedback is not rendered on public pages.
+- [x] Feedback collection remains closed unless all three explicit configuration gates are enabled.
+- [x] Citizen-facing page is informational only; no personal case lookup is exposed.
 - [x] Author analytics is reachable only through the non-public `?view=author` route and requires the configured author password.
 - [x] No default author password exists.
 - [ ] Verify both routes in a real deployed browser on mobile and desktop.
@@ -33,15 +36,16 @@ This checklist is a release gate, not a claim that the prototype is production-r
 - Use a long random `session_hmac_secret` (at least 32 random bytes encoded as text) and a password of at least 12 characters.
 - Store secrets only in the hosting platform's secret manager. Never send them in chat or commit them to Git.
 
-## Repository data audit — unresolved
+## Repository data audit — unresolved exposure
 
-- The repository contains a legacy root-level `finzanjir.db` SQLite file that is not used by the v3 lab or visitor store.
-- Its contents have not yet been audited, so it must not be assumed to contain only synthetic or non-sensitive data.
-- Do not collect real visitor feedback or publish the repository as a public source until this file has been inspected.
-- Removing the file from the current branch alone would not erase it from earlier Git commits. If sensitive data is found, treat it as an exposure: restrict repository access, rotate any credentials found, and plan a coordinated Git-history cleanup. History rewriting can invalidate existing clones and must be handled deliberately.
+- The legacy root-level `finzanjir.db` was inspected at the SQLite string/schema level. It contains the old `cases` and `audit_log` tables, synthetic-looking IDs such as `CARD-xxx`, `TX-xxxxx`, `CASE-xxxx`, and legacy decisions including `BLOCKED`.
+- These entries appear consistent with the old prototype's generated records, but their provenance and full row contents have not been independently established. Do not treat them as verified synthetic data.
+- The v3 application does not read this database; it uses its own `finzanjir_v3/synthetic_lab.sqlite3` store. The legacy file should not be included in the v3 deployment branch.
+- The repository is currently public. Removing the file from the current branch does not erase it from earlier commits or the `main` branch. Before public launch, make the source repository private or perform a coordinated Git-history cleanup and verify no sensitive data remains. The Streamlit app itself can be publicly viewable while source access is restricted.
+- Do not enable real feedback collection until durable private storage, backups, retention/deletion, and privacy review are completed.
 
 ## Release decision
 
 **Current status: NOT READY for real public feedback.**
 
-The code has a feedback-only public route and a password-gated author route, but durable storage, deployment/browser checks, repository database audit, retention/deletion, and hosting privacy review remain outstanding.
+The code has a public synthetic-demo route and a password-gated author route. Repository database exposure and live browser checks remain release blockers for public deployment. Durable storage, retention/deletion, backups, and privacy review remain blockers for accepting real visitor feedback.
