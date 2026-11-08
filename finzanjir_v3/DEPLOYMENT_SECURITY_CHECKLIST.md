@@ -16,6 +16,7 @@ This checklist is a release gate, not a claim that the prototype is production-r
 ## Required before accepting real visitor feedback
 
 - [ ] Configure a durable private database. The current visitor store is SQLite on the app filesystem; hosted ephemeral filesystems may lose data on restart/redeploy.
+- [ ] Only after storage is verified, set `visitor_analytics.feedback_enabled = true`, `durable_storage_confirmed = true`, and `privacy_notice_reviewed = true` in Streamlit Secrets. These flags are acknowledgements, not technical proof of persistence.
 - [ ] Configure automated encrypted backups and test restoration.
 - [ ] Define retention period and a deletion process for feedback and analytics.
 - [ ] Review who can access the database, deployment logs, backups, and secrets.
