@@ -269,19 +269,46 @@ elif page=="16 qatlam holati":
     st.dataframe([{"Qatlam":a,"Nomi":b,"Holat":c,"Cheklov":d} for a,b,c,d in layers],use_container_width=True,hide_index=True)
 
 elif page=="FINZANJIR AI (o'zbekcha)":
-    st.subheader("FINZANJIR bilim yordamchisi")
-    st.caption("Savol yozing. Yordamchi mavjud bilim kartalaridan mos parchalarni topadi; yetarli dalil bo‘lmasa, buni ochiq aytadi.")
-    st.info("Internetdagi AI xizmatiga so'rov yuborilmaydi. Bu bosqichda matn generatsiyasi emas, V317 manbasidan ajratilgan 33 ta o'zbekcha candidate bilim kartasidan dalil qidirish va parchalarni ko'rsatish ishlaydi.")
-    q=st.text_area("Savolingizni o'zbek tilida yozing",placeholder="Masalan: Shubhali signal mijozni aybdor qiladimi?")
-    if st.button("Bilimdan qidirish",type="primary",disabled=not q.strip()):
-        result=offline_ai.answer(q)
-        if result["status"]=="NO_SUFFICIENT_EVIDENCE": st.warning(result["answer"])
-        else: st.success(result["answer"])
-        with st.expander("Topilgan dalillar va ularning maqomi",expanded=True):
-            for item in result["evidence"]:
-                st.markdown(f"**{item['id']}** · {item['approval']} · moslik {item['coverage']}")
-                st.write(item["text"])
-    st.caption("Bilim yozuvlari candidate maqomida. AI ularni rasmiy tasdiqlangan qoida sifatida ko'rsatmaydi va Authoritative KBni o'zgartirmaydi.")
+    import internet_research
+    st.subheader("FINZANJIR bilim va internet tadqiqot yordamchisi")
+    st.caption("Mahalliy bilimlar bazasidan qidirish yoki internetdan yangi manbalarni topish mumkin.")
+    mode=st.radio("Qidiruv manbasi",["Mahalliy bilimlar","Internetdan qidirish","Ikkalasini solishtirish"],horizontal=True)
+    q=st.text_area("Savolingizni o'zbek tilida yozing",placeholder="Masalan: Banklararo firibgarlik signallarini tekshirish bo‘yicha xalqaro amaliyot qanday?")
+    st.info("Maxfiylik: internet qidiruvida faqat siz yozgan so‘rov tashqi qidiruv xizmatiga yuboriladi. Karta raqami, mijoz ma’lumoti, parol, OTP yoki maxfiy bank ma’lumotlarini yozmang.")
+    if mode in ("Internetdan qidirish","Ikkalasini solishtirish"):
+        st.caption("Internet qidiruvi Streamlit serveri orqali ishlaydi. Buning uchun Streamlit Secrets ichida internet_research.api_key nomi bilan Tavily API kaliti sozlanishi kerak. Kalitni chatga yoki kodga yozmang.")
+    if st.button("Qidirishni boshlash",type="primary",disabled=not q.strip()):
+        if mode in ("Mahalliy bilimlar","Ikkalasini solishtirish"):
+            st.markdown("### Mahalliy bilimlar bazasi")
+            local=offline_ai.answer(q)
+            if local["status"]=="NO_SUFFICIENT_EVIDENCE": st.warning(local["answer"])
+            else: st.success(local["answer"])
+            with st.expander("Mahalliy topilgan dalillar va maqomi",expanded=True):
+                for item in local["evidence"]:
+                    st.markdown(f"**{item['id']}** · {item['approval']} · moslik {item['coverage']}")
+                    st.write(item["text"])
+        if mode in ("Internetdan qidirish","Ikkalasini solishtirish"):
+            st.markdown("### Internet manbalari")
+            try:
+                key=st.secrets["internet_research"]["api_key"]
+            except Exception:
+                key=""
+            if not key:
+                st.warning("Internet qidiruvi hali sozlanmagan. Streamlit Cloud → App settings → Secrets bo‘limiga internet_research.api_key qo‘shing.")
+            else:
+                try:
+                    with st.spinner("Internet manbalari qidirilmoqda..."):
+                        web_result=internet_research.search_web(q,str(key))
+                    if not web_result:
+                        st.warning("Mos manba topilmadi. So‘rovni aniqroq yozib ko‘ring.")
+                    for i,item in enumerate(web_result,1):
+                        with st.container(border=True):
+                            st.markdown(f"**{i}. [{item['title']}]({item['url']})**")
+                            st.write(item["content"])
+                            st.caption("Qidiruv mosligi: "+str(item.get("score","—"))+" · Bu parcha manbaning mustaqil tasdig‘i emas.")
+                except internet_research.InternetSearchError as exc:
+                    st.error("Internet qidiruvi bajarilmadi: "+str(exc))
+    st.caption("Mahalliy bilim kartalari candidate maqomida; ular rasmiy tasdiqlangan qoida emas. Internet natijalari tashqi manbalardan olingan va alohida tekshirilishi kerak. Qidiruv natijasi FINZANJIR qoidalarini avtomatik o‘zgartirmaydi.")
 
 elif page=="AI sinovlari":
     st.subheader("O'zbekcha AI regression sinovlari")
