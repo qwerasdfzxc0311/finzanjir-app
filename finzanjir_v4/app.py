@@ -250,8 +250,7 @@ if page == "Umumiy ko‘rinish":
                 st.caption(f"{event['source']} · {status_label(event['status'])}")
                 if st.button("Hodisani ochish", key=f"open-{eid}", use_container_width=True):
                     st.session_state["selected_event"] = eid
-                    st.session_state["nav"] = "Signallar"
-                    st.rerun()
+                    st.success("Hodisa tanlandi. Batafsil ko‘rish uchun chap menyudan “Signallar” bo‘limini oching.")
     st.info("Bu raqamlar faqat ushbu sahifadagi 3 ta sintetik namuna. Real bank statistikasi emas.")
 
 elif page == "Ish jarayoni":
