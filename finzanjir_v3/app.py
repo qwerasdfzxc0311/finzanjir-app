@@ -406,7 +406,7 @@ elif page=="FINZANJIR AI (o'zbekcha)":
     q=st.text_area("Savolingizni o'zbek tilida yozing",placeholder="Masalan: Banklararo firibgarlik signallarini tekshirish bo‘yicha xalqaro amaliyot qanday?")
     st.info("Maxfiylik: internet qidiruvida faqat siz yozgan so‘rov tashqi qidiruv xizmatiga yuboriladi. Karta raqami, mijoz ma’lumoti, parol, OTP yoki maxfiy bank ma’lumotlarini yozmang.")
     if mode in ("Internetdan qidirish","Ikkalasini solishtirish"):
-        st.caption("Internet qidiruvi Streamlit serveri orqali ishlaydi. Buning uchun Streamlit Secrets ichida internet_research.api_key nomi bilan Tavily API kaliti sozlanishi kerak. Kalitni chatga yoki kodga yozmang.")
+        st.caption("Internet qidiruvi faqat muallif Streamlit Secrets ichida internet_research.enabled = true qilib yoqqanidan keyin ishlaydi. Kunlik umumiy limit sukut bo'yicha 25 ta so'rov. API kalitini chatga yoki kodga yozmang.")
     if st.button("Qidirishni boshlash",type="primary",disabled=not q.strip()):
         if mode in ("Mahalliy bilimlar","Ikkalasini solishtirish"):
             st.markdown("### Mahalliy bilimlar bazasi")
@@ -420,15 +420,20 @@ elif page=="FINZANJIR AI (o'zbekcha)":
         if mode in ("Internetdan qidirish","Ikkalasini solishtirish"):
             st.markdown("### Internet manbalari")
             try:
-                key=st.secrets["internet_research"]["api_key"]
+                internet_config = st.secrets["internet_research"]
+                key = internet_config.get("api_key", "")
+                internet_enabled = internet_config.get("enabled", False) is True
+                daily_limit = int(internet_config.get("max_daily_requests", 25))
             except Exception:
-                key=""
-            if not key:
-                st.warning("Internet qidiruvi hali sozlanmagan. Streamlit Cloud → App settings → Secrets bo‘limiga internet_research.api_key qo‘shing.")
+                key, internet_enabled, daily_limit = "", False, 25
+            if not internet_enabled:
+                st.warning("Internet qidiruvi hozircha o'chirilgan. Muallif uni Secrets ichida enabled = true qilib, Tavily kalitini xavfsiz kiritgandan keyin yoqishi mumkin.")
+            elif not key:
+                st.warning("Tavily API kaliti sozlanmagan. Streamlit Cloud → App settings → Secrets bo'limiga internet_research.api_key qo'shing.")
             else:
                 try:
                     with st.spinner("Internet manbalari qidirilmoqda..."):
-                        web_result=internet_research.search_web(q,str(key))
+                        web_result=internet_research.search_web(q,str(key),max_daily_requests=daily_limit)
                     if not web_result:
                         st.warning("Mos manba topilmadi. So‘rovni aniqroq yozib ko‘ring.")
                     for i,item in enumerate(web_result,1):
