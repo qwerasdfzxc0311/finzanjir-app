@@ -15,5 +15,5 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -r finzanjir_v3/requirements.txt
-      - run: python -m py_compile finzanjir_v3/app.py finzanjir_v3/laboratory.py finzanjir_v3/offline_ai.py finzanjir_v3/visitor_analytics.py finzanjir_v3/visitor_pages.py
+      - run: python -m py_compile finzanjir_v3/app.py finzanjir_v3/laboratory.py finzanjir_v3/offline_ai.py finzanjir_v3/visitor_analytics.py finzanjir_v3/visitor_pages.py finzanjir_v3/internet_research.py
       - run: python -m unittest discover -s finzanjir_v3 -p "test_*.py" -v
