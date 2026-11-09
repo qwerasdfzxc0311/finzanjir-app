@@ -53,7 +53,7 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
         topBar = {
             TopAppBar(title = { Column {
                 Text("FINZANJIR", color = Navy, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                Text("Ochiq mutaxassislar prototipi · v1", color = Muted, fontSize = 10.sp)
+                Text("Yagona bog‘langan ish jarayoni · demo", color = Muted, fontSize = 10.sp)
             } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Canvas))
         },
         bottomBar = {
@@ -74,7 +74,11 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
             when (page) {
                 "Bosh sahifa" -> Home { select("Yagona tizim") }
                 "Yagona tizim" -> UnifiedWorkflowScreen()
-                "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
+                "Jarayon" -> UnifiedWorkflowScreen()
+                "Signallar" -> UnifiedWorkflowScreen()
+                "Case" -> UnifiedWorkflowScreen()
+                "Human Review" -> UnifiedWorkflowScreen()
+                /* "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
                     "1. Hodisa va manba — hozircha namoyish ma’lumotlari sintetik",
                     "2. Ma’lumot sifati — yetishmayotgan, eskirgan yoki zid ma’lumotlarni belgilash",
                     "3. 16 qatlam — tegishli talab va nazorat yo‘nalishlarini ko‘rib chiqish",
@@ -127,6 +131,7 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                     "Natija: tasdiqlash / rad etish / qo‘shimcha ma’lumot / qayta tekshiruv",
                     "AI tavsiyasi rasmiy qaror o‘rnini bosmaydi"
                 ))
+                */
                 "AI yordamchi" -> KnowledgeAssistant()
                 else -> InfoList("Prototip cheklovlari", "Mavjud bo‘lmagan imkoniyatlar bor deb ko‘rsatilmaydi", listOf(
                     "Bank API yoki haqiqiy bank ma’lumotlari ulanmagan",
