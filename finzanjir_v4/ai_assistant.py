@@ -41,6 +41,7 @@ _ALIASES = {
     "ko'rigi":"review", "ko‘rigi":"review", "korigi":"review",
     "jarayoni":"jarayon", "jarayonlar":"jarayon", "kartani":"karta", "kartaga":"karta",
     "bloklaydimi":"blokla", "bloklamaydi":"blokla", "xavfi":"xavf", "qatlamning":"qatlam",
+    "finzanjirning":"finzanjir", "finzanjirga":"finzanjir", "finzanjirni":"finzanjir",
 }
 _STOP = set("va yoki bu shu u uchun bilan ham nima qanday qaysi haqida kerak mumkin orqali uning ular bir bor yoq yo'q emas deb".split())
 
