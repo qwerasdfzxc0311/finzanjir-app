@@ -313,9 +313,12 @@ object FinzanjirKnowledgeBase {
         val q = question.lowercase(Locale.ROOT)
         return when {
             q.contains("qaraqalpaq") || q.contains("qoraqalpoq") || q.contains("қарақалпақ") ||
-                listOf("aqsha", "qalay", "jaqsi", "jaman", "menin", "bizdin", "qaysi").any { Regex("\\\\b" + it + "\\\\b").containsMatchIn(q) } -> "kaa"
+                q.contains("ақша") || q.contains("жоғалды") || q.contains("істеймен") ||
+                listOf("aqsha", "qalay", "jaqsi", "jaman", "menin", "bizdin", "qaysi")
+                    .any { Regex("\\b" + it + "\\b").containsMatchIn(q) } -> "kaa"
+            listOf("ў", "ҳ", "қиламан", "бўйича", "ўзбек").any { q.contains(it) } -> "uz"
             Regex("[әіңғүұқөһ]").containsMatchIn(q) -> "kk"
-            Regex("[áǵńóúı]").containsMatchIn(q) || q.contains("qaraqalpaq") -> "kaa"
+            Regex("[áǵńóúı]").containsMatchIn(q) -> "kaa"
             Regex("[а-яё]").containsMatchIn(q) && !Regex("[қғңәіңұүөһ]").containsMatchIn(q) -> "ru"
             Regex("\\b(what|who|why|how|english|author)\\b").containsMatchIn(q) -> "en"
             else -> "uz"
@@ -494,7 +497,8 @@ object FinzanjirKnowledgeBase {
             "mutahasis" to "mutaxassis", "mutaxasis" to "mutaxassis",
             "qatlamla" to "qatlamlar", "firibgarlk" to "firibgarlik",
             "qaraqalpaqsha" to "qaraqalpaq", "qarakalpak" to "qaraqalpaq",
-            "qoraqalpoqcha" to "qoraqalpoq"
+            "qoraqalpoqcha" to "qoraqalpoq", "ақша" to "pul",
+            "жоғалды" to "yoqoldi", "не істеймен" to "nima qilaman"
         )
         corrections.forEach { (wrong, right) -> value = value.replace(wrong, right) }
         val language = detectLanguage(question)
@@ -532,6 +536,8 @@ object FinzanjirKnowledgeBase {
             "finzanjir" to listOf("finzanjir","moliyaviy","zanjir"),
             "qaraqalpaq" to listOf("qaraqalpaq","qoraqalpoq","karakalpak"),
             "qoraqalpoq" to listOf("qoraqalpoq","qaraqalpaq","karakalpak"),
+            "aqsha" to listOf("aqsha","pul","money","qarji"),
+            "yoqoldi" to listOf("yoqoldi","yoqolgan","lost","joq"),
             "firibgar" to listOf("firibgar","aldaw","aldash"),
             "aldaw" to listOf("aldaw","firibgar","firibgarlik"),
             "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
