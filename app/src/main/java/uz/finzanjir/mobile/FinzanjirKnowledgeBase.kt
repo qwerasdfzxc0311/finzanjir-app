@@ -28,13 +28,13 @@ data class KnowledgeAnswer(
  * reads a small candidate set, then composes an evidence-grounded answer.
  */
 object FinzanjirKnowledgeBase {
-    const val VERSION = "v6-lightweight-fts4-core-2026-11-10"
+    const val VERSION = "v7-multilingual-evidence-fts4-2026-11-10"
     private const val ASSET = "finzanjir_knowledge.json"
     private const val MANIFEST = "knowledge_manifest.json"
     private const val DB_NAME = "finzanjir_knowledge_v6.db"
     private const val DB_VERSION = 1
     private const val MAX_CANDIDATES = 48
-    private const val MAX_ANSWER_RECORDS = 4
+    private const val MAX_ANSWER_RECORDS = 6
 
     private data class Record(
         val rowId: Long,
@@ -89,7 +89,8 @@ object FinzanjirKnowledgeBase {
     }
 
     fun search(context: Context, question: String, expertMode: Boolean = false): KnowledgeAnswer {
-        val q = normalize(question)
+        val understood = understandQuery(question)
+        val q = normalize(understood)
         if (q.isBlank()) return KnowledgeAnswer(
             "Savolingizni yozing. Masalan: “Risk Engine nima?”, “L12 nima?” yoki “Fraud Graph qanday ishlashi ko‘zda tutilgan?”",
             emptyList(), "NO_QUERY", "Javoblar manba va hujjat maqomi bilan ko‘rsatiladi.", count(context)
@@ -106,7 +107,7 @@ object FinzanjirKnowledgeBase {
             layerNumber != null -> exactLayer(database, layerNumber)
             layerOverview -> allLayers(database)
             authorQuestion -> authorRecords(database, question)
-            else -> retrieve(database, question, expertMode, authorQuestion)
+            else -> retrieve(database, understood, expertMode, authorQuestion)
         }.filter { r ->
             val type = r.recordType.lowercase(Locale.ROOT)
             r.approval != "index_only" && !type.contains("alias") && !type.contains("query_pattern") &&
@@ -118,11 +119,11 @@ object FinzanjirKnowledgeBase {
         val selected = if (layerNumber != null || layerOverview || authorQuestion) {
             rows.map { Candidate(it, 100) }
         } else {
-            scoreCandidates(question, rows).distinctBy { normalize(it.record.text) }.take(MAX_ANSWER_RECORDS)
+            scoreCandidates(understood, rows).distinctBy { normalize(it.record.text) }.take(MAX_ANSWER_RECORDS)
         }
         if (selected.isEmpty()) return insufficient(count(context))
 
-        val baseAnswer = composeAnswer(question, selected, layerOverview)
+        val baseAnswer = composeAnswer(understood, selected, layerOverview)
         val answer = if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
         else baseAnswer
@@ -304,12 +305,13 @@ object FinzanjirKnowledgeBase {
     }
 
     private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
-        val terms = queryTerms(question).take(8)
+        val terms = queryTerms(question).take(10)
         if (terms.isEmpty()) return emptyList()
         val expressions = listOf(
-            terms.joinToString(" AND ") { "\"" + it + "\"" },
+            terms.take(5).joinToString(" AND ") { "\"" + it + "\"" },
             terms.joinToString(" OR ") { "\"" + it + "\"" }
-        )
+        ).distinct()
+        val gathered = LinkedHashMap<String, Record>()
         for (expression in expressions) {
             val found = queryMeta(database,
                 """SELECT m.* FROM knowledge_fts f
@@ -321,9 +323,10 @@ object FinzanjirKnowledgeBase {
                     (expertMode || r.audience == "general" || r.audience == "general_and_expert") &&
                     (authorQuestion || !isAuthorRecord(r))
             }
-            if (found.isNotEmpty()) return found
+            found.forEach { gathered.putIfAbsent(it.id, it) }
+            if (gathered.size >= MAX_CANDIDATES) break
         }
-        return emptyList()
+        return gathered.values.toList()
     }
 
     private fun queryMeta(database: SQLiteDatabase, sql: String, args: Array<String>): List<Record> {
@@ -381,6 +384,28 @@ object FinzanjirKnowledgeBase {
         }.joinToString("").take(5200)
     }
 
+    private fun understandQuery(question: String): String {
+        var value = question.lowercase(Locale.ROOT)
+        val corrections = mapOf(
+            "finzajir" to "finzanjir", "finzanjr" to "finzanjir",
+            "risk engin" to "risk engine", "riskengine" to "risk engine",
+            "fraud graf" to "fraud graph", "fraudgraph" to "fraud graph",
+            "human revyu" to "human review", "humanreview" to "human review",
+            "mutahasis" to "mutaxassis", "mutaxasis" to "mutaxassis",
+            "qatlamla" to "qatlamlar", "firibgarlk" to "firibgarlik",
+            "qaraqalpaqsha" to "qaraqalpaq", "qarakalpak" to "qaraqalpaq",
+            "qoraqalpoqcha" to "qoraqalpoq"
+        )
+        corrections.forEach { (wrong, right) -> value = value.replace(wrong, right) }
+        val language = detectLanguage(question)
+        if (language == "kk" || language == "kaa") {
+            val aliases = mapOf("aqsha" to "pul", "qarjiliq" to "moliyaviy",
+                "qorǵaw" to "himoya", "aldaw" to "firibgarlik")
+            aliases.forEach { (from, to) -> value = value.replace(from, to) }
+        }
+        return value
+    }
+
     private fun isAuthorRecord(r: Record): Boolean {
         val t = r.recordType.lowercase(Locale.ROOT)
         return t.contains("author") || t.contains("founder") ||
@@ -392,7 +417,7 @@ object FinzanjirKnowledgeBase {
             "the","what","how","does","is","are","and","with","for","about","who","why","это","как","что","для","кто")
         val base = normalize(value).split(Regex("\\s+")).map { token ->
             when (token) {
-                "qatlamlar","qatlamning","qatlamga","qatlamni" -> "qatlam"
+                "qatlamlar","qatlamning","qatlamga","qatlamni","qatlamlardi","qatlamlarnı" -> "qatlam"
                 "signallar","signalni","signali" -> "signal"
                 "dalillar","dalilni","dalili" -> "dalil"
                 "tranzaksiya","tranzaksiyalar","tranzaksiyani" -> "operatsiya"
@@ -403,7 +428,12 @@ object FinzanjirKnowledgeBase {
             }
         }.filter { it.length >= 2 && it !in stop }
         val aliases = mapOf(
-            "riskengine" to listOf("risk","engine"), "risk" to listOf("risk","xavf"),
+            "riskengine" to listOf("risk","engine"), "risk" to listOf("risk","xavf","qawip"),
+            "finzanjir" to listOf("finzanjir","moliyaviy","zanjir"),
+            "qaraqalpaq" to listOf("qaraqalpaq","qoraqalpoq","karakalpak"),
+            "qoraqalpoq" to listOf("qoraqalpoq","qaraqalpaq","karakalpak"),
+            "firibgar" to listOf("firibgar","aldaw","aldash"),
+            "aldaw" to listOf("aldaw","firibgar","firibgarlik"),
             "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
             "fraud" to listOf("fraud","firibgar"), "graph" to listOf("graph","graf","boglanish"),
             "recal" to listOf("recalibration","kalibratsiya","kalibrlash"),
@@ -429,7 +459,8 @@ object FinzanjirKnowledgeBase {
                 append(when (c) {
                     'а' -> "a"; 'б' -> "b"; 'в' -> "v"; 'г' -> "g"; 'д' -> "d"; 'е' -> "e"; 'ё' -> "yo"
                     'ж' -> "j"; 'з' -> "z"; 'и' -> "i"; 'й' -> "y"; 'к' -> "k"; 'л' -> "l"; 'м' -> "m"
-                    'н' -> "n"; 'о' -> "o"; 'п' -> "p"; 'р' -> "r"; 'с' -> "s"; 'т' -> "t"; 'у' -> "u"
+                    'н' -> "n"; 'ң' -> "ng"; 'ә' -> "a"; 'ө' -> "o"; 'ү' -> "u"; 'ұ' -> "u"; 'і' -> "i"
+                    'о' -> "o"; 'п' -> "p"; 'р' -> "r"; 'с' -> "s"; 'т' -> "t"; 'у' -> "u"
                     'ф' -> "f"; 'х' -> "x"; 'ц' -> "ts"; 'ч' -> "ch"; 'ш' -> "sh"; 'щ' -> "sh"
                     'ъ', 'ь' -> ""; 'ы' -> "i"; 'э' -> "e"; 'ю' -> "yu"; 'я' -> "ya"
                     'ў' -> "o"; 'қ' -> "q"; 'ғ' -> "g"; 'ҳ' -> "h"
