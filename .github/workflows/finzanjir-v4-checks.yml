@@ -58,6 +58,7 @@ jobs:
           app = Path("finzanjir_v4/app.py").read_text(encoding="utf-8")
           assistant = Path("finzanjir_v4/ai_assistant.py").read_text(encoding="utf-8")
           knowledge = Path("finzanjir_v4/knowledge_uz.json").read_text(encoding="utf-8")
+          manifest = Path("finzanjir_v4/knowledge_manifest.json").read_text(encoding="utf-8")
           forbidden = (
               "sqlite3", "save_feedback(", "review_case(", "update_case_status(",
               "delete_case(", "st.data_editor(", "st.file_uploader("
@@ -68,6 +69,13 @@ jobs:
           assert "GEMINI_API_KEY" not in app and "AIza" not in app + assistant, "Possible API key literal found"
           assert "st.text_area(" in app and "st.button(" in app, "AI question input/action missing"
           assert "google_search" in assistant, "Google Search grounding is missing"
+          import json
+          records = json.loads(knowledge)
+          manifest_data = json.loads(manifest)
+          assert len(records) == manifest_data["record_count"], "Knowledge manifest record count mismatch"
+          assert len(records) >= 100, "Knowledge corpus unexpectedly small"
+          assert all(row.get("approval") == "candidate_not_authoritative" for row in records), "Candidate record was promoted without approval"
+          assert all(row.get("source_id") and row.get("source_version") and row.get("source_section") for row in records), "Knowledge provenance is incomplete"
           for layer_number in range(1, 17):
               assert f"L{layer_number:02d}" in knowledge, f"Missing knowledge record for L{layer_number:02d}"
           print("Read-only business-data boundary, Gemini/Search path, and 16-layer KB checks passed.")
