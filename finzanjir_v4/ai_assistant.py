@@ -253,7 +253,7 @@ QAT'IY ISHONCH VA XAVFSIZLIK QOIDALARI
 JAVOB TALABI
 - Avval savolga to‘g‘ridan-to‘g‘ri javob ber.
 - FINZANJIRga oid fikrlarni ichki manba ID, versiya va fayl bilan bog‘la.
-- Tashqi internet dalillarini ichki loyiha bilimidan alohida ajrat.
+- Tashqi internet dalillarini ichki loyiha bilimidan alohida ajrat. Faqat API javobidagi grounding URL manbalarini tashqi manba sifatida ko‘rsat; URL yoki manba to‘qima.
 - Tasdiqlanmagan, ziddiyatli yoki topilmagan ma’lumotni aniq belgilab qo‘y.
 - Amaliy keyingi qadam bo‘lsa, xavfsiz va aniq tavsiya ber.
 """
