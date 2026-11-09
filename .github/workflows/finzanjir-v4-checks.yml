@@ -35,8 +35,8 @@ jobs:
           app = AppTest.from_file("finzanjir_v4/app.py", default_timeout=30).run()
           if app.exception:
               raise AssertionError("\\n".join(str(item) for item in app.exception))
-          assert len(app.radio) >= 1, "Main navigation was not rendered"
-          assert any("Bosh sahifa" in str(item.value) for item in app.radio), "Public home page was not rendered"
+          assert len(app.selectbox) >= 1, "Top-level navigation was not rendered"
+          assert "Bosh sahifa" in str(app.selectbox[0].value), "Public home page was not rendered"
           PY
       - name: Verify public interface is read-only
         run: |
