@@ -13,8 +13,22 @@ class KnowledgeAssistantTests(unittest.TestCase):
         rows = ai.load_knowledge()
         ids = [row["id"] for row in rows]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertGreaterEqual(len(rows), 70)
+        self.assertGreaterEqual(len(rows), 130)
         self.assertTrue(all(row.get("source_path") and row.get("source_id") and row.get("source_version") and row.get("source_section") for row in rows))
+
+
+    def test_twenty_four_project_chapter_summaries_are_present(self):
+        rows = ai.load_knowledge()
+        chapters = [row for row in rows if row.get("record_type") == "book_chapter_summary_candidate"]
+        self.assertEqual(len(chapters), 24)
+        self.assertTrue(all(row.get("source_section") and "PDF pages" in row.get("text", "") for row in chapters))
+
+    def test_project_overview_retrieves_core_chapters(self):
+        hits = ai.retrieve("FINZANJIR nima va uning asosiy maqsadi qanday?", limit=18)
+        ids = {item["id"] for item in hits}
+        self.assertIn("BOOK25-CH01", ids)
+        self.assertIn("BOOK25-CH02", ids)
+        self.assertIn("BOOK25-CH03", ids)
 
     def test_all_sixteen_layer_cards_are_retrievable(self):
         for number in range(1, 17):
