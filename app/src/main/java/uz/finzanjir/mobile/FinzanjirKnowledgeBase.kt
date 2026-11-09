@@ -560,6 +560,8 @@ object FinzanjirKnowledgeBase {
             "yoqoldi" to listOf("yoqoldi","yoqolgan","lost","joq"),
             "firibgar" to listOf("firibgar","aldaw","aldash"),
             "aldaw" to listOf("aldaw","firibgar","firibgarlik"),
+            "qorgaw" to listOf("qorgaw","himoya","protect"),
+            "qalay" to listOf("qalay","qanday","how"),
             "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
             "fraud" to listOf("fraud","firibgar"), "graph" to listOf("graph","graf","boglanish"),
             "recal" to listOf("recalibration","kalibratsiya","kalibrlash"),
