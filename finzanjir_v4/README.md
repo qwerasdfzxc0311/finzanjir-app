@@ -65,18 +65,19 @@ Local test uchun .streamlit/secrets.toml faylini faqat o‘z qurilmangizda yarat
 
 ## 3. Knowledge Base holati
 
-Joriy v4 knowledge_uz.json ichida 137 ta yozuv:
+Joriy v4 knowledge_uz.json ichida 957 ta yozuv:
 - 33 legacy v3 candidate;
 - 16 qatlam katalogi;
 - 22 repository konsepsiya yozuvi;
 - 42 AI arxitekturasi, AI baholash va V317 auditidan tanlangan yozuv;
-- 24 ta 25 bobli integratsiyalashgan kitobning 1–24-boblari bo‘yicha sahifaga bog‘langan qisqa xulosa.
+- 24 ta bob xulosasi;
+- 820 ta PDF sahifa matn segmenti (1–24-boblar, PDF sahifalari 5–331).
 
 Barcha yozuvlar candidate_not_authoritative. Hozircha authoritative/approved yozuv yo‘q.
 
 Har bir yozuv source_id, source_version, source_section, source_path va approval maqomiga ega. knowledge_manifest.json manbalar va ma’lum bo‘shliqlarni ko‘rsatadi.
 
-**Bu to‘liq FINZANJIR arxivi emas.** 25 bobli integratsiyalashgan kitobning 1–24-boblari sahifaga bog‘langan qisqa xulosalar bilan berilgan, ammo to‘liq bob matnlari indekslanmagan. Asl V14 va V8 PDFlarining to‘liq sahifa-paragraf importi, 16 qatlam chuqur tushuntirishining to‘liq importi va FINZANJIR_AI.zip v0.6.0 korpusi hali to‘liq bajarilmagan. V317 auditidagi 4 671 yozuv ham to‘liq ko‘chirilmagan. 25-bobdagi muallifning shaxsiy biografiyasi ommaviy AI bilimlar bazasiga kiritilmagan. Shuning uchun AI loyiha haqidagi barcha savollarga javob bera oladi deb va’da qilinmaydi.
+**Bu to‘liq FINZANJIR arxivi emas.** 25 bobli integratsiyalashgan kitobning 1–24-boblari, PDF sahifalari 5–331, 820 matn segmentiga ajratilib indekslandi. Diagramma va murakkab jadvallarning ayrim tuzilishi matn ekstraksiyasida yo‘qolishi mumkin. Asl V14 va V8 PDFlari alohida, to‘liq crosswalk bilan import qilinmagan; asl FINZANJIR_AI.zip v0.6.0 ham Library qidiruvida topilmadi. V317 auditidagi 4 671 yozuv to‘liq ko‘chirilmagan. 25-bobdagi muallifning shaxsiy biografiyasi ommaviy AI bilimlar bazasiga kiritilmagan. Shuning uchun AI loyiha haqidagi barcha savollarga javob bera oladi deb va’da qilinmaydi.
 
 Qidiruv hozir lexical/synonym-based; to‘liq embedding/vector semantic search emas. “16 qatlam” savolida barcha 16 qatlam yozuvi kontekstga beriladi. Qidiruv balli faktik ishonchlilik emas.
 
