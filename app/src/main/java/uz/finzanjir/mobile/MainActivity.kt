@@ -104,6 +104,7 @@ private fun OwnerGate(hasPin: Boolean, pin: String, confirm: String, error: Stri
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(page: String, select: (String) -> Unit, lock: () -> Unit) {
     val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
