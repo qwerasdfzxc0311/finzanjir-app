@@ -153,6 +153,8 @@ object FinzanjirKnowledgeBase {
         val visualNotice = if (selected.any { it.record.recordType == "visual_ocr_candidate" })
             " OCR yozuvlari vizual ekspert tekshiruvini kutadi." else ""
         val notice = statusNotice + visualNotice +
+            " So‘rov tili taxmini: " + detectLanguage(question).uppercase(Locale.ROOT) +
+            "; yozuv variantlari normallashtiriladi, imlo tuzatishi taxminiy bo‘lishi mumkin. " +
             " FINZANJIR konsepsiyasi va prototipi ishlab chiqilmoqda: matndagi modul yoki integratsiya tavsifi uning hozir amalda ishlayotganini anglatmaydi. Mutaxassislar bilan tekshirish va vakolatli inson nazorati ko‘zda tutiladi. Risk signali aybdorlik isboti emas."
         return KnowledgeAnswer(
             answer, sources,
