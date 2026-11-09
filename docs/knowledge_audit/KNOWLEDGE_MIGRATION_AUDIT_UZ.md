@@ -42,14 +42,14 @@ Bilim qo‘shilishi model vaznlarini fine-tuning qilish emas. Ushbu migratsiya R
 
 ## 6. Tekshiruv natijalari
 
-Migratsiya paketining dastlabki 5,580 yozuvli korpusida 23/23 smoke-test PASS bo‘lgan. 5,607 yozuvli vizual OCR qo‘shilgan korpusda ham Kotlin BM25-ekvivalent ranking simulyatsiyasi bo‘yicha 23/23 source-aware regression PASS. Bu Android runtime testi emas. APK build, o‘rnatish, telefon sinovi va AI javoblarining to‘liq regressiya testi bajarilgan deb talqin qilinmaydi.
+Candidate 5,607 yozuvli korpusda 17 ta asosiy savol bo‘yicha Python SQLite FTS5 simulyatsiyasi 17/17 mos yozuv topdi. Bu Android FTS4 runtime testi emas. APK build, o‘rnatish, telefon sinovi va AI javoblarining to‘liq regressiya testi bajarilgan deb talqin qilinmaydi.
 
 ## 7. GitHub branchida bajarilgan kod ishlari
 
-- AI qidiruvi oddiy token ustma-ustligidan BM25-uslubidagi term weightingga o‘tkazildi.
+- 2026-11-10 no-BM25 branchida BM25 olib tashlandi; SQLite FTS4 va oqim tarzida JSON importi qo‘shildi.
 - Fuqaro va Mutaxassis qidiruv ko‘rinishlari qo‘shildi. Mutaxassis ko‘rinishi texnik, qatlamlar, bank integratsiyasi va tarixiy loyiha manbalarini ham qidiradi; bu demo filtri, server autentifikatsiyasi yoki RBAC emas.
 - Bir xil matnli yozuvlar korpusdan o‘chirilmaydi; javobda bir marta ko‘rsatiladi va mos kelgan barcha manba izlari saqlanadi.
-- Kotlin knowledge engine minimal Android/JSON stub muhitida sintaksis bo‘yicha kompilyatsiyadan o‘tdi. GitHub Actions orqali Android Gradle debug APK build ham muvaffaqiyatli yakunlandi (run 42680177385 va 42680010769). Bu faqat build; 5,607 yozuvli asset hali aktiv emas va qurilmadagi runtime sinovi bajarilmagan.
+- No-BM25 Kotlin knowledge core birinchi importda SHA/count tekshiruvi, SQLite FTS4 va yengil dalil sintezidan foydalanadi. Ushbu yangi branch uchun GitHub Actions build hali tasdiqlanmagan; qurilmadagi FTS4 runtime testi ham bajarilmagan.
 - GitHub Actions workflow yangi branchni ham kuzatadigan qilib yangilandi; tekshiruv vaqtida ushbu branch uchun workflow run hali qaytmadi.
 
 ## 8. Hali ochiq qolgan ishlar
@@ -57,9 +57,14 @@ Migratsiya paketining dastlabki 5,580 yozuvli korpusida 23/23 smoke-test PASS bo
 1. 5,607 yozuvli JSON assetni GitHub Android branchidagi eski 1,121 yozuvli asset bilan almashtirishdan oldin manba/maqom/duplikat nazoratini yakunlash.
 2. 37 ta PDF ichki rasm/diagrammaning 26 tasida OCR urinishlari bajarildi; 22 tasining matni va 5 ta mustaqil diagramma OCRi 27 ta candidate yozuvga kiritildi. Ularning barchasi hali vizual ekspert tekshiruvini kutmoqda.
 3. 3 ta aynan takror matnli guruhni source provenance yo‘qotmasdan retrieval natijasida bir marta ko‘rsatish.
-4. Android Kotlin qidiruvi, fuqarolik/mutaxassis rejimi, 16 qatlam ID marshruti, manba ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni 5,580 yozuv bilan sinash.
+4. 5,607 assetni aktiv faylga qo‘yib, Android FTS4 qidiruvi, fuqaro/mutaxassis ko‘rinishi, 16 qatlam ID marshruti, manba ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni qurilmada sinash.
 5. APK build va real qurilmadagi sinovlarni alohida bajarish.
 
 ## 9. Muhim holat
 
 Ushbu audit GitHub branchidagi amaldagi Android asset allaqachon 5,580 yozuvga yangilandi degani emas. Migratsiya ZIPida 5,607 yozuvli asset mavjud. SHA-256: `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`. GitHub branchidagi aktiv asset va manifestni yangilash faqat to‘liq asset aynan shu branchga yozilib, SHA-256 va record count qayta tekshirilgandan keyin tasdiqlanadi.
+
+
+## 10. 2026-11-10 no-BM25 yengil yadro
+
+Yangi branch: `ai-core-lightweight-fts4-2026-11-10`. BM25 o‘rniga SQLite FTS4, streaming JSON import va kichik dalil to‘plamidan lokal javob sintezi qo‘llanadi. Aktiv Android asset hali 1,121 yozuv. 5,607 candidate assetning SHA-256 qiymati `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`; aktiv import, Android build va telefon testi alohida qabul darvozalari bo‘lib qoladi.
