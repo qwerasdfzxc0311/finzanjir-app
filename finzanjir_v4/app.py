@@ -681,7 +681,11 @@ elif page == "FINZANJIR AI":
                     with st.expander("Javobda ishlatilgan FINZANJIR ichki bilimlari", expanded=False):
                         st.caption(f"Bilimlar bazasidagi yozuvlar: {result['knowledge_records_total']}")
                         for item in result["internal_evidence"]:
-                            st.markdown(f"**{item['id']}** · {item['approval']} · {item['source_path']}")
+                            st.markdown(
+                                f"**{item['id']}** · {item['approval']} · "
+                                f"{item['source_id']} / {item['source_version']}"
+                            )
+                            st.caption(item["source_section"] + " · " + item["source_path"])
                             st.write(item["text"])
                     st.caption("Model: " + result["model"] + " · Ichki bilimlar candidate_not_authoritative bo‘lsa, rasmiy tasdiq deb talqin qilinmaydi.")
                 except ai_assistant.AssistantError as exc:
