@@ -452,7 +452,7 @@ object FinzanjirKnowledgeBase {
         if (q.contains("case") || q.contains("hodisa")) notes += "Case — tekshirish uchun yig‘ilgan hodisa materiallari; Case ochilishi aybdorlikni anglatmaydi."
         if (q.contains("human") || q.contains("review") || q.contains("inson")) notes += "Human Review — dalillarni vakolatli mutaxassisning inson sifatida ko‘rib chiqishi."
         if (q.contains("recovery") || q.contains("tiklash")) notes += "FIN-RECOVERY — hodisadan keyingi tiklash jarayonini qo‘llab-quvvatlash konsepsiyasi; pul qaytishini kafolatlamaydi."
-        return if (notes.isEmpty()) "" else notes.joinToString("\\n", "Qisqa izoh:\\n", "\\n\\n") + ""
+        return if (notes.isEmpty()) "" else notes.joinToString("\n", "Qisqa izoh:\n", "\n\n") + ""
     }
 
     private fun detectConflicts(rows: List<Candidate>): List<String> {
