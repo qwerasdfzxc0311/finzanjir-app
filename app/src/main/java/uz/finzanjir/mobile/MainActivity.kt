@@ -68,10 +68,8 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
         }, containerColor = Canvas
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            if (page !in nav.take(4)) {
-                ScrollableTabRow(selectedTabIndex = nav.indexOf(page).coerceAtLeast(0), edgePadding = 12.dp) {
-                    nav.forEach { Tab(page == it, { select(it) }, text = { Text(it, fontSize = 10.sp) }) }
-                }
+            ScrollableTabRow(selectedTabIndex = nav.indexOf(page).coerceAtLeast(0), edgePadding = 12.dp) {
+                nav.forEach { Tab(page == it, { select(it) }, text = { Text(it, fontSize = 10.sp) }) }
             }
             when (page) {
                 "Bosh sahifa" -> Home { select("Jarayon") }
