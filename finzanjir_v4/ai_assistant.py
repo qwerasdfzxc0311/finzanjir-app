@@ -10,6 +10,7 @@ import json
 import re
 import unicodedata
 from pathlib import Path
+from functools import lru_cache
 from typing import Any
 
 KB_PATH = Path(__file__).with_name("knowledge_uz.json")
@@ -67,6 +68,7 @@ def tokens(text: str) -> list[str]:
     return result
 
 
+@lru_cache(maxsize=1)
 def load_knowledge() -> list[dict[str, Any]]:
     try:
         with KB_PATH.open("r", encoding="utf-8") as handle:
