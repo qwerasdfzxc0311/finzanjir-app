@@ -21,7 +21,7 @@ class KnowledgeAssistantTests(unittest.TestCase):
         rows = ai.load_knowledge()
         chapters = [row for row in rows if row.get("record_type") == "book_chapter_summary_candidate"]
         self.assertEqual(len(chapters), 24)
-        self.assertTrue(all(row.get("source_section") and "PDF pages" in row.get("text", "") for row in chapters))
+        self.assertTrue(all(row.get("source_section") and "PDF pages" in row.get("source_section", "") for row in chapters))
 
     def test_project_overview_retrieves_core_chapters(self):
         hits = ai.retrieve("FINZANJIR nima va uning asosiy maqsadi qanday?", limit=18)
@@ -32,9 +32,9 @@ class KnowledgeAssistantTests(unittest.TestCase):
 
     def test_all_sixteen_layer_cards_are_retrievable(self):
         for number in range(1, 17):
-            hits = ai.retrieve(f"L{number:02d} qatlam nima vazifa bajaradi?", limit=10)
-            ids = [item["id"] for item in hits]
-            self.assertIn(f"V4-L{number:02d}", ids, f"Layer L{number:02d} was not retrieved")
+            hits = ai.retrieve(f"L{number:02d} qatlam nima vazifa bajaradi?", limit=1)
+            self.assertTrue(hits, f"No result for L{number:02d}")
+            self.assertEqual(hits[0]["id"], f"V4-L{number:02d}")
 
     def test_latin_and_cyrillic_queries_match(self):
         latin = ai.retrieve("FINZANJIR inson ko'rigi va Case jarayoni", limit=5)
