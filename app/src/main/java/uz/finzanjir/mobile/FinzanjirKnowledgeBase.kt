@@ -122,7 +122,10 @@ object FinzanjirKnowledgeBase {
         }
         if (selected.isEmpty()) return insufficient(count(context))
 
-        val answer = composeAnswer(question, selected, layerOverview)
+        val baseAnswer = composeAnswer(question, selected, layerOverview)
+        val answer = if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
+            "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
+        else baseAnswer
         val sources = selected.map { c ->
             val r = c.record
             r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
@@ -386,7 +389,7 @@ object FinzanjirKnowledgeBase {
             "riskengine" to listOf("risk","engine"), "risk" to listOf("risk","xavf"),
             "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
             "fraud" to listOf("fraud","firibgar"), "graph" to listOf("graph","graf","boglanish"),
-            "recal" to listOf("recal","recovery","qayta","tiklash"),
+            "recal" to listOf("recalibration","kalibratsiya","kalibrlash"),
             "finrecovery" to listOf("fin","recovery","tiklash"),
             "case" to listOf("case","hodisa","ish"),
             "humanreview" to listOf("human","review","inson","mutaxassis","korik"),
