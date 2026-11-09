@@ -1,23 +1,43 @@
 package uz.finzanjir.mobile
 
 import android.content.Context
-import org.json.JSONArray
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.util.JsonReader
+import android.util.JsonToken
+import org.json.JSONObject
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.security.MessageDigest
 import java.text.Normalizer
 import java.util.Locale
-import kotlin.math.ln
 
 data class KnowledgeAnswer(
     val answer: String,
     val sources: List<String>,
     val confidence: String,
-    val notice: String
+    val notice: String,
+    val recordCount: Int
 )
 
+/**
+ * Lightweight FINZANJIR knowledge core.
+ * No BM25, embeddings, vector database, model download or full-corpus RAM index.
+ * A one-time streaming import builds a local SQLite FTS4 index. Each question
+ * reads a small candidate set, then composes an evidence-grounded answer.
+ */
 object FinzanjirKnowledgeBase {
-    const val VERSION = "v5-retrieval-foundation-2026-11-09"
+    const val VERSION = "v6-lightweight-fts4-core-2026-11-10"
     private const val ASSET = "finzanjir_knowledge.json"
+    private const val MANIFEST = "knowledge_manifest.json"
+    private const val DB_NAME = "finzanjir_knowledge_v6.db"
+    private const val DB_VERSION = 1
+    private const val MAX_CANDIDATES = 48
+    private const val MAX_ANSWER_RECORDS = 4
 
     private data class Record(
+        val rowId: Long,
         val id: String,
         val text: String,
         val approval: String,
@@ -27,106 +47,299 @@ object FinzanjirKnowledgeBase {
         val sourcePath: String,
         val recordType: String,
         val audience: String,
-        val domain: String
+        val domain: String,
+        val language: String
     )
+    private data class Candidate(val record: Record, val score: Int)
 
-    private data class IndexedRecord(
-        val record: Record,
-        val normalized: String,
-        val normalizedText: String,
-        val termCounts: Map<String, Int>
-    )
+    private class DbHelper(context: Context) :
+        SQLiteOpenHelper(context.applicationContext, DB_NAME, null, DB_VERSION) {
+        override fun onCreate(db: SQLiteDatabase) {
+            db.execSQL("""CREATE TABLE knowledge_meta(
+                _id INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, approval TEXT NOT NULL,
+                source_id TEXT NOT NULL, source_version TEXT NOT NULL, source_section TEXT NOT NULL,
+                source_path TEXT NOT NULL, record_type TEXT NOT NULL, audience TEXT NOT NULL,
+                domain TEXT NOT NULL, language TEXT NOT NULL
+            )""")
+            db.execSQL("CREATE VIRTUAL TABLE knowledge_fts USING fts4(search_text, tokenize=unicode61)")
+            db.execSQL("CREATE TABLE knowledge_state(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execSQL("CREATE INDEX knowledge_meta_type ON knowledge_meta(record_type)")
+            db.execSQL("CREATE INDEX knowledge_meta_approval ON knowledge_meta(approval)")
+        }
+        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+            db.execSQL("DROP TABLE IF EXISTS knowledge_fts")
+            db.execSQL("DROP TABLE IF EXISTS knowledge_meta")
+            db.execSQL("DROP TABLE IF EXISTS knowledge_state")
+            onCreate(db)
+        }
+    }
 
-    @Volatile private var cached: List<IndexedRecord>? = null
+    @Volatile private var helper: DbHelper? = null
+    @Synchronized private fun db(context: Context): SQLiteDatabase {
+        if (helper == null) helper = DbHelper(context.applicationContext)
+        return helper!!.writableDatabase
+    }
 
-    fun count(context: Context): Int = load(context).size
+    fun count(context: Context): Int {
+        ensureReady(context)
+        return db(context).rawQuery("SELECT COUNT(*) FROM knowledge_meta", null).use { c ->
+            if (c.moveToFirst()) c.getInt(0) else 0
+        }
+    }
 
     fun search(context: Context, question: String, expertMode: Boolean = false): KnowledgeAnswer {
-        val normalizedQuestion = normalize(question)
-        if (normalizedQuestion.isBlank()) {
-            return KnowledgeAnswer(
-                "Savolingizni yozing. Masalan: “L12 nima?”, “Bank integratsiyasi qanday ishlaydi?” yoki “AI javobni qanday tekshiradi?”",
-                emptyList(), "NO_QUERY",
-                "Bilimlar bazasida tasdiqlangan, nomzod va tarixiy manbalar maqomi alohida saqlanadi."
-            )
-        }
-
-        val queryTokens = tokens(normalizedQuestion).distinct()
-        if (queryTokens.isEmpty()) return insufficient()
-
-        val all = load(context)
-        val layerId = Regex("\\bL(0?[1-9]|1[0-6])\\b", RegexOption.IGNORE_CASE)
-            .find(question)?.groupValues?.get(1)?.toIntOrNull()
-
-        val isLayerOverview = listOf("16 qatlam", "barcha qatlam", "qatlamlar").any {
-            normalizedQuestion.contains(normalize(it))
-        }
-        val isAuthorQuestion = listOf("muallif", "salamat", "smaylov", "tangrbergen", "asoschi")
-            .any { normalizedQuestion.contains(normalize(it)) }
-
-        // Index-only va alias yozuvlari javob dalili sifatida ishlatilmaydi.
-        // Ular manba korpusida saqlanadi; asl yozuvlar o‘chirilmaydi.
-        val eligible = all.filter { indexed ->
-            val r = indexed.record
-            val type = r.recordType.lowercase(Locale.ROOT)
-            r.approval != "index_only" &&
-                !type.contains("alias") &&
-                !type.contains("query_pattern") &&
-                (expertMode || r.audience == "general" || r.audience == "general_and_expert") &&
-                (!isAuthorRecord(r) || isAuthorQuestion || expertMode)
-        }
-
-        val selected: List<Pair<IndexedRecord, Double>> = when {
-            layerId != null -> {
-                val id = "V4-L%02d".format(Locale.ROOT, layerId)
-                eligible.filter { it.record.id.equals(id, true) }.map { it to 1000.0 }
-            }
-            isLayerOverview -> {
-                eligible.filter { it.record.recordType == "layer_catalog_candidate" }
-                    .sortedBy { it.record.id }
-                    .map { it to 100.0 }
-            }
-            else -> rank(eligible, queryTokens, normalizedQuestion)
-                // Bir xil matnli yozuvlar korpusda qoladi, lekin javobda takrorlanmaydi.
-                .distinctBy { it.first.normalizedText }
-                .take(5)
-        }
-
-        if (selected.isEmpty()) return insufficient()
-
-        val answerRecords = if (isLayerOverview) selected else selected.take(5)
-        val answer = buildString {
-            answerRecords.forEachIndexed { index, pair ->
-                if (index > 0) append("\n\nBog‘liq bilim yozuvi:\n")
-                append(pair.first.record.text)
-            }
-        }
-
-        // Takror matn bir marta ko‘rsatiladi, ammo unga tegishli barcha source izlari saqlanadi.
-        val sourceLines = answerRecords.flatMap { (indexed, _) ->
-            eligible.filter { it.normalizedText == indexed.normalizedText }.map { match ->
-                val r = match.record
-                r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
-                    r.sourceSection + " | " + r.sourcePath + " | " + r.approval
-            }
-        }.distinct()
-
-        val approvals = answerRecords.map { it.first.record.approval }.distinct()
-        val notice = when {
-            approvals.all { it == "candidate_not_authoritative" || it == "candidate" || it == "not_auto_promoted" } ->
-                "Topilgan materiallar loyiha manbasi yoki tasdiqlanmagan nomzod yozuvlardir. Ular ekspert tasdig‘i yoki amaldagi tizimda joriy etilganini o‘z-o‘zidan isbotlamaydi."
-            approvals.any { it == "unclassified" || it == "unknown" } ->
-                "Natijada maqomi to‘liq aniqlanmagan yozuvlar bor. Manba, versiya va tasdiqlash holatini alohida tekshirish kerak."
-            else ->
-                "Qidiruv mosligi faktning to‘g‘riligini, amaldagi qonuniy kuchini yoki prototipda funksiya ishlayotganini isbotlamaydi."
-        }
-
-        return KnowledgeAnswer(
-            answer,
-            sourceLines,
-            if (answerRecords.first().second >= 5.0) "MOS YOZUV TOPILDI" else "QISMAN MOSLIK",
-            notice
+        val q = normalize(question)
+        if (q.isBlank()) return KnowledgeAnswer(
+            "Savolingizni yozing. Masalan: “Risk Engine nima?”, “L12 nima?” yoki “Fraud Graph qanday ishlashi ko‘zda tutilgan?”",
+            emptyList(), "NO_QUERY", "Javoblar manba va hujjat maqomi bilan ko‘rsatiladi.", count(context)
         )
+        ensureReady(context)
+        val database = db(context)
+        val authorQuestion = listOf("muallif", "salamat", "smaylov", "tangrbergen", "asoschi", "author", "founder")
+            .any { q.contains(normalize(it)) }
+        val layerNumber = Regex("\\bL(0?[1-9]|1[0-6])\\b", RegexOption.IGNORE_CASE)
+            .find(question)?.groupValues?.get(1)?.toIntOrNull()
+        val layerOverview = listOf("16 qatlam", "barcha qatlam", "qatlamlar").any { q.contains(normalize(it)) }
+
+        val rows = when {
+            layerNumber != null -> exactLayer(database, layerNumber)
+            layerOverview -> allLayers(database)
+            else -> retrieve(database, question, expertMode, authorQuestion)
+        }.filter { r ->
+            val type = r.recordType.lowercase(Locale.ROOT)
+            r.approval != "index_only" && !type.contains("alias") && !type.contains("query_pattern") &&
+                (expertMode || r.audience == "general" || r.audience == "general_and_expert") &&
+                (authorQuestion || !isAuthorRecord(r))
+        }
+        if (rows.isEmpty()) return insufficient(count(context))
+
+        val selected = if (layerNumber != null || layerOverview) {
+            rows.map { Candidate(it, 100) }
+        } else {
+            scoreCandidates(question, rows).distinctBy { normalize(it.record.text) }.take(MAX_ANSWER_RECORDS)
+        }
+        if (selected.isEmpty()) return insufficient(count(context))
+
+        val answer = composeAnswer(question, selected, layerOverview)
+        val sources = selected.map { c ->
+            val r = c.record
+            r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
+                r.sourceSection + " | " + r.sourcePath + " | " + r.approval
+        }.distinct()
+        val approvals = selected.map { it.record.approval }.distinct()
+        val notice = when {
+            approvals.all { it in setOf("candidate_not_authoritative", "candidate", "not_auto_promoted") } ->
+                "Manbalar loyiha konsepsiyasi yoki tasdiqlanmagan nomzod materiallaridir. Ular mutaxassis tasdig‘i yoki funksiya prototipda ishlayotganini isbotlamaydi."
+            approvals.any { it == "unclassified" || it == "unknown" } ->
+                "Ayrim yozuvlarning maqomi to‘liq aniqlanmagan. Manba va versiyani alohida tekshirish kerak."
+            else ->
+                "Qidiruv mosligi mustaqil tasdiq emas. Risk signali aybdorlik isboti emas; yakuniy qaror vakolatli insonda qoladi."
+        }
+        return KnowledgeAnswer(
+            answer, sources,
+            if (selected.first().score >= 6) "MOS BILIM TOPILDI" else "QISMAN MOSLIK",
+            notice, count(context)
+        )
+    }
+
+    private fun ensureReady(context: Context) {
+        val database = db(context)
+        val manifest = JSONObject(context.assets.open(MANIFEST).bufferedReader(Charsets.UTF_8).use { it.readText() })
+        val expectedCount = manifest.optInt("record_count", -1)
+        val expectedSha = manifest.optString("asset_sha256", manifest.optString("sha256", ""))
+        val staged = File(context.cacheDir, "finzanjir_knowledge_import.json")
+        val digest = MessageDigest.getInstance("SHA-256")
+        context.assets.open(ASSET).use { input ->
+            staged.outputStream().use { output ->
+                val buffer = ByteArray(32768)
+                while (true) {
+                    val n = input.read(buffer)
+                    if (n < 0) break
+                    digest.update(buffer, 0, n)
+                    output.write(buffer, 0, n)
+                }
+            }
+        }
+        val actualSha = digest.digest().joinToString("") { "%02x".format(it) }
+        if (expectedSha.isNotBlank() && !actualSha.equals(expectedSha, true)) {
+            staged.delete()
+            throw IllegalStateException("Bilim asset SHA-256 manifestga mos emas. Import to‘xtatildi.")
+        }
+        val oldSha = database.rawQuery("SELECT value FROM knowledge_state WHERE key='corpus_sha256'", null).use {
+            if (it.moveToFirst()) it.getString(0) else ""
+        }
+        val oldCount = database.rawQuery("SELECT COUNT(*) FROM knowledge_meta", null).use {
+            if (it.moveToFirst()) it.getInt(0) else 0
+        }
+        if (oldSha == actualSha && oldCount > 0 && (expectedCount <= 0 || oldCount == expectedCount)) {
+            staged.delete()
+            return
+        }
+
+        database.beginTransaction()
+        try {
+            database.delete("knowledge_fts", null, null)
+            database.delete("knowledge_meta", null, null)
+            database.delete("knowledge_state", null, null)
+            val metaInsert = database.compileStatement(
+                """INSERT INTO knowledge_meta(id,approval,source_id,source_version,source_section,
+                source_path,record_type,audience,domain,language) VALUES(?,?,?,?,?,?,?,?,?,?)"""
+            )
+            val ftsInsert = database.compileStatement(
+                "INSERT INTO knowledge_fts(docid,search_text) VALUES(?,?)"
+            )
+            var imported = 0
+            JsonReader(InputStreamReader(FileInputStream(staged), Charsets.UTF_8)).use { reader ->
+                reader.beginArray()
+                while (reader.hasNext()) {
+                    val r = readRecord(reader)
+                    if (r.id.isBlank() || r.text.isBlank()) continue
+                    metaInsert.clearBindings()
+                    listOf(r.id,r.approval,r.sourceId,r.sourceVersion,r.sourceSection,r.sourcePath,
+                        r.recordType,r.audience,r.domain,r.language).forEachIndexed { i, value ->
+                        metaInsert.bindString(i + 1, value)
+                    }
+                    val rowId = metaInsert.executeInsert()
+                    ftsInsert.clearBindings()
+                    ftsInsert.bindLong(1, rowId)
+                    ftsInsert.bindString(2, normalize(r.text + " " + r.id + " " + r.sourceSection + " " + r.recordType + " " + r.domain))
+                    ftsInsert.executeInsert()
+                    imported++
+                }
+                reader.endArray()
+            }
+            if (expectedCount > 0 && imported != expectedCount) {
+                throw IllegalStateException("Bilim yozuvlari soni mos emas: " + imported + " / " + expectedCount)
+            }
+            database.execSQL("INSERT INTO knowledge_state(key,value) VALUES('corpus_sha256',?)", arrayOf(actualSha))
+            database.execSQL("INSERT INTO knowledge_state(key,value) VALUES('record_count',?)", arrayOf(imported.toString()))
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+            staged.delete()
+        }
+    }
+
+    private data class RawRecord(
+        var id: String = "", var text: String = "", var approval: String = "unknown",
+        var sourceId: String = "unknown", var sourceVersion: String = "unknown",
+        var sourceSection: String = "unknown", var sourcePath: String = "unknown",
+        var recordType: String = "unknown", var audience: String = "general",
+        var domain: String = "unclassified", var language: String = "und"
+    )
+
+    private fun readRecord(reader: JsonReader): RawRecord {
+        val r = RawRecord()
+        reader.beginObject()
+        while (reader.hasNext()) {
+            when (reader.nextName()) {
+                "id" -> r.id = readScalar(reader)
+                "text" -> r.text = readScalar(reader)
+                "approval" -> r.approval = readScalar(reader)
+                "source_id", "source" -> r.sourceId = readScalar(reader)
+                "source_version" -> r.sourceVersion = readScalar(reader)
+                "source_section", "section" -> r.sourceSection = readScalar(reader)
+                "source_path" -> r.sourcePath = readScalar(reader)
+                "record_type", "kind" -> r.recordType = readScalar(reader)
+                "audience" -> r.audience = readScalar(reader)
+                "domain" -> r.domain = readScalar(reader)
+                "source_language", "language" -> r.language = readScalar(reader)
+                else -> reader.skipValue()
+            }
+        }
+        reader.endObject()
+        return r
+    }
+
+    private fun readScalar(reader: JsonReader): String = when (reader.peek()) {
+        JsonToken.STRING, JsonToken.NUMBER, JsonToken.BOOLEAN -> reader.nextString()
+        JsonToken.NULL -> { reader.nextNull(); "" }
+        else -> { reader.skipValue(); "" }
+    }
+
+    private fun exactLayer(database: SQLiteDatabase, layer: Int): List<Record> {
+        val id = "V4-L%02d".format(Locale.ROOT, layer)
+        return queryMeta(database, "SELECT m.*, f.search_text AS text FROM knowledge_meta m JOIN knowledge_fts f ON m._id=f.docid WHERE m.id=?", arrayOf(id))
+    }
+
+    private fun allLayers(database: SQLiteDatabase): List<Record> =
+        queryMeta(database,
+            "SELECT m.*, f.search_text AS text FROM knowledge_meta m JOIN knowledge_fts f ON m._id=f.docid WHERE m.record_type LIKE '%layer%' OR m.id LIKE 'V4-L%' ORDER BY m.id",
+            emptyArray())
+
+    private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
+        val terms = queryTerms(question).take(8)
+        if (terms.isEmpty()) return emptyList()
+        val expressions = listOf(
+            terms.joinToString(" AND ") { "\"" + it + "\"" },
+            terms.joinToString(" OR ") { "\"" + it + "\"" }
+        )
+        for (expression in expressions) {
+            val found = queryMeta(database,
+                """SELECT m.*, f.search_text AS text FROM knowledge_fts f
+                   JOIN knowledge_meta m ON m._id=f.docid
+                   WHERE knowledge_fts MATCH ? LIMIT $MAX_CANDIDATES""",
+                arrayOf(expression)).filter { r ->
+                val type = r.recordType.lowercase(Locale.ROOT)
+                r.approval != "index_only" && !type.contains("alias") && !type.contains("query_pattern") &&
+                    (expertMode || r.audience == "general" || r.audience == "general_and_expert") &&
+                    (authorQuestion || !isAuthorRecord(r))
+            }
+            if (found.isNotEmpty()) return found
+        }
+        return emptyList()
+    }
+
+    private fun queryMeta(database: SQLiteDatabase, sql: String, args: Array<String>): List<Record> {
+        val rows = ArrayList<Record>()
+        database.rawQuery(sql, args).use { c ->
+            while (c.moveToNext()) {
+                rows += Record(
+                    rowId = c.getLong(c.getColumnIndexOrThrow("_id")),
+                    id = c.getString(c.getColumnIndexOrThrow("id")),
+                    text = c.getString(c.getColumnIndexOrThrow("text")),
+                    approval = c.getString(c.getColumnIndexOrThrow("approval")),
+                    sourceId = c.getString(c.getColumnIndexOrThrow("source_id")),
+                    sourceVersion = c.getString(c.getColumnIndexOrThrow("source_version")),
+                    sourceSection = c.getString(c.getColumnIndexOrThrow("source_section")),
+                    sourcePath = c.getString(c.getColumnIndexOrThrow("source_path")),
+                    recordType = c.getString(c.getColumnIndexOrThrow("record_type")),
+                    audience = c.getString(c.getColumnIndexOrThrow("audience")),
+                    domain = c.getString(c.getColumnIndexOrThrow("domain")),
+                    language = c.getString(c.getColumnIndexOrThrow("language"))
+                )
+            }
+        }
+        return rows
+    }
+
+    private fun scoreCandidates(question: String, rows: List<Record>): List<Candidate> {
+        val terms = queryTerms(question).toSet()
+        val phrase = normalize(question)
+        return rows.mapNotNull { r ->
+            val body = normalize(r.text)
+            val hits = terms.count { body.contains(it) }
+            if (hits == 0) return@mapNotNull null
+            val score = (hits * 4 / terms.size.coerceAtLeast(1)) +
+                (if (phrase.length > 4 && body.contains(phrase)) 5 else 0) +
+                (if (r.domain == "finzanjir") 2 else 0)
+            Candidate(r, score)
+        }.sortedByDescending { it.score }
+    }
+
+    private fun composeAnswer(question: String, rows: List<Candidate>, layerOverview: Boolean): String {
+        if (layerOverview) return rows.joinToString("\n\n") { it.record.text.take(900) }
+        val terms = queryTerms(question).toSet()
+        return rows.mapIndexed { index, candidate ->
+            val r = candidate.record
+            val sentences = r.text.split(Regex("(?<=[.!?])\\s+|\\n+"))
+                .map { it.trim() }.filter { it.length > 30 }
+            val chosen = sentences.map { s -> s to terms.count { normalize(s).contains(it) } }
+                .filter { it.second > 0 }.sortedByDescending { it.second }
+                .take(if (index == 0) 3 else 2).map { it.first }
+            val body = if (chosen.isNotEmpty()) chosen.joinToString(" ") else r.text.take(900)
+            (if (index == 0) "" else "\n\nBog‘liq manba: ") + body
+        }.joinToString("").take(5200)
     }
 
     private fun isAuthorRecord(r: Record): Boolean {
@@ -135,110 +348,40 @@ object FinzanjirKnowledgeBase {
             r.approval == "author_visible_on_direct_request"
     }
 
-    private fun rank(
-        records: List<IndexedRecord>,
-        queryTokens: List<String>,
-        normalizedQuestion: String
-    ): List<Pair<IndexedRecord, Double>> {
-        if (records.isEmpty()) return emptyList()
-        val querySet = queryTokens.toSet()
-        val documentFrequency = HashMap<String, Int>()
-        records.forEach { indexed ->
-            querySet.forEach { token ->
-                if ((indexed.termCounts[token] ?: 0) > 0) {
-                    documentFrequency[token] = (documentFrequency[token] ?: 0) + 1
-                }
-            }
-        }
-
-        val n = records.size.toDouble()
-        return records.mapNotNull { indexed ->
-            var score = 0.0
-            var matched = 0
-            querySet.forEach { token ->
-                val tf = indexed.termCounts[token] ?: 0
-                if (tf > 0) {
-                    matched++
-                    val df = (documentFrequency[token] ?: 0).toDouble()
-                    val idf = ln(1.0 + (n - df + 0.5) / (df + 0.5))
-                    val saturatedTf = (tf * 2.2) / (tf + 1.2)
-                    score += idf * saturatedTf
-                }
-            }
-            if (matched == 0) return@mapNotNull null
-
-            val coverage = matched.toDouble() / querySet.size.coerceAtLeast(1)
-            if (indexed.normalized.contains(normalizedQuestion)) score += 5.0
-            if (normalize(indexed.record.sourceSection).contains(normalizedQuestion)) score += 2.5
-            if (indexed.record.domain == "finzanjir") score += 0.6
-            score += coverage * 2.0
-            indexed to score
-        }.sortedByDescending { it.second }
-    }
-
-    private fun insufficient() = KnowledgeAnswer(
-        "Import qilingan bilimlarda bu savolga yetarli asos topilmadi. Taxminni fakt sifatida bermayman. Tegishli hujjat yoki bo‘limni tekshirish kerak bo‘lishi mumkin.",
-        emptyList(), "YETARLI DALIL TOPILMADI",
-        "Topilmagan javob FINZANJIR konsepsiyasida bunday qoida yo‘q degani emas; qidiruv indeksi to‘liq bo‘lmasligi yoki savol boshqacha ifodalangan bo‘lishi mumkin."
-    )
-
-    private fun load(context: Context): List<IndexedRecord> {
-        cached?.let { return it }
-        synchronized(this) {
-            cached?.let { return it }
-            val json = context.assets.open(ASSET).bufferedReader(Charsets.UTF_8).use { it.readText() }
-            val array = JSONArray(json)
-            val rows = ArrayList<IndexedRecord>(array.length())
-            for (i in 0 until array.length()) {
-                val item = array.optJSONObject(i) ?: continue
-                val id = item.optString("id").takeIf { it.isNotBlank() } ?: continue
-                val text = item.optString("text").takeIf { it.isNotBlank() } ?: continue
-                val record = Record(
-                    id = id,
-                    text = text,
-                    approval = item.optString("approval", item.optString("record_status", "unknown")),
-                    sourceId = item.optString("source_id", item.optString("source", "unknown")),
-                    sourceVersion = item.optString("source_version", "unknown"),
-                    sourceSection = item.optString("source_section", item.optString("section", "unknown")),
-                    sourcePath = item.optString("source_path", item.optString("source", "unknown")),
-                    recordType = item.optString("record_type", item.optString("kind", "unknown")),
-                    audience = item.optString("audience", "general"),
-                    domain = item.optString("domain", "unclassified")
-                )
-                val normalizedText = normalize(text)
-                val searchable = normalize(text + " " + id + " " + record.sourceSection + " " + record.recordType)
-                val counts = tokens(searchable).groupingBy { it }.eachCount()
-                rows += IndexedRecord(record, searchable, normalizedText, counts)
-            }
-            if (rows.isEmpty()) throw IllegalStateException("FINZANJIR bilimlar bazasida yaroqli yozuv topilmadi.")
-            cached = rows
-            return rows
-        }
-    }
-
-    private fun tokens(value: String): List<String> = normalize(value)
-        .split(Regex("\\s+"))
-        .map { token ->
+    private fun queryTerms(value: String): List<String> {
+        val stop = setOf("va","yoki","bu","shu","uchun","bilan","ham","nima","qanday","qaysi","haqida","bor","deb","esa","men",
+            "the","what","how","does","is","are","and","with","for","about","who","why","это","как","что","для","кто")
+        val base = normalize(value).split(Regex("\\s+")).map { token ->
             when (token) {
-                "qatlamlar", "qatlamning", "qatlamga", "qatlamni" -> "qatlam"
-                "signallar", "signalni", "signali" -> "signal"
-                "dalillar", "dalilni", "dalili" -> "dalil"
-                "bloklaydimi", "bloklamaydi", "bloklash", "bloklandi" -> "blokla"
-                "tranzaksiya", "tranzaksiyalar", "tranzaksiyani" -> "operatsiya"
-                "ma'lumotlar", "malumotlar", "ma'lumotni" -> "malumot"
-                "firibgarlik", "firibgarligi", "firibgarlikka" -> "firibgar"
-                "integratsiyasi", "integratsiyaga", "integratsiyani" -> "integratsiya"
-                "mutaxassislar", "mutaxassisni" -> "mutaxassis"
+                "qatlamlar","qatlamning","qatlamga","qatlamni" -> "qatlam"
+                "signallar","signalni","signali" -> "signal"
+                "dalillar","dalilni","dalili" -> "dalil"
+                "tranzaksiya","tranzaksiyalar","tranzaksiyani" -> "operatsiya"
+                "firibgarlik","firibgarligi","firibgarlikka" -> "firibgar"
+                "integratsiyasi","integratsiyaga","integratsiyani" -> "integratsiya"
+                "mutaxassislar","mutaxassisni" -> "mutaxassis"
                 else -> token
             }
-        }
-        .filter {
-            it.length >= 2 && it !in setOf(
-                "va", "yoki", "bu", "shu", "uchun", "bilan", "ham", "nima",
-                "qanday", "qaysi", "haqida", "bor", "deb", "esa", "men"
-            )
-        }
-        .distinct()
+        }.filter { it.length >= 2 && it !in stop }
+        val aliases = mapOf(
+            "riskengine" to listOf("risk","engine"), "risk" to listOf("risk","xavf"),
+            "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
+            "fraud" to listOf("fraud","firibgar"), "graph" to listOf("graph","graf","boglanish"),
+            "recal" to listOf("recal","recovery","qayta","tiklash"),
+            "finrecovery" to listOf("fin","recovery","tiklash"),
+            "case" to listOf("case","hodisa","ish"),
+            "humanreview" to listOf("human","review","inson","mutaxassis","korik"),
+            "explainable" to listOf("explainable","izohlanadigan","tushuntirish")
+        )
+        return (base + base.flatMap { aliases[it].orEmpty() }).distinct().take(12)
+    }
+
+    private fun insufficient(count: Int) = KnowledgeAnswer(
+        "Import qilingan bilimlardan bu savolga yetarli dalil topilmadi. Taxminni fakt sifatida bermayman. Savolni aniqlashtirish yoki tegishli hujjatni tekshirish kerak.",
+        emptyList(), "YETARLI DALIL TOPILMADI",
+        "Bu FINZANJIR konsepsiyasida bunday qoida yo‘q degani emas. Qidiruvda mos yozuv topilmadi yoki savol boshqacha ifodalangan bo‘lishi mumkin.",
+        count
+    )
 
     private fun normalize(value: String): String {
         val lower = Normalizer.normalize(value.lowercase(Locale.ROOT), Normalizer.Form.NFKC)
