@@ -76,7 +76,7 @@ Barcha yozuvlar candidate_not_authoritative. Hozircha authoritative/approved yoz
 
 Har bir yozuv source_id, source_version, source_section, source_path va approval maqomiga ega. knowledge_manifest.json manbalar va ma’lum bo‘shliqlarni ko‘rsatadi.
 
-**Bu to‘liq FINZANJIR arxivi emas.** To‘liq V14, V8, 16 qatlam chuqur tushuntirishi va asl FINZANJIR_AI.zip v0.6.0 korpusi hali to‘liq import qilinmagan. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. Shuning uchun AI loyiha haqidagi barcha savollarga javob bera oladi deb va’da qilinmaydi.
+**Bu to‘liq FINZANJIR arxivi emas.** 25 bobli integratsiyalashgan kitobning 1–24-boblari sahifaga bog‘langan qisqa xulosalar bilan berilgan, ammo to‘liq bob matnlari indekslanmagan. Asl V14 va V8 PDFlarining to‘liq sahifa-paragraf importi, 16 qatlam chuqur tushuntirishining to‘liq importi va FINZANJIR_AI.zip v0.6.0 korpusi hali to‘liq bajarilmagan. V317 auditidagi 4 671 yozuv ham to‘liq ko‘chirilmagan. 25-bobdagi muallifning shaxsiy biografiyasi ommaviy AI bilimlar bazasiga kiritilmagan. Shuning uchun AI loyiha haqidagi barcha savollarga javob bera oladi deb va’da qilinmaydi.
 
 Qidiruv hozir lexical/synonym-based; to‘liq embedding/vector semantic search emas. “16 qatlam” savolida barcha 16 qatlam yozuvi kontekstga beriladi. Qidiruv balli faktik ishonchlilik emas.
 
