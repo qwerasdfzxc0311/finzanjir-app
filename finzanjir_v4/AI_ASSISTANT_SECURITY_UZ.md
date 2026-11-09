@@ -126,3 +126,10 @@ CI PASS — source/unit/smoke test dalili. Bu Gemini API bilan jonli javob, Goog
 8. Uzbek Latin/Cyrillic, typo, negation, mixed-language, prompt injection va unsupported-question gold set tayyorlash.
 9. Public billing/abuse control va privacy/legal review.
 10. Mustaqil AI ekspert bahosi va reliz qabul mezonlari.
+
+
+## 11. Rasmiy Google API manbalari
+
+- Gemini Interactions API, Python SDK 2.3.0+, stateless store=false: https://ai.google.dev/gemini-api/docs/interactions-overview
+- Google Search grounding, google_search tool, citations va narxlash: https://ai.google.dev/gemini-api/docs/google-search
+- Gemini API boshlash va API kalit yaratish: https://ai.google.dev/gemini-api/docs/get-started
