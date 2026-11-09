@@ -37,6 +37,17 @@ jobs:
               raise AssertionError("\\n".join(str(item) for item in app.exception))
           assert len(app.selectbox) >= 1, "Top-level navigation was not rendered"
           assert "Bosh sahifa" in str(app.selectbox[0].value), "Public home page was not rendered"
+          pages = [
+              "Bosh sahifa", "Boshqaruv paneli", "Sun’iy bank laboratoriyasi",
+              "Yagona ish jarayoni", "Signallar reyestri", "16 qatlam",
+              "Case markazi", "Human Review", "Banklararo tahlil (sintetik)",
+              "KPI dashboard", "Fuqaro uchun tushuntirish", "Audit jurnali",
+              "Qatlamlararo xarita", "Sintetik sinovlar", "Atamalar va cheklovlar",
+          ]
+          for page in pages:
+              app.selectbox[0].select(page).run()
+              if app.exception:
+                  raise AssertionError(f"Page failed: {page}\\n" + "\\n".join(str(item) for item in app.exception))
           PY
       - name: Verify public interface is read-only
         run: |
