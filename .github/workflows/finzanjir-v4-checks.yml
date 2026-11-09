@@ -39,7 +39,7 @@ jobs:
           assert "Bosh sahifa" in str(app.selectbox[0].value), "Public home page was not rendered"
           pages = [
               "Bosh sahifa", "Boshqaruv paneli", "Sun’iy bank laboratoriyasi",
-              "Yagona ish jarayoni", "Signallar reyestri", "16 qatlam",
+              "Yagona ish jarayoni", "Signallar reyestri", "16 qatlam", "FINZANJIR AI",
               "Case markazi", "Human Review", "Banklararo tahlil (sintetik)",
               "KPI dashboard", "Fuqaro uchun tushuntirish", "Audit jurnali",
               "Qatlamlararo xarita", "Sintetik sinovlar", "Atamalar va cheklovlar",
@@ -49,19 +49,26 @@ jobs:
               if app.exception:
                   raise AssertionError(f"Page failed: {page}\\n" + "\\n".join(str(item) for item in app.exception))
           PY
-      - name: Verify public interface is read-only
+      - name: Run AI knowledge and safety regression tests
+        run: python -m unittest discover -s finzanjir_v4 -p 'test_*.py' -v
+      - name: Verify public interface and AI boundaries
         run: |
           python - <<'PY'
           from pathlib import Path
-          source = Path("finzanjir_v4/app.py").read_text(encoding="utf-8")
+          app = Path("finzanjir_v4/app.py").read_text(encoding="utf-8")
+          assistant = Path("finzanjir_v4/ai_assistant.py").read_text(encoding="utf-8")
+          knowledge = Path("finzanjir_v4/knowledge_uz.json").read_text(encoding="utf-8")
           forbidden = (
-              "st.button(", "st.form(", "st.form_submit_button(",
-              "st.text_area(", "st.session_state[", "sqlite3",
-              "save_feedback(", "review_case("
+              "sqlite3", "save_feedback(", "review_case(", "update_case_status(",
+              "delete_case(", "st.data_editor(", "st.file_uploader("
           )
-          found = [item for item in forbidden if item in source]
-          assert not found, f"Public interface contains write-capable code: {found}"
+          found = [item for item in forbidden if item in app]
+          assert not found, f"Public app contains persistent/business write paths: {found}"
+          assert "tavily" not in assistant.lower(), "v4 assistant must not use Tavily"
+          assert "GEMINI_API_KEY" not in app and "AIza" not in app + assistant, "Possible API key literal found"
+          assert "st.text_area(" in app and "st.button(" in app, "AI question input/action missing"
+          assert "google_search" in assistant, "Google Search grounding is missing"
           for layer_number in range(1, 17):
-              assert f"L{layer_number:02d}" in source, f"Missing layer L{layer_number:02d}"
-          print("Read-only source check passed; all 16 layer IDs are present.")
+              assert f"L{layer_number:02d}" in knowledge, f"Missing knowledge record for L{layer_number:02d}"
+          print("Read-only business-data boundary, Gemini/Search path, and 16-layer KB checks passed.")
           PY
