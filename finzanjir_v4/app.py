@@ -633,7 +633,7 @@ elif page == "FINZANJIR AI":
     st.info(
         "Maxfiylik: savolingiz va unga mos ichki bilim parchalari Gemini xizmatiga yuboriladi. "
         "Google Search yoqilsa, Gemini qidiruvdan ham foydalanishi mumkin. Haqiqiy mijoz ma’lumoti, "
-        "karta raqami, PIN, CVV, OTP yoki parol kiritmang. Savollar ilova tomonidan doimiy bilimlar bazasiga yozilmaydi."
+        "karta raqami, PIN, CVV, OTP yoki parol kiritmang. Gemini so‘rovlari store=false bilan yuboriladi; ilova savollarni o‘zining doimiy bilimlar bazasiga yozmaydi."
     )
     use_google_search = st.checkbox(
         "Google Search orqali yangilangan internet manbalarini ham tekshirish",
