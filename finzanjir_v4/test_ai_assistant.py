@@ -37,11 +37,11 @@ class KnowledgeAssistantTests(unittest.TestCase):
         page_rows = [row for row in rows if row.get("record_type") == "book_page_candidate"]
         self.assertEqual(len(page_rows), 820)
         page_numbers = {
-            int(re.search(r"PDF page (\\d+)", row["source_section"]).group(1))
+            int(re.search(r"PDF page (\d+)", row["source_section"]).group(1))
             for row in page_rows
         }
         self.assertEqual(page_numbers, set(range(5, 332)))
-        self.assertTrue(all(int(re.search(r"PDF page (\\d+)", row["source_section"]).group(1)) <= 331 for row in page_rows))
+        self.assertTrue(all(int(re.search(r"PDF page (\d+)", row["source_section"]).group(1)) <= 331 for row in page_rows))
 
     def test_all_sixteen_layer_cards_are_retrievable(self):
         for number in range(1, 17):
