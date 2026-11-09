@@ -2,7 +2,7 @@
   "project": "FINZANJIR",
   "package": "knowledge-migration-audit-2026-11-09",
   "status": "CANDIDATE_NOT_APK_VERIFIED",
-  "target_record_count": 5580,
+  "target_record_count": 5607,
   "ai_v2_1_record_count": 4656,
   "ai_v2_1_ids_preserved": 4656,
   "new_document_chunks": 893,
@@ -26,7 +26,7 @@
     "expert": 420,
     "expert_and_author": 60
   },
-  "asset_sha256": "1069110ed74ad8b87c5d5c081f598598396928f52868e07bc6777e2ca816bda6",
+  "asset_sha256": "f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250",
   "ai_v2_1_sha256": "dbab49e8cff3e935cb43f83038a154dba28475835462958451b0002bdfc76c06",
   "known_visual_gaps": {
     "pdf_pages_text_extracted": 304,
@@ -35,5 +35,14 @@
     "standalone_diagram_images_ocr_attempted": 5,
     "ocr_results_merged_into_knowledge_asset": false
   },
-  "note": "This is a candidate migration manifest, not the active Android app manifest. The 5,580-record asset must be installed and SHA-256 verified before changing the active manifest."
+  "note": "The 5,607-record candidate asset is in the migration ZIP and is not yet the active Android asset in this GitHub branch.",
+  "visual_ocr_candidate_records": 27,
+  "embedded_pdf_images_ocr_attempted": 26,
+  "embedded_pdf_images_with_candidate_records": 22,
+  "standalone_diagram_images_with_candidate_records": 5,
+  "retrieval_regression": {
+    "passed": 23,
+    "total": 23,
+    "method": "Kotlin BM25-equivalent ranking simulation with source-aware acceptance; not Android runtime"
+  }
 }
