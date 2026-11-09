@@ -11,13 +11,13 @@
 
 ## 2. Korpus tarkibi
 
-- Yakuniy migratsiya nomzodi: **5,580 yozuv**.
+- Yakuniy migratsiya nomzodi: **5,607 yozuv**.
 - V317 asosiy yozuvlari: 4,671.
 - Yangi hujjatlardan ajratilgan bo‘laklar: 893.
 - 16 qatlam uchun alohida IDli yozuvlar: 16 (`V4-L01` ... `V4-L16`).
 - AI v2.1 dagi 4,656 yozuvning barchasi ID bo‘yicha migratsiya nomzodida saqlangan.
 - ID takrorlari: 0.
-- Bir xil normallashtirilgan matnli guruhlar: 3 (jami 6 yozuv). Ular faqat bir xil matn sababli o‘chirilmadi; manba izi saqlanadi va qidiruv natijasida bir xil javobning qayta-qayta ko‘rinishi oldi olinishi kerak.
+- Bir xil normallashtirilgan matnli guruhlar: 3 (jami 6 yozuv). 27 ta vizual OCR nomzodi (22 PDF ichki tasvir + 5 mustaqil diagramma) qo‘shildi; barchasi tekshiruv talab qiladigan candidate maqomida. Ular faqat bir xil matn sababli o‘chirilmadi; manba izi saqlanadi va qidiruv natijasida bir xil javobning qayta-qayta ko‘rinishi oldi olinishi kerak.
 
 ## 3. Maqom va tasdiqlash
 
@@ -42,24 +42,24 @@ Bilim qo‘shilishi model vaznlarini fine-tuning qilish emas. Ushbu migratsiya R
 
 ## 6. Tekshiruv natijalari
 
-Migratsiya paketida 23/23 retrieval smoke-test PASS deb qayd etilgan: 20 ekspert va 3 fuqaro so‘rovi. Bu Python BM25-ekvivalent test; Android runtime testi emas. APK build, o‘rnatish, telefon sinovi va AI javoblarining to‘liq regressiya testi bajarilgan deb talqin qilinmaydi.
+Migratsiya paketining dastlabki 5,580 yozuvli korpusida 23/23 smoke-test PASS bo‘lgan. 5,607 yozuvli vizual OCR qo‘shilgan korpusda ham Kotlin BM25-ekvivalent ranking simulyatsiyasi bo‘yicha 23/23 source-aware regression PASS. Bu Android runtime testi emas. APK build, o‘rnatish, telefon sinovi va AI javoblarining to‘liq regressiya testi bajarilgan deb talqin qilinmaydi.
 
 ## 7. GitHub branchida bajarilgan kod ishlari
 
 - AI qidiruvi oddiy token ustma-ustligidan BM25-uslubidagi term weightingga o‘tkazildi.
 - Fuqaro va Mutaxassis qidiruv ko‘rinishlari qo‘shildi. Mutaxassis ko‘rinishi texnik, qatlamlar, bank integratsiyasi va tarixiy loyiha manbalarini ham qidiradi; bu demo filtri, server autentifikatsiyasi yoki RBAC emas.
 - Bir xil matnli yozuvlar korpusdan o‘chirilmaydi; javobda bir marta ko‘rsatiladi va mos kelgan barcha manba izlari saqlanadi.
-- Kotlin knowledge engine minimal Android/JSON stub muhitida sintaksis bo‘yicha kompilyatsiyadan o‘tdi. Bu to‘liq Android Gradle build yoki qurilma runtime testi emas.
+- Kotlin knowledge engine minimal Android/JSON stub muhitida sintaksis bo‘yicha kompilyatsiyadan o‘tdi. GitHub Actions orqali Android Gradle debug APK build ham muvaffaqiyatli yakunlandi (run 42680177385 va 42680010769). Bu faqat build; 5,607 yozuvli asset hali aktiv emas va qurilmadagi runtime sinovi bajarilmagan.
 - GitHub Actions workflow yangi branchni ham kuzatadigan qilib yangilandi; tekshiruv vaqtida ushbu branch uchun workflow run hali qaytmadi.
 
 ## 8. Hali ochiq qolgan ishlar
 
-1. 5,580 yozuvli JSON assetni GitHub Android branchidagi eski 1,121 yozuvli asset bilan almashtirishdan oldin manba/maqom/duplikat nazoratini yakunlash.
-2. 37 ta PDF ichki rasm/diagramma va 5 ta mustaqil diagramma tasvirining vizual/OCR tekshiruvini tugatish. 17 ta PDF ichki rasm va 5 ta mustaqil tasvirda dastlabki OCR urinishlari bo‘lgan, ammo OCR natijalari 5,580 yozuvli assetga kiritilmagan.
+1. 5,607 yozuvli JSON assetni GitHub Android branchidagi eski 1,121 yozuvli asset bilan almashtirishdan oldin manba/maqom/duplikat nazoratini yakunlash.
+2. 37 ta PDF ichki rasm/diagrammaning 26 tasida OCR urinishlari bajarildi; 22 tasining matni va 5 ta mustaqil diagramma OCRi 27 ta candidate yozuvga kiritildi. Ularning barchasi hali vizual ekspert tekshiruvini kutmoqda.
 3. 3 ta aynan takror matnli guruhni source provenance yo‘qotmasdan retrieval natijasida bir marta ko‘rsatish.
 4. Android Kotlin qidiruvi, fuqarolik/mutaxassis rejimi, 16 qatlam ID marshruti, manba ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni 5,580 yozuv bilan sinash.
 5. APK build va real qurilmadagi sinovlarni alohida bajarish.
 
 ## 9. Muhim holat
 
-Ushbu audit GitHub branchidagi amaldagi Android asset allaqachon 5,580 yozuvga yangilandi degani emas. Migratsiya ZIPida 5,580 yozuvli asset mavjud. GitHub branchidagi aktiv asset va manifestni yangilash faqat to‘liq asset aynan shu branchga yozilib, SHA-256 va record count qayta tekshirilgandan keyin tasdiqlanadi.
+Ushbu audit GitHub branchidagi amaldagi Android asset allaqachon 5,580 yozuvga yangilandi degani emas. Migratsiya ZIPida 5,607 yozuvli asset mavjud. SHA-256: `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`. GitHub branchidagi aktiv asset va manifestni yangilash faqat to‘liq asset aynan shu branchga yozilib, SHA-256 va record count qayta tekshirilgandan keyin tasdiqlanadi.
