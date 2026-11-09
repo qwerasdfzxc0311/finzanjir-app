@@ -637,5 +637,383 @@
     "source_package": "FINZANJIR v4 repository documentation",
     "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
     "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "AI-ARCH-001",
+    "text": "FINZANJIR AI oddiy umumiy chatbot sifatida emas, tasdiqlangan bilimlar, mavzu yo‘naltirish (Topic Router), dalilni tekshirish va xavfsiz javob berish asosida ishlaydigan yordamchi qatlam sifatida loyihalangan. U insonning o‘rnini bosmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi va ishlash mexanizmi V1, 1–2-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-ARCH-002",
+    "text": "Maqsadli AI oqimi: foydalanuvchi savoli → normallashtirish → mavzu/niyatni aniqlash → xavfsizlik tekshiruvi → bilim qidiruvi → manba va dalilni saralash → javob rejasini tuzish → javob sintezi → yakuniy xavfsizlik nazorati → zarur bo‘lsa fikr-mulohaza nomzodi. Bu arxitektura taklifi; barcha bosqichlar production darajasida joriy etilgan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi va ishlash mexanizmi V1, 3-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-ARCH-003",
+    "text": "Topic Router savolni CARD, RISK_ENGINE, FRAUD_GRAPH, FIN_RECOVERY, TRANSACTION, PHISHING_FRAUD, IDENTITY_SECURITY yoki GENERAL kabi mavzu yo‘nalishlariga ajratishi mumkin. Router natijasi mutlaq haqiqat emas; noaniq savolda aniqlashtirish yoki xavfsiz fallback kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.3; AI ichki tuzilishi V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-ARCH-004",
+    "text": "Oddiy/FUQARO rejimi murakkab terminlarsiz, sodda va amaliy keyingi qadamlar bilan tushuntiradi. EKSPERT rejimi manba ID, versiya, risk indikatori, Case, qoida/model, audit va cheklovlarni batafsilroq ko‘rsatadi. Har ikki rejimda vakolat chegarasi bir xil qoladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.5; AI ichki tuzilishi V1, 7-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-ARCH-005",
+    "text": "Safe Fallback quyidagi holatlarda ishlatiladi: mos bilim topilmasa, manba eskirgan yoki sanasi noma’lum bo‘lsa, manbalar zid bo‘lsa, savol noaniq bo‘lsa, dalil yetarli bo‘lmasa yoki yuqori xavfli amal vakolat talab qilsa. Tizim noaniqlikni yashirmaydi va fakt to‘qimaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.6; AI ichki tuzilishi V1, 6-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-001",
+    "text": "FINZANJIR bilim arxitekturasi kamida quyidagi mantiqiy qatlamlarni ajratadi: Authoritative KB (tasdiqlangan bilim), Candidate/Learning KB (tekshirilayotgan material), joriy suhbat konteksti, tarixiy/arxiv qatlam va AI xulosasi. Bu qatlamlar bitta fayl yoki bitta jadvalda saqlansa ham, maqom va ruxsatlari aralashtirilmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Bilimlar bazasi va xotira arxitekturasi V1, 2–3-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-002",
+    "text": "Authoritative KB AI tomonidan bevosita o‘zgartirilmaydi. Yangi import, foydalanuvchi tuzatishi yoki AI o‘rgangan material avval Candidate/Learning qatlamida qoladi va faqat vakolatli inson tasdig‘i, manba tekshiruvi hamda versiyalashdan keyin rasmiy bilimga o‘tkazilishi mumkin.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Bilimlar bazasi va xotira arxitekturasi V1; FINZANJIR V14, 12.8.1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-003",
+    "text": "Bilim yozuvi uchun tavsiya etiladigan metama’lumotlar: KB-ID, source/SRC-ID, hujjat nomi, versiya, bob/bo‘lim/sahifa, til, domen, yozuv turi, approval/status, amal qilish doirasi, olingan sana, tekshiruvchi/tasdiqlovchi va oldingi versiya bilan bog‘lanish. Manbasi noma’lum maydon taxmin bilan to‘ldirilmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Bilimlar bazasi va xotira arxitekturasi V1, 4–5-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-004",
+    "text": "Katta hujjatni bitta uzun matn sifatida emas, chapter → section → concept → relation → provenance ko‘rinishida indekslash taklif etiladi. PDF/DOCX/PPTX/HTML va tasvirlardan matn ajratish, OCR/vision, sahifa va jadval kontekstini saqlash kelajakdagi import talabidir; hozirgi v4 JSON bazasi bu to‘liq import pipeline’ini bajarmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.2; Bilimlar bazasi va xotira arxitekturasi V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-005",
+    "text": "Retrieval (qidiruv) natijasi haqiqat kafolati emas. Moslik balli yoki topilgan yozuv soni da’voning rostlik ehtimoli sifatida talqin qilinmaydi. Javobdan oldin manba, versiya, yangilanish, maqom, ziddiyat va dalil yetarliligi tekshirilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1, 4.3–4.5; AI ishonchliligi V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-006",
+    "text": "Bilim manbalari maqomi ajratiladi: FACT/VERIFIED (dalil bilan tasdiqlangan), CANDIDATE (ko‘rib chiqilayotgan), PROPOSAL (loyiha taklifi), FUTURE (kelajak yo‘nalishi), HYPOTHESIS (tekshirilmagan taxmin), CONFLICT (ziddiyatli) va OPEN (yetarli dalil yo‘q). Provider javobi o‘z-o‘zidan truth authority emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Yagona tizim kitobi, 11.9.1–11.9.2",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-007",
+    "text": "Zid yoki takroriy bilim yozuvlari o‘chirilmasdan, ularning manbasi va farqi bilan saqlanishi mumkin. Ziddiyat hal qilinmaguncha AI bir pozitsiyani izohsiz tanlamasligi kerak. Dublikatni birlashtirish va versiya o‘zgartirish jarayoni audit qilinadigan bo‘lishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Bilimlar bazasi va xotira arxitekturasi V1, 8-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-008",
+    "text": "Tasdiqlash sikli: yangi manba → Candidate claim → provenance tekshiruvi → sifat/yangilik va ziddiyat nazorati → huquqiy/maxfiylik/xavfsizlik ko‘rigi → vakolatli tasdiq yoki rad → versiyalash → regression test → foydalanish. Rad etilgan yoki tasdiqlanmagan material authoritative qatlamga o‘tmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Yagona tizim kitobi, 11.9.2",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-009",
+    "text": "Tarixiy/arxiv ma’lumot joriy holat bilan aralashtirilmaydi. Eski versiyadagi loyiha qarori yoki eski hujjat bugungi holatni avtomatik tasdiqlamaydi; amal qilish sanasi va versiya ko‘rsatilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Bilimlar bazasi va xotira arxitekturasi V1, 2–5-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-KB-010",
+    "text": "Foydalanuvchi tuzatishi yoki e’tirozi darhol rasmiy bilimni o‘zgartirmaydi. U candidate tuzatish sifatida manba bilan tekshiriladi, vakolatli shaxs qarori va o‘zgarish tarixi bilan boshqariladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1, 4.7; Bilimlar bazasi va xotira arxitekturasi V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-LANG-001",
+    "text": "FINZANJIR AI uchun ko‘zda tutilgan til qamrovi o‘zbek lotin, o‘zbek kirill, qoraqalpoq, qozoq, rus va ingliz tillarini o‘z ichiga oladi. Har bir tilning sifati alohida baholanadi; hujjatda tilni qo‘llab-quvvatlash maqsadi borligi barcha tillar ishlaydi yoki teng sifatli degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.2; AI ishonchliligi va mustaqil baholash V1, 5-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-LANG-002",
+    "text": "O‘zbekcha qidiruv sinovlari rasmiy va kundalik til, lotin/kirill, imlo xatosi, qisqa/uzun savol, aralash til, sinonim va soha terminlarini qamrab olishi kerak. Normalizatsiya asl savol ma’nosini o‘zgartirmasligi lozim.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1, 4.1; AI ishonchliligi V1, 5-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-EVAL-001",
+    "text": "Retrieval sifati uchun Recall@k yoki Precision@k kabi ko‘rsatkichlar faqat ekspert belgilagan relevant hujjatlar to‘plami mavjud bo‘lganda hisoblanadi. Yuqori retrieval ko‘rsatkichi javob faktik to‘g‘ri ekanini yakka o‘zi isbotlamaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 6-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-EVAL-002",
+    "text": "AI javobi alohida mezonlarda baholanadi: faktik to‘g‘rilik, groundedness/dalilga tayanganlik, manba mosligi, abstention sifati, noaniqlikni tan olish, ziddiyatni ko‘rsatish, til sifati, maxfiylik, xavfsizlik, takrorlanuvchanlik va javob kechikishi. Maqsadli thresholdlar ekspert tasdig‘isiz e’lon qilinmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 2 va 6-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-EVAL-003",
+    "text": "AI xatolari taksonomiyasiga uydirma fakt, manbani noto‘g‘ri talqin qilish, manba/iqtibos mos emasligi, eskirgan ma’lumot, ziddiyatni yo‘qotish, noaniqlikni noto‘g‘ri baholash, til/tarjima xatosi, maxfiylik buzilishi, prompt injection, retrieval xatosi, ruxsatsiz avtomatlashtirish, FP/FN xavfi va drift kiradi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 3-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-EVAL-004",
+    "text": "Har bir AI regression testida TEST-ID, REQ-ID/LAYER-ID, savol, ishlatilgan KB/model/config versiyasi, kutilgan xulq va manba, olingan javob, retrieval natijalari, dalillar, PASS/FAIL/BLOCKED/NOT RUN holati, baholovchi va EVIDENCE-ID qayd etilishi tavsiya qilinadi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 7–8-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-EVAL-005",
+    "text": "Benchmark savollari til, savol turi va javob berish mumkin/mumkin emas holatlari bo‘yicha muvozanatli bo‘lishi, test to‘plami versiyalanishi va o‘qitish/tuzatish ma’lumotlari holdout sinovga sizib kirmasligi kerak. Yuqori ta’sirli javoblar mustaqil inson ekspertizasi bilan baholanadi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 4–5-bo‘limlar",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-001",
+    "text": "Prompt injection va indirect prompt injection xavfi: foydalanuvchi so‘rovi, import qilingan hujjat yoki Google Search natijasi ichidagi “oldingi qoidalarni unut” kabi matnlar ma’lumot hisoblanadi, buyruq emas. Ular tizim ko‘rsatmalarini o‘zgartirmasligi va ruxsatsiz amalni ishga tushirmasligi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI ishonchliligi va mustaqil baholash V1, 4.3; OWASP LLM xavfsizlik sinovlari tavsiyasi",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-002",
+    "text": "Maxfiylik va tashqi provider: API kaliti mobil/web klient kodiga yozilmaydi; tashqi provider ishlatilsa, kalit server tomonida saqlanadi. Tashqi uzatishdan oldin ma’lumot minimallashtiriladi, foydalanuvchi xabardor qilinadi va tegishli huquqiy/xavfsizlik talablari ko‘rib chiqiladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1, 9-bo‘lim; FINZANJIR V8 xavfsizlik tamoyillari",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-003",
+    "text": "Offline-first yoki lokal ishlash iborasi o‘z-o‘zidan ma’lumot qurilmadan chiqmasligini isbotlamaydi. Tarmoq so‘rovlari, loglar, analitika, backup, gateway va providerga yuboriladigan maydonlar kod hamda tarmoq sinovi bilan tekshirilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1, 9-bo‘lim",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-004",
+    "text": "AI quyidagi maxfiy ma’lumotlarni so‘ramasligi kerak: OTP, CVV/CVC, PIN, parol, autentifikatsiya kaliti va boshqa maxfiy credentiallar. Savolga javob berish uchun zarur bo‘lmagan shaxsiy yoki moliyaviy ma’lumot yig‘ilmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR V14, 4.6.6; FINZANJIR AI — Ichki tuzilishi V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-005",
+    "text": "AI yakuniy huquqiy, moliyaviy yoki bank qarorini chiqarmaydi; shaxsni firibgar yoki aybdor deb e’lon qilmaydi; bankka yoki tashqi tizimga ruxsatsiz amal yubormaydi. Muhim va yuqori ta’sirli holatlar vakolatli inson/tashkilotga qoldiriladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI — Ichki tuzilishi V1; AI ishonchliligi va mustaqil baholash V1",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-006",
+    "text": "Google Search grounding yoqilganda foydalanuvchi savoli va unga mos ichki bilim parchalari Gemini provideriga yuboriladi; Google Search qidiruv so‘rovlarini model shakllantirishi mumkin. Shu sababli maxfiy bank yoki shaxsiy ma’lumotni ommaviy AI oynasiga kiritmaslik kerak; providerga uzatish alohida xabardorlik va nazoratni talab qiladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR AI tashqi provider chegarasi V1; joriy v4 Gemini modulining ma’lumot oqimi",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-SEC-007",
+    "text": "Google Search natijalari tashqi manba sifatida ko‘rsatiladi; ular FINZANJIRning tasdiqlangan bilimiga avtomatik qo‘shilmaydi. Muhim tashqi da’volar uchun URL, sarlavha, sana va da’voni qo‘llab-quvvatlash mosligi tekshirilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR Yagona tizim kitobi, 11.9.1–11.9.2; Gemini Google Search grounding hujjatlari",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-001",
+    "text": "2026-10-29 dagi V317 korpus auditi 4 671 yozuvni qayd etgan. Audit snapshotida source/version/original_section kabi provenance maydonlari ko‘p yozuvlarda yo‘q: source bo‘sh 2 180, original section bo‘sh 3 805. Bu raqamlar korpus sifatidagi bo‘shliqlarni bildiradi, tasdiqlangan bilimlar sonini emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-058",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-002",
+    "text": "V317 audit snapshotida language=und 1 681 yozuv, language maydoni yo‘q 860 yozuv qayd etilgan. Tilni avtomatik ravishda o‘zbek deb belgilash mumkin emas; manba asosida tasniflash va til kesimidagi sifat sinovi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-059",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-003",
+    "text": "V317 audit snapshotida kind maydoni yo‘q 860, kind tasnifi noma’lum 1 070, domain tasnifi noma’lum 540 yozuv qayd etilgan. Boshqariladigan lug‘at va needs_review navbati kerak; noma’lum domenni taxmin bilan to‘ldirmaslik lozim.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-060",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-004",
+    "text": "V317 audit snapshotida approval holati ham bir xil emas: unclassified 1 237, index_only 881, candidate 812, candidate_not_authoritative 549, not_auto_promoted 300. Bu maqomlarni bitta umumiy “tasdiqlangan” toifaga birlashtirish mumkin emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-061",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-005",
+    "text": "V317 besh tilli training kitida 105 train va 20 validation yozuvi, har bir til uchun 21 train va 4 validation strukturasi qayd etilgan. Validatorning strukturaviy PASS natijasi til sifati yoki semantik to‘g‘rilikni isbotlamaydi; native-speaker bahosi talab qilinadi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-062",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-006",
+    "text": "V317 audit snapshotida o‘qitilgan model weights, LoRA adapter yoki LiteRT-LM conversion yo‘qligi qayd etilgan. Training kit boshlang‘ich to‘plam, tayyor model emas; Android qurilmada inference ishlaydi deb da’vo qilinmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-063",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-007",
+    "text": "V317 auditda 86/86 targeted regression natijasi va 2 000 savollik smoke-test qayd etilgan, ammo 2 000 savol semantik inson ko‘rigini talab qiladi. Source-level test PASS universal faktik to‘g‘rilikni tasdiqlamaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-064",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-008",
+    "text": "V317 auditda Android APK build/device/runtime, JNI va 10K gate qayta tekshirilmagani qayd etilgan. Bu audit snapshotidagi holat; real qurilmada o‘rnatish, inference, bekor qilish, xotira va kechikish sinovlari alohida bajarilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-065",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-CORPUS-009",
+    "text": "V317 audit WebView konfiguratsiyasida allowFileAccessFromFileURLs yoqilganini va migration/hardening tasdiqlanmaganini qayd etgan. Bu xavfsizlik topilmasi sifatida saqlanadi; uni yangi v4 Gemini moduliga avtomatik tatbiq etib bo‘lmaydi, lekin WebView arxitekturasi alohida tekshirilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv, AUD-066",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-V4-001",
+    "text": "Joriy GitHub v4 branchida FINZANJIR AI sahifasi, Gemini API chaqiruv moduli, ixtiyoriy Google Search grounding va 71 ta manbaga bog‘langan knowledge yozuvi qo‘shilgan. Bu source-level implementatsiya; yangi API kaliti bilan haqiqiy Gemini/Google Search javobi Streamlit Cloud’da hali sinovdan o‘tmagan.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "GitHub finzanjir-v4-unified-workflow-uz branch, v4 AI source files",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-V4-002",
+    "text": "v4 Gemini yordamchisi ichki JSON bilim bazasidan mos yozuvlarni qidirib, savol va mos bilim parchalarini Gemini promptiga qo‘shadi. Google Search grounding checkbox orqali ixtiyoriy yoqiladi; natijadagi URL manbalar alohida ko‘rsatiladi. Retrieval hozir lexical/synonym-based; to‘liq embedding yoki semantik qidiruv emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "GitHub finzanjir-v4/ai_assistant.py va app.py source snapshot",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-V4-003",
+    "text": "v4 ommaviy AI sahifasi Case, Human Review yoki bilimlar bazasini o‘zgartirmaydi. Savol va javob doimiy ilova ma’lumotlar bazasiga yozilmaydi; joriy sessiya uchun faqat vaqtinchalik so‘rov hisoblagichi ishlatiladi. Hosting va providerning o‘z log/data processing amaliyoti bundan mustasno bo‘lishi mumkin.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "GitHub finzanjir-v4/app.py source snapshot",
+    "record_type": "ai_architecture_candidate"
+  },
+  {
+    "id": "AI-V4-004",
+    "text": "v4 AI public session limit — oddiy sessiya ichidagi yumshoq cheklov; sahifa/session qayta ochilishi bilan qayta boshlanishi mumkin. U qat’iy rate limit, DDoS himoyasi yoki Google billing limitining o‘rnini bosmaydi. Public release oldidan provider quota, billing alerts va server-side abuse controls talab qilinadi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
+    "source_path": "GitHub finzanjir-v4/app.py; Gemini Google Search pricing documentation",
+    "record_type": "ai_architecture_candidate"
   }
 ]
