@@ -80,3 +80,35 @@ Manifestdagi `branch` maydoni `finzanjir-v4-unified-workflow-uz` deb turibdi, ho
 6. Manba to‘liqligi va checksum nazoratidan keyingina alohida integratsiya rejasini ko‘rsatish.
 
 **Hisobot yakuniy integratsiya emas. Bu hisobotdagi sanash va dublikat tahlili matn/JSON darajasidagi tekshiruvdir; PDF rasmlari, murakkab jadvallar va semantik dublikatlar hali alohida ko‘rik talab qiladi.**
+
+
+## 7. V14 vizual sahifalarini tanlab ko‘rish
+
+PDF ichidagi sahifa rasmlari alohida ko‘rildi; oddiy matn ekstraksiyasi bilan cheklanilmadi.
+
+- 20–23-sahifalarda eski Android prototip ekranlari tasvirlangan: Dashboard, “Mening kartalarim”, xavf tahlili, History, ilova xavfsizligi skaneri, ogohlantirishlar, AI yordamchi va Demo Report. 23-sahifadagi izoh bu ekranlardagi ma’lumotlar demo/sintetik ekanini va real bank API/Production integratsiyasi ishlayotganini anglatmasligini ochiq aytadi. Ular konsepsiya va UX namunalari sifatida saqlanadi, joriy APK funksiyasi deb qabul qilinmaydi.
+- 24-sahifa Android prototipining o‘rni va chegarasini tushuntiradi; Identity Risk/Identity Assurance kabi yo‘nalishlar ham mavjud APK’da to‘liq implementatsiya qilingan deb da’vo qilinmaydi.
+- 78–79-sahifalarda API data contract jadvali va Prototype → MVP → Pilot → Production farqlari bor. Bu jadvalni alohida strukturali bilimga aylantirish kerak; har bir bosqichning dalil va qabul sharti saqlanishi lozim.
+- 95–96-sahifalarda KPI manbalari va namunaviy Risk Score arifmetikasi ko‘rsatilgan. 96-sahifadagi 70/100 misoli Production modeli emasligi, real og‘irliklar pilot ma’lumotlari va ekspert validatsiyasidan keyin belgilanishi matnda qayd etilgan. Shuning uchun bu misol faqat tushuntiruvchi namuna sifatida indekslanadi.
+- 141-sahifada vizual chizma/drawing obyektlari mavjud; ushbu va boshqa diagrammali sahifalar alohida sahifa tasviri bilan qayd qilinishi kerak.
+
+**Vizual tekshiruv cheklovi:** V14 va texnik arxitektura PDF’larida sahifa resurslarida takrorlanuvchi rasmlar mavjud; sahifadagi image-resource soni mustaqil diagrammalar soni emas. Diagramma va jadvallarni sahifa renderi, matn va kontekst bilan birga tekshirish kerak. Hozirgi ko‘rik tanlangan sahifalar bilan cheklangan; barcha 164 sahifa vizual tasdiqdan o‘tdi deb aytilmaydi.
+
+## 8. Dublikat bo‘yicha aniq saqlash qoidasi
+
+- 16 qatlam hujjatidagi bir xil himoya jumlasi 16 qatlamning har birida kontekstli takrorlangan; bu mazmuniy dublikat bo‘lsa ham, qatlamdan uzib tashlanmaydi.
+- Signal hujjatlaridagi muallif satrining takrorlanishi metadata, bilim mazmuni emas.
+- V317 source archive’dagi “Risk Engine nima” va “Fraud Graph nima” ikki juft yozuvi aynan takrorlangan. Canonical javob yozuvi yaratilsa, ikkala original ID/source relation saqlanadi.
+- Active index’dagi population, migration va cloud ifodalarining uch juft takrori til/domain alias yozuvlari bo‘lishi mumkin; ularni faqat mazmun, til va routing vazifasi tekshirilgandan keyin birlashtirish mumkin.
+- ZIP-1’dagi hujjatlar orasidagi o‘xshash matnlar hali to‘liq semantik taqqoslanmagan. Shu sababli bu bosqichda ZIP-1 hujjatlararo “dublikat yo‘q” degan xulosa berilmaydi.
+
+## 9. Integratsiyadan oldingi qabul mezonlari
+
+1. Har bir manba fayli uchun checksum, hajm, sahifa/bo‘lim soni va manba ID bo‘lishi.
+2. Har bir hosila yozuv kamida bitta aniq source locator (PDF sahifa, DOCX paragraf/jadval qatori, PPTX slayd yoki V317 record ID) bilan bog‘lanishi.
+3. Exact duplicate merge qilinganda barcha original IDs va source locators saqlanishi.
+4. Near duplicate yoki ziddiyatli yozuvlar inson ko‘rigisiz o‘chirilmasligi.
+5. General encyclopedia, test dataset, author-only/private, historical/archive va FINZANJIR domain qatlamlari ajratilishi.
+6. Author attestation, independent review, content type, record status va privacy/access scope mustaqil maydonlarda bo‘lishi.
+7. Bilim soni kamaygan ko‘rinsa, merge ledger orqali oldingi yozuvlarning har biri qaysi canonical IDga bog‘langanini ko‘rsatish; manbasiz yo‘qolgan yozuv bo‘lmasligi.
+8. Asl matn va hosila yozuvlar uchun hash/checksum hamda import hisoboti qayta tiklanadigan bo‘lishi.
