@@ -65,11 +65,12 @@ Local test uchun .streamlit/secrets.toml faylini faqat o‘z qurilmangizda yarat
 
 ## 3. Knowledge Base holati
 
-Joriy v4 knowledge_uz.json ichida 113 ta yozuv:
+Joriy v4 knowledge_uz.json ichida 137 ta yozuv:
 - 33 legacy v3 candidate;
 - 16 qatlam katalogi;
 - 22 repository konsepsiya yozuvi;
-- 42 AI arxitekturasi, AI baholash va V317 auditidan tanlangan yozuv.
+- 42 AI arxitekturasi, AI baholash va V317 auditidan tanlangan yozuv;
+- 24 ta 25 bobli integratsiyalashgan kitobning 1–24-boblari bo‘yicha sahifaga bog‘langan qisqa xulosa.
 
 Barcha yozuvlar candidate_not_authoritative. Hozircha authoritative/approved yozuv yo‘q.
 
