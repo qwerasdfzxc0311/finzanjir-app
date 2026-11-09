@@ -202,6 +202,7 @@ object FinzanjirKnowledgeBase {
             database.delete("knowledge_fts", null, null)
             database.delete("knowledge_meta", null, null)
             database.delete("knowledge_state", null, null)
+            database.delete("token_lexicon", null, null)
             val metaInsert = database.compileStatement(
                 """INSERT INTO knowledge_meta(id,body,approval,source_id,source_version,source_section,
                 source_path,record_type,audience,domain,language) VALUES(?,?,?,?,?,?,?,?,?,?,?)"""
@@ -346,7 +347,7 @@ object FinzanjirKnowledgeBase {
                     (authorQuestion || !isAuthorRecord(r))
             }
             found.forEach { gathered.putIfAbsent(it.id, it) }
-            if (gathered.size >= MAX_CANDIDATES) break
+            if (gathered.size >= MAX_CANDIDATES * 2) break
         }
         return gathered.values.toList()
     }
