@@ -127,11 +127,11 @@ object FinzanjirKnowledgeBase {
 
         val baseAnswer = composeAnswer(understood, selected, layerOverview)
         val conflicts = detectConflicts(selected)
-        val modeIntro = if (expertMode) "MUTAXASSIS REJIMI — texnik izohlar va to‘liq manba izi.\\n\\n"
-            else "FUQARO REJIMI — sodda izoh; risk signali aybdorlik isboti emas.\\n\\n"
+        val modeIntro = if (expertMode) "MUTAXASSIS REJIMI — texnik izohlar va to‘liq manba izi.\n\n"
+            else "FUQARO REJIMI — sodda izoh; risk signali aybdorlik isboti emas.\n\n"
         val conflictBlock = if (conflicts.isEmpty()) "" else
-            "\\n\\nMANBALARDA EHTIMOLIY ZIDLIK: bu bayonlar bir-biriga mos kelmasligi mumkin; ularni yashirmadim. Inson tekshiruvi zarur:\\n" +
-                conflicts.joinToString("\\n") { "• " + it }
+            "\n\nMANBALARDA EHTIMOLIY ZIDLIK: bu bayonlar bir-biriga mos kelmasligi mumkin; ularni yashirmadim. Inson tekshiruvi zarur:\n" +
+                conflicts.joinToString("\n") { "• " + it }
         val answer = modeIntro + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
         else baseAnswer) + conflictBlock
@@ -414,7 +414,8 @@ object FinzanjirKnowledgeBase {
         val phrase = normalize(question)
         return rows.mapNotNull { r ->
             val body = normalize(r.text)
-            val hits = terms.count { body.contains(it) }
+            val bodyTerms = body.split(" ").filter { it.length >= 4 }
+            val hits = terms.count { term -> body.contains(term) || bodyTerms.any { editDistanceAtMostOne(term, it) } }
             if (hits == 0) return@mapNotNull null
             val score = (hits * 4 / terms.size.coerceAtLeast(1)) +
                 (if (phrase.length > 4 && body.contains(phrase)) 5 else 0) +
@@ -446,10 +447,10 @@ object FinzanjirKnowledgeBase {
         val negative = listOf("mavjud emas", "ulanmagan", "ishlamaydi", "tasdiqlanmagan", "faol emas", "yo‘q", "yo'q")
         val claims = rows.flatMap { candidate ->
             val record = candidate.record
-            record.text.split(Regex("(?<=[.!?])\\\\s+|\\\\n+")).mapNotNull { sentence ->
+            record.text.split(Regex("(?<=[.!?])\\s+|\\n+")).mapNotNull { sentence ->
                 val normalized = normalize(sentence)
-                val pos = positive.any { normalized.contains(normalize(it)) }
                 val neg = negative.any { normalized.contains(normalize(it)) }
+                val pos = !neg && positive.any { normalized.contains(normalize(it)) }
                 if (pos == neg || sentence.length < 45) null
                 else Triple(record, sentence.trim().take(220), if (pos) 1 else -1)
             }
