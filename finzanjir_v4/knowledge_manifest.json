@@ -79,20 +79,16 @@
     }
   ],
   "known_gaps": [
-    "25 bobli integratsiyalashgan kitobning PDF sahifalari 5–331 (1–24-boblar) 820 matn segmentiga ajratilib import qilindi; 25-bobdagi shaxsiy muallif biografiyasi ataylab chiqarib tashlandi.",
+    "25 bobli integratsiyalashgan kitobning PDF sahifalari 5–331 (1–24-boblar) 820 matn segmentiga ajratildi; 25-bobdagi shaxsiy muallif biografiyasi ataylab chiqarib tashlandi.",
     "PDF matn ekstraksiyasi diagramma, rasm va ayrim murakkab jadval tuzilishini to‘liq saqlamasligi mumkin; muhim vizual sahifalar alohida ko‘rik talab qiladi.",
+    "Asl V14 alohida PDF sifatida sahifa-paragraf crosswalk bilan import qilinmagan; uning asosiy mazmuni integratsiyalashgan kitobning 1–24-boblarida aks etadi.",
     "Original V8 texnik arxitektura hujjati alohida, to‘liq import qilinmagan; integratsiyalashgan kitobdagi texnik arxitektura bo‘limlari mavjud.",
-    "Original FINZANJIR_AI.zip v0.6.0 korpusi Library qidiruvida topilmadi; V317 audit readiness hujjati asl corpus fayllari berilmaganini qayd etadi.",
-    "Asl FINZANJIR_KONSEPSIYA_V14.pdf va V8 texnik arxitektura fayllari alohida, to‘liq sahifa-paragraf importi sifatida hozirgi korpusda yo‘q; ularning ayrim mazmuni integratsiyalashgan kitob xulosalarida aks etadi.",
-    "FINZANJIR_AI.zip v0.6.0 va uning asl finzanjir_knowledge.json, curated_notes.json, SOURCE_REGISTER.csv va FEATURE_REGISTRY.csv fayllari Library qidiruvida topilmadi; audit readiness hujjati ularni berilmagan deb qayd etadi.",
-    "25-bob muallif biografiyasi va shaxsiy hayotiy tafsilotlari ommaviy bilim bazasiga import qilinmadi.",
-    "This is not the full 4,671-record V317 corpus. Only selected, source-described facts from the V317 audit are included.",
-    "Some legacy v3 records do not preserve original section/page/version provenance.",
-    "All current records remain candidate_not_authoritative pending source review and owner/expert approval.",
-    "Retrieval is lexical and synonym-based, not a fully evaluated semantic/vector search system.",
-    "PDF/OCR/table extraction, duplicate/conflict governance UI, authoritative promotion workflow, and retrieval benchmark are not implemented.",
+    "Original FINZANJIR_AI.zip v0.6.0 va uning asl knowledge/source registry fayllari Library qidiruvida topilmadi; V317 audit readiness hujjati ularni berilmagan deb qayd etadi.",
     "V317 auditidagi 4 671 yozuv to‘liq ko‘chirilmagan; faqat AI arxitekturasi va auditdan tanlangan 9 ta yozuv bor.",
-    "V14 ning mazmuni 25 bobli integratsiyalashgan kitobning 1–24-bob sahifalarida aks etadi; asl V14 alohida PDF sifatida sahifa-paragraf crosswalk bilan import qilinmagan."
+    "33 ta legacy v3 yozuvining ayrimlarida asl section/page/version provenance saqlanmagan; ular candidate maqomida qoladi.",
+    "Retrieval lexical va synonym-based; embedding/vector semantic search, R@k/P@k gold benchmark va to‘liq typo/morphology bahosi hali yo‘q.",
+    "PDF diagramma/OCR importi, duplicate/conflict boshqaruv UI, authoritative bilimga tasdiqli promotion workflow va mustaqil retrieval benchmark hali implementatsiya qilinmagan.",
+    "Barcha 957 yozuv candidate_not_authoritative; hozircha authoritative/approved bilim yozuvi yo‘q."
   ],
   "privacy_scope": {
     "public_kb": "Contains project design, requirements, technical concepts and chapter summaries only. Private author biography, sensitive personal history and conversation memory are intentionally excluded.",
