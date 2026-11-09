@@ -1,17 +1,14 @@
 package uz.finzanjir.mobile
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -20,13 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
-import java.security.SecureRandom
 
 private val Navy = Color(0xFF10243D)
 private val Blue = Color(0xFF2878C8)
@@ -38,91 +30,38 @@ private val Muted = Color(0xFF65758B)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { FinzanjirApp(this) }
+        setContent { FinzanjirApp() }
     }
 }
 
 @Composable
-private fun FinzanjirApp(context: Context) {
-    val prefs = remember { context.getSharedPreferences("owner_access", Context.MODE_PRIVATE) }
-    var unlocked by remember { mutableStateOf(false) }
-    var hasPin by remember { mutableStateOf(prefs.contains("hash")) }
+private fun FinzanjirApp() {
     var page by remember { mutableStateOf("Bosh sahifa") }
-    var pin by remember { mutableStateOf("") }
-    var confirm by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
     MaterialTheme(colorScheme = lightColorScheme(primary = Navy, secondary = Teal, background = Canvas, surface = Color.White)) {
         Surface(Modifier.fillMaxSize(), color = Canvas) {
-            if (!unlocked) {
-                OwnerGate(hasPin, pin, confirm, error, { pin = it; error = "" }, { confirm = it; error = "" }) {
-                    if (pin.length < 8) error = "Kamida 8 belgili parol kiriting."
-                    else if (!hasPin && pin != confirm) error = "Parollar mos kelmadi."
-                    else if (!hasPin) {
-                        val salt = ByteArray(16).also { SecureRandom().nextBytes(it) }
-                        prefs.edit().putString("salt", Base64.encodeToString(salt, Base64.NO_WRAP))
-                            .putString("hash", Base64.encodeToString(hashPin(pin, salt), Base64.NO_WRAP)).apply()
-                        hasPin = true; unlocked = true; pin = ""; confirm = ""
-                    } else {
-                        val salt = Base64.decode(prefs.getString("salt", ""), Base64.DEFAULT)
-                        val expected = Base64.decode(prefs.getString("hash", ""), Base64.DEFAULT)
-                        if (hashPin(pin, salt).contentEquals(expected)) unlocked = true else error = "Parol noto‘g‘ri."
-                        pin = ""
-                    }
-                }
-            } else {
-                MainScreen(page, { page = it }, { unlocked = false })
-            }
+            MainScreen(page, { page = it })
         }
-    }
-}
-
-private fun hashPin(pin: String, salt: ByteArray): ByteArray {
-    val spec = PBEKeySpec(pin.toCharArray(), salt, 120000, 256)
-    return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded
-}
-
-@Composable
-private fun OwnerGate(hasPin: Boolean, pin: String, confirm: String, error: String,
-                      onPin: (String) -> Unit, onConfirm: (String) -> Unit, submit: () -> Unit) {
-    Column(Modifier.fillMaxSize().background(Navy).padding(26.dp), verticalArrangement = Arrangement.Center) {
-        Icon(Icons.Default.Shield, null, tint = Color.White, modifier = Modifier.size(48.dp))
-        Spacer(Modifier.height(18.dp))
-        Text("FINZANJIR", color = Color.White, fontSize = 29.sp, fontWeight = FontWeight.ExtraBold)
-        Text("Dalil. Kontekst. Inson nazorati.", color = Color(0xFFCAD8E8), fontSize = 13.sp)
-        Spacer(Modifier.height(30.dp))
-        Text(if (hasPin) "Muallif kirishi" else "Muallif parolini yarating", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold)
-        Text(if (hasPin) "Muallif paneliga kirish uchun parolni kiriting." else "Bu parol ushbu qurilmadagi muallif panelini mahalliy himoya qiladi.", color = Color(0xFFCAD8E8), fontSize = 12.sp, modifier = Modifier.padding(top = 7.dp, bottom = 16.dp))
-        OutlinedTextField(pin, onPin, label = { Text("Parol") }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth())
-        if (!hasPin) {
-            Spacer(Modifier.height(9.dp))
-            OutlinedTextField(confirm, onConfirm, label = { Text("Parolni takrorlang") }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth())
-        }
-        if (error.isNotBlank()) Text(error, color = Color(0xFFFFC1B8), modifier = Modifier.padding(top = 9.dp))
-        Spacer(Modifier.height(18.dp))
-        Button(submit, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text(if (hasPin) "Kirish" else "Parolni saqlash") }
-        Text("Mahalliy prototip himoyasi; production SSO/RBAC emas.", color = Color(0xFF9EB1C6), fontSize = 10.sp, modifier = Modifier.padding(top = 15.dp))
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainScreen(page: String, select: (String) -> Unit, lock: () -> Unit) {
+private fun MainScreen(page: String, select: (String) -> Unit) {
     val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
     Scaffold(
         topBar = {
             TopAppBar(title = { Column {
                 Text("FINZANJIR", color = Navy, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                Text("Muallif ish maydoni · Android prototip", color = Muted, fontSize = 10.sp)
-            } }, actions = { IconButton(onClick = lock) { Icon(Icons.Default.Lock, "Qulflash", tint = Navy) } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Canvas))
+                Text("Ochiq mutaxassislar prototipi · v1", color = Muted, fontSize = 10.sp)
+            } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Canvas))
         },
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
-                val bottom = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam")
+                val bottom = listOf("Bosh sahifa", "Jarayon", "Signallar", "AI yordamchi")
                 bottom.forEachIndexed { i, label ->
                     NavigationBarItem(selected = page == label, onClick = { select(label) },
-                        icon = { Icon(listOf(Icons.Default.Dashboard, Icons.Default.AccountTree, Icons.Default.Bolt, Icons.Default.Layers)[i], null) },
-                        label = { Text(listOf("Bosh", "Jarayon", "Signal", "Qatlam")[i], fontSize = 9.sp) })
+                        icon = { Icon(listOf(Icons.Default.Dashboard, Icons.Default.AccountTree, Icons.Default.Bolt, Icons.Default.Psychology)[i], null) },
+                        label = { Text(listOf("Bosh", "Jarayon", "Signal", "AI")[i], fontSize = 9.sp) })
                 }
             }
         }, containerColor = Canvas
@@ -136,56 +75,100 @@ private fun MainScreen(page: String, select: (String) -> Unit, lock: () -> Unit)
             when (page) {
                 "Bosh sahifa" -> Home { select("Jarayon") }
                 "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
-                    "Manba / bank adapteri — hozircha sintetik",
-                    "Hodisa qabul qilinadi — ID, vaqt, sxema",
-                    "Ma’lumot sifati — missing, eskirish, zidlik",
-                    "16 qatlam tahlili — katalog asosida",
-                    "Signal + dalil + qarshi dalil + unknown",
-                    "Case mezonlari — bitta indikator yetarli emas",
-                    "Case → Human Review → Audit izi"
+                    "1. Hodisa va manba — hozircha namoyish ma’lumotlari sintetik",
+                    "2. Ma’lumot sifati — yetishmayotgan, eskirgan yoki zid ma’lumotlarni belgilash",
+                    "3. 16 qatlam — tegishli talab va nazorat yo‘nalishlarini ko‘rib chiqish",
+                    "4. Signal — kuzatuvni qayd etish; signal aybdorlik hukmi emas",
+                    "5. Dalil va qarshi dalil — tasdiqlovchi hamda rad etuvchi ma’lumotlar",
+                    "6. Rozilik doirasi — qurilma, hisob va aniq o‘tkazma roziligini ajratish",
+                    "7. Case mezonlari — yetarli asos bo‘lsa tekshiruv ishini shakllantirish",
+                    "8. Human Review — vakolatli inson tekshiradi va natijani qayd etadi",
+                    "9. Audit izi — kim, qachon, qaysi manbaga tayanganini saqlash"
                 ))
-                "Signallar" -> InfoList("Signal reyestri", "Signal aybdorlik hukmi yoki yakuniy dalil emas", listOf(
+                "Signallar" -> InfoList("Signal reyestri", "Signal — tekshirish indikatori, yakuniy xulosa emas", listOf(
                     "SIG-DEMO-001 · Qurilma atributi mosligi · kontekst talab qiladi",
                     "SIG-DEMO-002 · Vaqt ketma-ketligi noodatiy · qayta tekshiruv",
-                    "SIG-DEMO-003 · Rozilik doirasi noaniq · unknown",
-                    "SIG-DEMO-004 · Manba ma’lumoti to‘liq emas · DATA_REVIEW"
+                    "SIG-DEMO-003 · Rozilik doirasi noaniq · UNKNOWN",
+                    "SIG-DEMO-004 · Manba ma’lumoti to‘liq emas · DATA_REVIEW",
+                    "Har bir signal uchun manba, vaqt, ishonchlilik, tasdiqlash/rad etish munosabati va noma’lumlar talab qilinadi"
                 ))
-                "16 qatlam" -> InfoList("16 qatlam katalogi", "Katalog mavjudligi implementatsiya qilinganini anglatmaydi", listOf(
-                    "L01 Evidence & Data Provenance","L02 Data Quality & Reliability","L03 Risk & Uncertainty",
-                    "L04 Human Oversight & Correction","L05 Rule & Model Governance","L06 Data Disclosure & Sharing Control",
-                    "L07 Automation Safety & Control","L08 Transaction Chain & Case Correlation",
-                    "L09 Citizen Transparency & Appeal","L10 Privacy & Data Lifecycle","L11 Security Incident Response",
-                    "L12 Knowledge Governance & AI Reliability","L13 Cross-Bank Signal Exchange",
-                    "L14 Fraud Typology & Consent Scope","L15 Case Lifecycle & Auditability","L16 Testing & Performance Validation"
+                "16 qatlam" -> InfoList("16 qatlam katalogi", "Katalog ko‘rsatilishi to‘liq implementatsiya degani emas", listOf(
+                    "L01 Evidence & Data Provenance — dalil kelib chiqishi va manba izi",
+                    "L02 Data Quality & Reliability — ma’lumot sifati va ishonchliligi",
+                    "L03 Risk & Uncertainty — xavf va noaniqlikni baholash",
+                    "L04 Human Oversight & Correction — inson nazorati va tuzatish",
+                    "L05 Rule & Model Governance — qoida va model boshqaruvi",
+                    "L06 Data Disclosure & Sharing Control — ma’lumotni oshkor qilish/almashish nazorati",
+                    "L07 Automation Safety & Control — avtomatlashtirish xavfsizligi",
+                    "L08 Transaction Chain & Case Correlation — tranzaksiya zanjiri va Case bog‘lanishi",
+                    "L09 Citizen Transparency & Appeal — fuqaro shaffofligi va e’tiroz",
+                    "L10 Privacy & Data Lifecycle — maxfiylik va ma’lumot hayot sikli",
+                    "L11 Security Incident Response — xavfsizlik hodisasiga javob",
+                    "L12 Knowledge Governance & AI Reliability — bilim boshqaruvi va AI ishonchliligi",
+                    "L13 Cross-Bank Signal Exchange — banklararo signal almashish",
+                    "L14 Fraud Typology & Consent Scope — firibgarlik turi va rozilik doirasi",
+                    "L15 Case Lifecycle & Auditability — Case hayot sikli va audit",
+                    "L16 Testing & Performance Validation — sinov va samaradorlikni tekshirish"
                 ))
-                "Case" -> InfoList("Case markazi", "Faqat sintetik namuna; bank Case emas", listOf(
+                "Case" -> InfoList("Case markazi", "Sintetik namuna; real bank Case emas", listOf(
                     "CASE-DEMO-001 · CASE_CANDIDATE",
+                    "Tasdiqlovchi dalillar: hali namoyish uchun to‘liq manbali dalil ulanmagan",
+                    "Qarshi dalillar: alohida qayd etilishi shart",
                     "Rozilik: qurilma / hisob / aniq o‘tkazma alohida tekshiriladi",
                     "Unknown: qurilma kimning nazoratida bo‘lgan?",
-                    "Unknown: o‘tkazma aniq tasdiqlanganmi?",
-                    "Unknown: manba dalillari o‘zaro mosmi?"
+                    "Unknown: o‘tkazma aynan qaysi usulda tasdiqlangan?",
+                    "Case ochilishi firibgarlik tasdiqlandi degani emas"
                 ))
-                "Human Review" -> InfoList("Human Review", "Yakuniy qaror inson vakolatida", listOf(
+                "Human Review" -> InfoList("Human Review", "Yakuniy qaror vakolatli insonda qoladi", listOf(
                     "Dalillarni manba, vaqt va ishonchlilik bo‘yicha tekshirish",
                     "Rozilik doirasini alohida aniqlash",
-                    "Noma’lum va qarama-qarshi jihatlarni ko‘rib chiqish",
-                    "Natija: tasdiqlash / rad etish / qo‘shimcha ma’lumot / qayta tekshiruv"
+                    "Qarshi dalillar va muqobil izohlarni ko‘rib chiqish",
+                    "Noma’lum yoki yetishmayotgan ma’lumotlarni qayd etish",
+                    "Natija: tasdiqlash / rad etish / qo‘shimcha ma’lumot / qayta tekshiruv",
+                    "AI tavsiyasi rasmiy qaror o‘rnini bosmaydi"
                 ))
-                "AI yordamchi" -> InfoList("FINZANJIR AI", "AI serveri hali Android ilovaga ulanmagan", listOf(
-                    "Reja: savol → ichki bilim qidiruvi → manba/versiya/maqom → AI → manbali javob",
-                    "Gemini kaliti APK ichiga joylanmaydi; xavfsiz server tomonda saqlanishi kerak",
-                    "AI javobi rasmiy ekspert yoki bank qarori emas"
-                ))
-                else -> InfoList("Cheklovlar", "Prototipning mavjud bo‘lmagan imkoniyatlari bor deb ko‘rsatilmaydi", listOf(
+                "AI yordamchi" -> KnowledgeAssistant()
+                else -> InfoList("Prototip cheklovlari", "Mavjud bo‘lmagan imkoniyatlar bor deb ko‘rsatilmaydi", listOf(
                     "Bank API yoki haqiqiy bank ma’lumotlari ulanmagan",
-                    "Barcha namoyish ma’lumotlari sintetik",
+                    "Namoyish signallari va Case sintetik",
                     "FINZANJIR karta, hisob yoki tranzaksiyani avtomatik bloklamaydi",
                     "Signal va Case aybdorlik hukmi emas",
                     "16 qatlam katalogi to‘liq implementatsiya yoki ekspert tasdig‘i emas",
-                    "Mahalliy parol production autentifikatsiya tizimi emas"
+                    "AI bilim mexanizmi hozircha lokal prototip yozuvlari bilan ishlaydi; to‘liq arxiv importi alohida bajariladi",
+                    "Production xavfsizlik, server RBAC, audit va bank integratsiyalari hali sinovdan o‘tmagan"
                 ))
             }
         }
+    }
+}
+
+@Composable
+private fun KnowledgeAssistant() {
+    var question by remember { mutableStateOf("") }
+    var answer by remember { mutableStateOf<KnowledgeAnswer?>(null) }
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
+        Text("FINZANJIR AI · bilim yordamchisi", color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+        Text("Savol bering. Yordamchi ichki bilim yozuvlaridan mos tushunchalarni topib, sodda izoh va manbani ko‘rsatadi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
+        OutlinedTextField(value = question, onValueChange = { question = it }, modifier = Modifier.fillMaxWidth(),
+            label = { Text("Masalan: Case nima va qachon ochiladi?") }, minLines = 2)
+        Button(onClick = { answer = FinzanjirKnowledgeBase.search(question) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Icon(Icons.Default.Search, null); Spacer(Modifier.width(7.dp)); Text("Bilimlardan izlash")
+        }
+        answer?.let { result ->
+            Card(Modifier.fillMaxWidth().padding(top = 14.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                Column(Modifier.padding(15.dp)) {
+                    Text(result.answer, color = Ink, fontSize = 13.sp, lineHeight = 19.sp)
+                    if (result.sources.isNotEmpty()) {
+                        Text("Manbalar", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 12.dp))
+                        result.sources.forEach { Text("• $it", color = Muted, fontSize = 11.sp) }
+                    }
+                    Text("Holat: ${result.confidence}", color = Blue, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 9.dp))
+                    Text(result.notice, color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 5.dp))
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Text("Bilimlar bazasi: ${FinzanjirKnowledgeBase.VERSION} · ${FinzanjirKnowledgeBase.entries.size} ta strukturali yozuv", color = Muted, fontSize = 10.sp)
     }
 }
 
@@ -216,7 +199,7 @@ private fun Home(open: () -> Unit) {
             }
         }
         Button(open, modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) { Text("Ish jarayonini ko‘rish") }
-        Text("Sintetik namoyish. Real bank aniqligi yoki production tayyorligini isbotlamaydi.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 10.dp))
+        Text("Barcha ekranlar mutaxassislar ko‘rishi uchun ochiq. Namoyish prototipi; real bank aniqligini isbotlamaydi.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 10.dp))
     }
 }
 
@@ -233,14 +216,9 @@ private fun InfoList(title: String, subtitle: String, rows: List<String>) {
         Text(title, color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
         Text(subtitle, color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 13.dp))
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            itemsIndexed(rows) { i, row ->
+            items(rows) { row ->
                 Card(shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                    Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(26.dp).background(Color(0xFFEAF2FA), CircleShape), Alignment.Center) {
-                            Text(if (title == "16 qatlam katalogi") "L%02d".format(i+1) else (i+1).toString(), color = Blue, fontWeight = FontWeight.Bold, fontSize = 9.sp)
-                        }
-                        Text(row, color = Ink, fontSize = 12.sp, modifier = Modifier.padding(start = 11.dp).weight(1f))
-                    }
+                    Text(row, color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.fillMaxWidth().padding(14.dp))
                 }
             }
         }
