@@ -105,7 +105,7 @@ object FinzanjirKnowledgeBase {
         val rows = when {
             layerNumber != null -> exactLayer(database, layerNumber)
             layerOverview -> allLayers(database)
-            authorQuestion -> authorRecords(database)
+            authorQuestion -> authorRecords(database, question)
             else -> retrieve(database, question, expertMode, authorQuestion)
         }.filter { r ->
             val type = r.recordType.lowercase(Locale.ROOT)
@@ -280,14 +280,28 @@ object FinzanjirKnowledgeBase {
             "SELECT m.* FROM knowledge_meta m WHERE m.record_type LIKE '%layer%' OR m.id LIKE 'V4-L%' ORDER BY m.id",
             emptyArray())
 
-    private fun authorRecords(database: SQLiteDatabase): List<Record> =
-        queryMeta(database,
+    private fun authorRecords(database: SQLiteDatabase, question: String): List<Record> {
+        val language = detectLanguage(question)
+        val sourceLanguage = if (language == "uz") "und" else language
+        return queryMeta(database,
             """SELECT m.* FROM knowledge_meta m
-               WHERE m.record_type IN ('author_biography','founder_multilingual_bio')
-                  OR m.approval='author_visible_on_direct_request'
-               ORDER BY CASE WHEN m.approval='author_visible_on_direct_request' THEN 0 ELSE 1 END,
-                        m.id LIMIT 8""",
-            emptyArray())
+               WHERE (m.record_type IN ('author_biography','founder_multilingual_bio')
+                  OR m.approval='author_visible_on_direct_request')
+                 AND (m.language=? OR m.language='und')
+               ORDER BY CASE WHEN m.language=? THEN 0 ELSE 1 END, m.id LIMIT 1""",
+            arrayOf(sourceLanguage, sourceLanguage))
+    }
+
+    private fun detectLanguage(question: String): String {
+        val q = question.lowercase(Locale.ROOT)
+        return when {
+            Regex("[әіңғүұқөһ]").containsMatchIn(q) -> "kk"
+            Regex("[áǵńóúı]").containsMatchIn(q) || q.contains("qaraqalpaq") -> "kaa"
+            Regex("[а-яё]").containsMatchIn(q) && !Regex("[қғңәіңұүөһ]").containsMatchIn(q) -> "ru"
+            Regex("\\\\b(what|who|why|how|english|author)\\\\b").containsMatchIn(q) -> "en"
+            else -> "uz"
+        }
+    }
 
     private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
         val terms = queryTerms(question).take(8)
