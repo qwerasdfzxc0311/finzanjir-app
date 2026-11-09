@@ -517,10 +517,23 @@ object FinzanjirKnowledgeBase {
             r.approval == "author_visible_on_direct_request"
     }
 
+    private fun stemToken(input: String): String {
+        val suffixes = listOf("laring", "lering", "lardan", "lerden", "larning",
+            "ning", "nen", "nan", "dan", "den", "men", "ben", "lar", "ler",
+            "ga", "ge", "qa", "ke", "ni", "nı", "di", "dı", "ti", "tı", "da", "de", "ta", "te")
+        for (suffix in suffixes.sortedByDescending { it.length }) {
+            if (input.endsWith(suffix) && input.length - suffix.length >= 4) {
+                return input.dropLast(suffix.length)
+            }
+        }
+        return input
+    }
+
     private fun queryTerms(value: String): List<String> {
         val stop = setOf("va","yoki","bu","shu","uchun","bilan","ham","nima","qanday","qaysi","haqida","bor","deb","esa","men",
             "the","what","how","does","is","are","and","with","for","about","who","why","это","как","что","для","кто")
-        val base = normalize(value).split(Regex("\\s+")).map { token ->
+        val base = normalize(value).split(Regex("\\s+")).map { rawToken ->
+            val token = stemToken(rawToken)
             when (token) {
                 "qatlamlar","qatlamning","qatlamga","qatlamni","qatlamlardi","qatlamlarnı" -> "qatlam"
                 "signallar","signalni","signali" -> "signal"
@@ -537,7 +550,9 @@ object FinzanjirKnowledgeBase {
             "finzanjir" to listOf("finzanjir","moliyaviy","zanjir"),
             "qaraqalpaq" to listOf("qaraqalpaq","qoraqalpoq","karakalpak"),
             "qoraqalpoq" to listOf("qoraqalpoq","qaraqalpaq","karakalpak"),
-            "aqsha" to listOf("aqsha","pul","money","qarji"),
+            "aqsha" to listOf("aqsha","aqsham","pul","money","qarji"),
+            "kartam" to listOf("kartam","karta","card"),
+            "jogaldi" to listOf("jogaldi","yoqoldi","yoqolgan","lost","joq"),
             "yoqoldi" to listOf("yoqoldi","yoqolgan","lost","joq"),
             "firibgar" to listOf("firibgar","aldaw","aldash"),
             "aldaw" to listOf("aldaw","firibgar","firibgarlik"),
@@ -571,6 +586,7 @@ object FinzanjirKnowledgeBase {
                     'ф' -> "f"; 'х' -> "x"; 'ц' -> "ts"; 'ч' -> "ch"; 'ш' -> "sh"; 'щ' -> "sh"
                     'ъ', 'ь' -> ""; 'ы' -> "i"; 'э' -> "e"; 'ю' -> "yu"; 'я' -> "ya"
                     'ў' -> "o"; 'қ' -> "q"; 'ғ' -> "g"; 'ҳ' -> "h"
+                    'á' -> "a"; 'ǵ' -> "g"; 'ń' -> "n"; 'ó' -> "o"; 'ú' -> "u"; 'ı' -> "i"
                     '’', 'ʻ', '\u0060', 'ʼ' -> "'"
                     else -> c.toString()
                 })
