@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "knowledge_base_version": "0.2.0",
+  "branch": "finzanjir-v4-unified-workflow-uz",
+  "updated_date": "2026-11-09",
+  "record_count": 113,
+  "approval_policy": "All records are candidate_not_authoritative. No record is promoted to authoritative knowledge by this prototype.",
+  "records_by_type": {
+    "legacy_candidate": 33,
+    "layer_catalog_candidate": 16,
+    "project_concept_candidate": 22,
+    "ai_architecture_candidate": 42
+  },
+  "sources": [
+    {
+      "source_id": "SRC-V317-LEGACY-KB",
+      "name": "Legacy v3 Uzbek knowledge JSON",
+      "path": "finzanjir_v3/knowledge_uz.json",
+      "version": "V317 legacy import",
+      "limitations": "Original per-record section/version provenance was not preserved in that JSON."
+    },
+    {
+      "source_id": "SRC-V4-LAYER-CATALOG",
+      "name": "FINZANJIR v4 16-layer catalogue",
+      "path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+      "version": "V1",
+      "limitations": "Catalogue rows describe requirements and intended controls, not verified implementation."
+    },
+    {
+      "source_id": "SRC-V4-ARCH",
+      "name": "FINZANJIR v4 architecture blueprint",
+      "path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+      "version": "v4 repository snapshot",
+      "limitations": "Project architecture proposal; not proof of production behavior."
+    },
+    {
+      "source_id": "SRC-AI-ARCH-V1",
+      "name": "FINZANJIR AI internal architecture",
+      "path": "Library PDF extracts: FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "V1 / V14 source sections",
+      "limitations": "Design proposal and explanation; not an APK implementation audit."
+    },
+    {
+      "source_id": "SRC-AI-KB-V1",
+      "name": "FINZANJIR knowledge base and memory architecture",
+      "path": "Library PDF extracts: FINZANJIR_Yagona_Tizim_Kitobi_2026.pdf",
+      "version": "V1",
+      "limitations": "Logical governance proposal; not a deployed knowledge vault."
+    },
+    {
+      "source_id": "SRC-AI-EVAL-V1",
+      "name": "FINZANJIR AI reliability and independent evaluation",
+      "path": "Library PDF extracts: FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "V1",
+      "limitations": "Evaluation methodology proposal; no target metrics are claimed as achieved."
+    },
+    {
+      "source_id": "SRC-V317-AUDIT",
+      "name": "V317 AI corpus audit",
+      "path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv",
+      "version": "2026-10-29",
+      "limitations": "Static audit snapshot; counts are not an approved/active knowledge count."
+    },
+    {
+      "source_id": "SRC-V4-CODE",
+      "name": "FINZANJIR v4 AI source implementation",
+      "path": "finzanjir_v4/ai_assistant.py and app.py",
+      "version": "v4 repository snapshot",
+      "limitations": "Source-level implementation only; live Gemini and Google Search deployment still requires Secrets and runtime validation."
+    }
+  ],
+  "known_gaps": [
+    "The full V14, V8, 16-layer deep explanation, and original FINZANJIR_AI v0.6.0 ZIP have not been fully ingested into this JSON corpus.",
+    "This is not the full 4,671-record V317 corpus. Only selected, source-described facts from the V317 audit are included.",
+    "Some legacy v3 records do not preserve original section/page/version provenance.",
+    "All current records remain candidate_not_authoritative pending source review and owner/expert approval.",
+    "Retrieval is lexical and synonym-based, not a fully evaluated semantic/vector search system.",
+    "PDF/OCR/table extraction, duplicate/conflict governance UI, authoritative promotion workflow, and retrieval benchmark are not implemented."
+  ],
+  "privacy_scope": {
+    "public_kb": "Contains project concepts and technical design only; private author biography and personal conversation memory are intentionally excluded.",
+    "user_queries": "The v4 AI interface does not persist user questions in its project knowledge database.",
+    "external_provider": "When used, the question and selected KB excerpts are sent to Gemini; Google Search grounding may query public web sources."
+  }
+}
