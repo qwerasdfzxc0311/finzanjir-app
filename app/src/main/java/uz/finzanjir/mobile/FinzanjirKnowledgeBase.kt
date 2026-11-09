@@ -373,7 +373,10 @@ object FinzanjirKnowledgeBase {
             val chosen = sentences.map { s -> s to terms.count { normalize(s).contains(it) } }
                 .filter { it.second > 0 }.sortedByDescending { it.second }
                 .take(if (index == 0) 3 else 2).map { it.first }
-            val body = if (chosen.isNotEmpty()) chosen.joinToString(" ") else r.text.take(900)
+            var body = if (chosen.isNotEmpty()) chosen.joinToString(" ") else r.text.take(900)
+            if (r.recordType == "author_biography") {
+                body = body.replace("Smaylov Salamat Tangrbergen uli", "Salamat Smaylov Tangrbergen uli")
+            }
             (if (index == 0) "" else "\n\nBog‘liq manba: ") + body
         }.joinToString("").take(5200)
     }
