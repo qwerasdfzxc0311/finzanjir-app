@@ -14,7 +14,7 @@ class KnowledgeAssistantTests(unittest.TestCase):
         ids = [row["id"] for row in rows]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertGreaterEqual(len(rows), 70)
-        self.assertTrue(all(row.get("source_path") for row in rows))
+        self.assertTrue(all(row.get("source_path") and row.get("source_id") and row.get("source_version") and row.get("source_section") for row in rows))
 
     def test_all_sixteen_layer_cards_are_retrievable(self):
         for number in range(1, 17):
@@ -28,6 +28,19 @@ class KnowledgeAssistantTests(unittest.TestCase):
         self.assertTrue(latin)
         self.assertTrue(cyrillic)
         self.assertEqual(latin[0]["id"], cyrillic[0]["id"])
+
+
+    def test_broad_sixteen_layer_question_returns_all_layers(self):
+        hits = ai.retrieve("FINZANJIR 16 qatlamlar qanday ishlaydi?", limit=18)
+        layer_ids = {item["id"] for item in hits if item["record_type"] == "layer_catalog_candidate"}
+        self.assertEqual(len(layer_ids), 16)
+        prompt = ai.build_prompt("FINZANJIR 16 qatlamlar qanday ishlaydi?", hits, False)
+        for number in range(1, 17):
+            self.assertIn(f"V4-L{number:02d}", prompt)
+
+    def test_knowledge_status_never_promotes_candidates(self):
+        rows = ai.load_knowledge()
+        self.assertTrue(all(row.get("approval") == "candidate_not_authoritative" for row in rows))
 
     def test_core_no_blocking_boundary_is_retrievable(self):
         hits = ai.retrieve("FINZANJIR kartani avtomatik bloklaydimi?", limit=8)
