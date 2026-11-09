@@ -5,7 +5,8 @@ Ishchi branch: `finzanjir-android-v1`. Asosiy FINZANJIR V3/V4 branchlari o‘zga
 ## Android foundation
 - Kotlin + Jetpack Compose.
 - Cloud build: GitHub Actions, JDK 17, Gradle 8.9.
-- Ekranlar: Bosh sahifa, Jarayon, Signallar, 16 qatlam, Case, Human Review, AI yordamchi, Cheklovlar.
+- Ekranlar: Bosh sahifa, Jarayon, Signallar, 16 qatlam, Case, Human Review, AI yordamchi, Cheklovlar. Barcha ekranlar umumiy navigatsiyadan ochiladi.
+- Alohida muallif-only panel yo‘q; barcha bo‘limlar va bilim qidiruvi tashrif buyuruvchilar uchun ochiq.
 - Barcha ekranlar yuqori bo‘lim navigatsiyasidan ochiladi; pastki navigatsiya asosiy to‘rtta bo‘limni ham beradi.
 - API kalitlari APK yoki repository ichiga joylanmaydi.
 

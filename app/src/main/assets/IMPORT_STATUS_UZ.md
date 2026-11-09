@@ -3,12 +3,15 @@
 ## Joriy import
 Android ilovasi lokal assets ichidan **1,121 ta strukturali yozuv** o‘qiydi:
 - V4 korpusi: 957 yozuv;
-- FINZANJIR V14 original PDF: 164 sahifa yozuvi.
+- FINZANJIR V14 original PDF: 164 sahifa yozuvi (1–164).
 
-Har bir yozuvda mavjud bo‘lgan joylarda ID, matn, approval maqomi, source_id, source_version, source_section, source_path va record_type saqlanadi. V14 yozuvlari original PDF sahifa raqami bilan bog‘langan.
+Har bir V14 sahifa yozuvida original sahifa raqami, source_id, source_version, source_section, source_path va candidate maqomi saqlanadi.
+
+## Ochiq prototip ko‘rinishi
+Alohida, faqat muallifga ko‘rinadigan panel mavjud emas. Barcha bo‘limlar va bilim qidiruvi prototipga kirgan mutaxassislar/ziyirchilar uchun bir xil ko‘rinadi. V14dagi muallif va loyiha tarixi sahifalari ham alohida muallif paneliga ajratilmagan; ular manbasi bilan bilim korpusida qidiriladi.
 
 ## Maqom
-Barcha yozuvlar `candidate_not_authoritative`. Ular bank tomonidan tasdiqlangan qoida, ekspert xulosasi yoki amalda ishlayotgan mexanizm deb talqin qilinmaydi. Qidiruv balli faktik ishonchlilik ko‘rsatkichi emas.
+Barcha yozuvlar `candidate_not_authoritative`. Ular bank tomonidan tasdiqlangan qoida, ekspert xulosasi yoki amalda ishlayotgan mexanizm deb talqin qilinmaydi. Qidiruv mosligi faktik ishonchlilik yoki ekspert tasdig‘i emas.
 
 ## Manbalar va bo‘shliqlar
 - V4 manbalar reyestri va 16 qatlam katalogi import qilingan.

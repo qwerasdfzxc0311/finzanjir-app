@@ -101,7 +101,7 @@
     "V8 bank texnik arxitektura PDFsi alohida to‘liq manba sifatida import qilinmagan; mavjud V4 kitobdagi havola va qisqa mazmun uning o‘rnini bosmaydi."
   ],
   "privacy_scope": {
-    "public_kb": "Contains project design, requirements, technical concepts and chapter summaries only. Private author biography, sensitive personal history and conversation memory are intentionally excluded.",
+    "public_kb": "Contains source-attributed project concepts, requirements, architecture and author/project-history passages from all 164 V14 pages. There is no author-only panel: all prototype sections and knowledge-search results are visible to visitors. All imported records remain candidate_not_authoritative; source attribution does not mean external verification.",
     "user_queries": "The v4 AI interface does not persist user questions in its project knowledge database.",
     "external_provider": "Each Gemini Interactions API request sets store=false to disable server-side Interaction storage. The user question and selected knowledge snippets are still transmitted to Google for processing; Google Search grounding may query public web sources. Provider service/security processing remains subject to Google's terms."
   }
