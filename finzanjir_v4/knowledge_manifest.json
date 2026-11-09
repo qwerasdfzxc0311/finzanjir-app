@@ -80,6 +80,6 @@
   "privacy_scope": {
     "public_kb": "Contains project concepts and technical design only; private author biography and personal conversation memory are intentionally excluded.",
     "user_queries": "The v4 AI interface does not persist user questions in its project knowledge database.",
-    "external_provider": "When used, the question and selected KB excerpts are sent to Gemini; Google Search grounding may query public web sources."
+    "external_provider": "Each Gemini Interactions API request sets store=false to disable server-side Interaction storage. The user question and selected knowledge snippets are still transmitted to Google for processing; Google Search grounding may query public web sources. Provider service/security processing remains subject to Google's terms."
   }
 }
