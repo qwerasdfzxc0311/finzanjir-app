@@ -411,10 +411,8 @@ def render_event_detail(event_id: str) -> None:
     else:
         st.warning("Ushbu hodisa bo‘yicha sintetik Case ochilmagan.")
 
-# Navigation contains viewing destinations only. No public form, save, edit, or decision action.
-st.sidebar.markdown("## 🛡️ FINZANJIR")
-st.sidebar.caption("Yagona ish jarayoni · ochiq namoyish")
-st.sidebar.markdown("---")
+# Top-level navigation stays visible on desktop and mobile.
+# It changes the displayed page only; no public data or settings can be edited.
 pages = [
     "Bosh sahifa",
     "Yagona ish jarayoni",
@@ -426,17 +424,18 @@ pages = [
     "Sintetik sinovlar",
     "Atamalar va cheklovlar",
 ]
-page = st.sidebar.radio("BO‘LIMLAR", pages, key="public_navigation")
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Namoyish holati**")
-st.sidebar.markdown("🟡 Faqat sintetik ma’lumot")
-st.sidebar.markdown("🔒 Ommaviy ko‘rish rejimi")
-st.sidebar.markdown("⛔ Avtomatik bloklash yo‘q")
-st.sidebar.caption("v4 · read-only demo")
 
 st.markdown('<div class="brand">FINZANJIR</div>', unsafe_allow_html=True)
 st.markdown('<div class="subbrand">Firibgarlik xavfini tekshirish uchun signal, dalil va inson ko‘rigini bir jarayonga bog‘lovchi konsepsiya</div>', unsafe_allow_html=True)
 st.markdown("")
+nav_col, mode_col = st.columns([1.25, 1])
+with nav_col:
+    page = st.selectbox("BO‘LIMNI TANLANG", pages, key="public_navigation")
+with mode_col:
+    st.markdown(
+        '<div class="callout"><b>Ochiq ko‘rish rejimi</b><br><span class="small">Faqat sintetik ma’lumot · tahrirlash yo‘q · avtomatik bloklash yo‘q</span></div>',
+        unsafe_allow_html=True,
+    )
 render_readonly_notice()
 
 if page == "Bosh sahifa":
