@@ -16,7 +16,7 @@ KB_PATH = Path(__file__).with_name("knowledge_uz.json")
 MAX_QUESTION_CHARS = 1200
 MAX_KB_HITS = 18
 MAX_CONTEXT_CHARS = 12000
-DEFAULT_MODEL = "gemini-3.6-flash"
+DEFAULT_MODEL = "gemini-3.8-flash"
 
 _CYRILLIC_TO_LATIN = str.maketrans({
     "а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"yo","ж":"j","з":"z",
@@ -270,6 +270,7 @@ def answer_question(
             model=str(model or DEFAULT_MODEL),
             input=prompt,
             tools=tools,
+            store=False,
         )
         text = str(_get(interaction, "output_text", "") or "").strip()
         if not text:
