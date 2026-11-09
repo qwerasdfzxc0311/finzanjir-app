@@ -126,9 +126,15 @@ object FinzanjirKnowledgeBase {
         if (selected.isEmpty()) return insufficient(count(context))
 
         val baseAnswer = composeAnswer(understood, selected, layerOverview)
-        val answer = if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
+        val conflicts = detectConflicts(selected)
+        val modeIntro = if (expertMode) "MUTAXASSIS REJIMI — texnik izohlar va to‘liq manba izi.\\n\\n"
+            else "FUQARO REJIMI — sodda izoh; risk signali aybdorlik isboti emas.\\n\\n"
+        val conflictBlock = if (conflicts.isEmpty()) "" else
+            "\\n\\nMANBALARDA EHTIMOLIY ZIDLIK: bu bayonlar bir-biriga mos kelmasligi mumkin; ularni yashirmadim. Inson tekshiruvi zarur:\\n" +
+                conflicts.joinToString("\\n") { "• " + it }
+        val answer = modeIntro + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
-        else baseAnswer
+        else baseAnswer) + conflictBlock
         val sources = selected.map { c ->
             val r = c.record
             r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
@@ -305,6 +311,7 @@ object FinzanjirKnowledgeBase {
     private fun detectLanguage(question: String): String {
         val q = question.lowercase(Locale.ROOT)
         return when {
+            q.contains("qaraqalpaq") || q.contains("qoraqalpoq") || q.contains("қарақалпақ") -> "kaa"
             Regex("[әіңғүұқөһ]").containsMatchIn(q) -> "kk"
             Regex("[áǵńóúı]").containsMatchIn(q) || q.contains("qaraqalpaq") -> "kaa"
             Regex("[а-яё]").containsMatchIn(q) && !Regex("[қғңәіңұүөһ]").containsMatchIn(q) -> "ru"
@@ -347,7 +354,7 @@ object FinzanjirKnowledgeBase {
                 val min = (term.length - 1).coerceAtLeast(4)
                 val max = term.length + 1
                 val candidates = ArrayList<String>()
-                database.rawQuery("SELECT term FROM token_lexicon WHERE length(term) BETWEEN ? AND ? LIMIT 600", arrayOf(min.toString(), max.toString())).use { c ->
+                database.rawQuery("SELECT term FROM token_lexicon WHERE substr(term,1,1)=substr(?,1,1) AND length(term) BETWEEN ? AND ? LIMIT 1200", arrayOf(term, min.toString(), max.toString())).use { c ->
                     while (c.moveToNext()) candidates += c.getString(0)
                 }
                 candidates.asSequence()
@@ -432,6 +439,35 @@ object FinzanjirKnowledgeBase {
             }
             (if (index == 0) "" else "\n\nBog‘liq manba: ") + body
         }.joinToString("").take(5200)
+    }
+
+    private fun detectConflicts(rows: List<Candidate>): List<String> {
+        val positive = listOf("mavjud", "ulanadi", "ishlaydi", "tasdiqlangan", "faol", "bor")
+        val negative = listOf("mavjud emas", "ulanmagan", "ishlamaydi", "tasdiqlanmagan", "faol emas", "yo‘q", "yo'q")
+        val claims = rows.flatMap { candidate ->
+            val record = candidate.record
+            record.text.split(Regex("(?<=[.!?])\\\\s+|\\\\n+")).mapNotNull { sentence ->
+                val normalized = normalize(sentence)
+                val pos = positive.any { normalized.contains(normalize(it)) }
+                val neg = negative.any { normalized.contains(normalize(it)) }
+                if (pos == neg || sentence.length < 45) null
+                else Triple(record, sentence.trim().take(220), if (pos) 1 else -1)
+            }
+        }
+        val conflicts = ArrayList<String>()
+        for (i in claims.indices) for (j in i + 1 until claims.size) {
+            val a = claims[i]; val b = claims[j]
+            if (a.third == b.third || a.first.sourceId == b.first.sourceId) continue
+            val at = normalize(a.second).split(" ").filter { it.length > 3 }.toSet()
+            val bt = normalize(b.second).split(" ").filter { it.length > 3 }.toSet()
+            val common = at.intersect(bt).size
+            val similarity = common.toDouble() / at.union(bt).size.coerceAtLeast(1)
+            if (common >= 3 && similarity >= 0.28) {
+                conflicts += "${a.first.sourceId}: “${a.second}” ↔ ${b.first.sourceId}: “${b.second}”"
+                if (conflicts.size >= 3) return conflicts
+            }
+        }
+        return conflicts.distinct()
     }
 
     private fun understandQuery(question: String): String {
