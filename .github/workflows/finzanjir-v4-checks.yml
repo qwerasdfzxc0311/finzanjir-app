@@ -59,6 +59,7 @@ jobs:
           assistant = Path("finzanjir_v4/ai_assistant.py").read_text(encoding="utf-8")
           knowledge = Path("finzanjir_v4/knowledge_uz.json").read_text(encoding="utf-8")
           manifest = Path("finzanjir_v4/knowledge_manifest.json").read_text(encoding="utf-8")
+          requirements = Path("requirements.txt").read_text(encoding="utf-8")
           forbidden = (
               "sqlite3", "save_feedback(", "review_case(", "update_case_status(",
               "delete_case(", "st.data_editor(", "st.file_uploader("
