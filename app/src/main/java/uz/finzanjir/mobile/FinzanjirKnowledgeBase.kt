@@ -533,7 +533,7 @@ object FinzanjirKnowledgeBase {
 
     private fun queryTerms(value: String): List<String> {
         val stop = setOf("va","yoki","bu","shu","uchun","bilan","ham","nima","qanday","qaysi","haqida","bor","deb","esa","men",
-            "the","what","how","does","is","are","and","with","for","about","who","why","это","как","что","для","кто")
+            "the","what","how","does","is","are","and","with","for","about","who","why","это","как","что","для","кто","ne","kerek","qalay","islew")
         val base = normalize(value).split(Regex("\\s+")).map { rawToken ->
             val token = stemToken(rawToken)
             when (token) {
@@ -562,6 +562,8 @@ object FinzanjirKnowledgeBase {
             "aldaw" to listOf("aldaw","firibgar","firibgarlik"),
             "qorgaw" to listOf("qorgaw","himoya","protect"),
             "qalay" to listOf("qalay","qanday","how"),
+            "graf" to listOf("graf","graph","fraud"),
+            "isley" to listOf("isley","islew","ishlash","work"),
             "fraudgraph" to listOf("fraud","graph","firibgar","graf"),
             "fraud" to listOf("fraud","firibgar"), "graph" to listOf("graph","graf","boglanish"),
             "recal" to listOf("recalibration","kalibratsiya","kalibrlash"),
