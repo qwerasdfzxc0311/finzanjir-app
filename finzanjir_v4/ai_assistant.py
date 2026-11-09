@@ -167,7 +167,7 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
                     selected.append(item)
             scored = selected
 
-    return [    return [
+    return [
         {
             "id": row["id"],
             "text": row["text"],
