@@ -52,7 +52,7 @@ Muhim: bu 113 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FI
 
 ## 5. Gemini va Google Search
 
-- SDK: Google tomonidan tavsiya etilgan google-genai.
+- SDK: Google tomonidan tavsiya etilgan google-genai 2.3.0 yoki undan yangi; Interactions API shu versiyadan boshlab mavjud.
 - Model default: gemini-3.6-flash; Streamlit Secrets orqali almashtirilishi mumkin.
 - Google Search: Gemini API built-in grounding tool; alohida checkbox bilan yoqiladi.
 - Grounding manbalari API javobidan olinadi; manba qaytmasa, UI buni ochiq ko‘rsatadi.
@@ -81,12 +81,12 @@ Sessiya uchun 5 ta so‘rov chegarasi faqat yumshoq UI nazorati. Session yangila
 
 ## 7. Maxfiylik va ma’lumot oqimi
 
-Gemini ishlatilganda foydalanuvchi savoli va qidiruvdan topilgan ichki bilim parchalari Google Gemini API ga yuboriladi. Google Search yoqilsa, Gemini qidiruv so‘rovlarini Google Search orqali bajarishi mumkin.
+Gemini ishlatilganda foydalanuvchi savoli va qidiruvdan topilgan ichki bilim parchalari Google Gemini API ga yuboriladi. Har bir Interactions API chaqiruvida store=false beriladi: Google hujjatlariga ko‘ra bu server-side Interaction obyektini saqlashni o‘chiradi. Google Search yoqilsa, Gemini qidiruv so‘rovlarini Google Search orqali bajarishi mumkin.
 
 Shu sabab:
 - Haqiqiy mijoz ma’lumoti, karta raqami, hisob raqami, PIN, CVV/CVC, OTP, parol, bank siri yoki shaxsiy identifikatorni AI oynasiga kiritmaslik kerak.
 - Ilova savol-javobni o‘zining loyiha ma’lumotlar bazasiga saqlamaydi; natija doimiy knowledge bazasiga yozilmaydi.
-- Streamlit hosting va Google providerning o‘z data processing/logging siyosati ilova kodining nazoratidan tashqarida; “hech qayerda saqlanmaydi” deb va’da qilinmaydi.
+- store=false provider tomonidan Interaction resursini saqlashni o‘chiradi, lekin providerning xizmat ko‘rsatish, xavfsizlik va qonuniy data processing amaliyotini yo‘q qilmaydi. Streamlit hosting va Google providerning o‘z data processing siyosati ilova kodining nazoratidan tashqarida; “hech qayerda saqlanmaydi” deb va’da qilinmaydi.
 - V4 ommaviy sahifasiga shaxsiy muallif biografiyasi, shaxsiy suhbat xotirasi yoki maxfiy hujjatlar import qilinmaydi.
 
 ## 8. Prompt injection va tashqi manba xavfi
