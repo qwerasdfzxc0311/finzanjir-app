@@ -133,6 +133,26 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
             if item[2]["id"] not in seen_ids and len(selected) < 19:
                 selected.append(item)
         scored = selected
+    else:
+        asks_project_overview = (
+            ("finzanjir" in query_set and any(term in normalized_question for term in ("nima", "haqida", "maqsad", "mohiyat", "umumiy")))
+            or ("loyiha haqida" in normalized_question)
+        )
+        if asks_project_overview:
+            priority_ids = {
+                "BOOK25-CH01", "BOOK25-CH02", "BOOK25-CH03",
+                "V4-CORE-001", "V4-CORE-002", "V4-CORE-003", "V4-CORE-007",
+            }
+            selected = []
+            seen_ids = set()
+            for row in rows:
+                if row.get("id") in priority_ids:
+                    selected.append((100.0, 1.0, row, ["project_overview"]))
+                    seen_ids.add(row["id"])
+            for item in scored:
+                if item[2]["id"] not in seen_ids and len(selected) < 14:
+                    selected.append(item)
+            scored = selected
 
     return [
         {
