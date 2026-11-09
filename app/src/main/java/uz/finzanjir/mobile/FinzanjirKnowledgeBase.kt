@@ -56,7 +56,7 @@ object FinzanjirKnowledgeBase {
         SQLiteOpenHelper(context.applicationContext, DB_NAME, null, DB_VERSION) {
         override fun onCreate(db: SQLiteDatabase) {
             db.execSQL("""CREATE TABLE knowledge_meta(
-                _id INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, approval TEXT NOT NULL,
+                _id INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, body TEXT NOT NULL, approval TEXT NOT NULL,
                 source_id TEXT NOT NULL, source_version TEXT NOT NULL, source_section TEXT NOT NULL,
                 source_path TEXT NOT NULL, record_type TEXT NOT NULL, audience TEXT NOT NULL,
                 domain TEXT NOT NULL, language TEXT NOT NULL
@@ -182,8 +182,8 @@ object FinzanjirKnowledgeBase {
             database.delete("knowledge_meta", null, null)
             database.delete("knowledge_state", null, null)
             val metaInsert = database.compileStatement(
-                """INSERT INTO knowledge_meta(id,approval,source_id,source_version,source_section,
-                source_path,record_type,audience,domain,language) VALUES(?,?,?,?,?,?,?,?,?,?)"""
+                """INSERT INTO knowledge_meta(id,body,approval,source_id,source_version,source_section,
+                source_path,record_type,audience,domain,language) VALUES(?,?,?,?,?,?,?,?,?,?,?)"""
             )
             val ftsInsert = database.compileStatement(
                 "INSERT INTO knowledge_fts(docid,search_text) VALUES(?,?)"
@@ -195,7 +195,7 @@ object FinzanjirKnowledgeBase {
                     val r = readRecord(reader)
                     if (r.id.isBlank() || r.text.isBlank()) continue
                     metaInsert.clearBindings()
-                    listOf(r.id,r.approval,r.sourceId,r.sourceVersion,r.sourceSection,r.sourcePath,
+                    listOf(r.id,r.text,r.approval,r.sourceId,r.sourceVersion,r.sourceSection,r.sourcePath,
                         r.recordType,r.audience,r.domain,r.language).forEachIndexed { i, value ->
                         metaInsert.bindString(i + 1, value)
                     }
@@ -252,19 +252,20 @@ object FinzanjirKnowledgeBase {
     }
 
     private fun readScalar(reader: JsonReader): String = when (reader.peek()) {
-        JsonToken.STRING, JsonToken.NUMBER, JsonToken.BOOLEAN -> reader.nextString()
+        JsonToken.STRING, JsonToken.NUMBER -> reader.nextString()
+        JsonToken.BOOLEAN -> reader.nextBoolean().toString()
         JsonToken.NULL -> { reader.nextNull(); "" }
         else -> { reader.skipValue(); "" }
     }
 
     private fun exactLayer(database: SQLiteDatabase, layer: Int): List<Record> {
         val id = "V4-L%02d".format(Locale.ROOT, layer)
-        return queryMeta(database, "SELECT m.*, f.search_text AS text FROM knowledge_meta m JOIN knowledge_fts f ON m._id=f.docid WHERE m.id=?", arrayOf(id))
+        return queryMeta(database, "SELECT m.* FROM knowledge_meta m WHERE m.id=?", arrayOf(id))
     }
 
     private fun allLayers(database: SQLiteDatabase): List<Record> =
         queryMeta(database,
-            "SELECT m.*, f.search_text AS text FROM knowledge_meta m JOIN knowledge_fts f ON m._id=f.docid WHERE m.record_type LIKE '%layer%' OR m.id LIKE 'V4-L%' ORDER BY m.id",
+            "SELECT m.* FROM knowledge_meta m WHERE m.record_type LIKE '%layer%' OR m.id LIKE 'V4-L%' ORDER BY m.id",
             emptyArray())
 
     private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
@@ -276,7 +277,7 @@ object FinzanjirKnowledgeBase {
         )
         for (expression in expressions) {
             val found = queryMeta(database,
-                """SELECT m.*, f.search_text AS text FROM knowledge_fts f
+                """SELECT m.* FROM knowledge_fts f
                    JOIN knowledge_meta m ON m._id=f.docid
                    WHERE knowledge_fts MATCH ? LIMIT $MAX_CANDIDATES""",
                 arrayOf(expression)).filter { r ->
@@ -297,7 +298,7 @@ object FinzanjirKnowledgeBase {
                 rows += Record(
                     rowId = c.getLong(c.getColumnIndexOrThrow("_id")),
                     id = c.getString(c.getColumnIndexOrThrow("id")),
-                    text = c.getString(c.getColumnIndexOrThrow("text")),
+                    text = c.getString(c.getColumnIndexOrThrow("body")),
                     approval = c.getString(c.getColumnIndexOrThrow("approval")),
                     sourceId = c.getString(c.getColumnIndexOrThrow("source_id")),
                     sourceVersion = c.getString(c.getColumnIndexOrThrow("source_version")),
