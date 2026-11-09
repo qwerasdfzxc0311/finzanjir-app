@@ -163,14 +163,14 @@ private fun KnowledgeAssistant() {
     }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("FINZANJIR AI · bilim yordamchisi", color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
-        Text("Savol bering. Yordamchi ichki bilim yozuvlaridan mos tushunchalarni topib, sodda izoh va manbani ko‘rsatadi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
+        Text("O‘zbekcha va qoraqalpoqcha savollar, oddiy yozuv xatolari va atama variantlari bilan ishlashga mo‘ljallangan. Bir nechta hujjat dalillari manbalari bilan birlashtiriladi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 8.dp)) {
             FilterChip(selected = !expertMode, onClick = { expertMode = false }, label = { Text("Fuqaro") })
             FilterChip(selected = expertMode, onClick = { expertMode = true }, label = { Text("Mutaxassis") })
         }
         Text(
-            if (expertMode) "Mutaxassis ko‘rinishi: texnik, qatlamlar, bank integratsiyasi va tarixiy loyiha manbalari ham qidiriladi. Bu demo ko‘rinish, autentifikatsiya emas."
-            else "Fuqaro ko‘rinishi: umumiy konsepsiya va fuqaro xavfsizligiga oid bilimlar qidiriladi.",
+            if (expertMode) "Mutaxassis rejimi: texnik tafsilotlar, manba versiyasi, hujjat maqomi va ehtimoliy ziddiyatlar. Bu demo ko‘rinish, autentifikatsiya emas."
+            else "Fuqaro rejimi: sodda izoh, asosiy tushunchalar va xavfsizlikka oid ma’lumotlar. Texnik atamalar qisqacha tushuntiriladi.",
             color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(value = question, onValueChange = { question = it }, modifier = Modifier.fillMaxWidth(),
