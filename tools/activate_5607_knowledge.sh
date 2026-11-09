@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "\${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE_JSON="\${SOURCE_JSON:-}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SOURCE_JSON="${SOURCE_JSON:-}"
 TARGET="$ROOT/app/src/main/assets/finzanjir_knowledge.json"
 MANIFEST="$ROOT/app/src/main/assets/knowledge_manifest.json"
 EXPECTED_COUNT=5607
