@@ -105,10 +105,10 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                     "L10 Privacy & Data Lifecycle — maxfiylik va ma’lumot hayot sikli",
                     "L11 Security Incident Response — xavfsizlik hodisasiga javob",
                     "L12 Knowledge Governance & AI Reliability — bilim boshqaruvi va AI ishonchliligi",
-                    "L13 Cross-Bank Signal Exchange — banklararo signal almashish",
-                    "L14 Fraud Typology & Consent Scope — firibgarlik turi va rozilik doirasi",
-                    "L15 Case Lifecycle & Auditability — Case hayot sikli va audit",
-                    "L16 Testing & Performance Validation — sinov va samaradorlikni tekshirish"
+                    "L13 Testing & Independent Evaluation — sinov va mustaqil baholash",
+                    "L14 Bank Integration Readiness — bank integratsiyasiga tayyorlik",
+                    "L15 Performance & Capacity Management — samaradorlik va quvvatni boshqarish",
+                    "L16 Impact & Harm Reduction — ta’sir va zarar kamayishini o‘lchash"
                 ))
                 "Case" -> InfoList("Case markazi", "Sintetik namuna; real bank Case emas", listOf(
                     "CASE-DEMO-001 · CASE_CANDIDATE",
