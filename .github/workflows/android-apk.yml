@@ -2,7 +2,7 @@ name: FINZANJIR Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [finzanjir-android-v1]
+    branches: [finzanjir-android-v1, ai-knowledge-foundation-2026-11-09]
     paths:
       - 'app/**'
       - '*.gradle.kts'
