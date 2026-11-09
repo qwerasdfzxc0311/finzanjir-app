@@ -93,17 +93,19 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
     scored = []
     for row in rows:
         body_tokens = tokens(row.get("text", ""))
-        if not body_tokens:
+        id_tokens = tokens(str(row.get("id", "")).replace("-", " "))
+        if not body_tokens and not id_tokens:
             continue
-        body_set = set(body_tokens)
+        body_set = set(body_tokens) | set(id_tokens)
         overlap = query_set.intersection(body_set)
         if not overlap:
             continue
-        # IDF-like weighting avoids common terms dominating; coverage rewards focused matches.
+        # IDF-like weighting avoids common terms dominating; exact record-ID matches get priority.
         rarity = sum(1.0 + min(2.0, len(term) / 12.0) for term in overlap)
         coverage = len(overlap) / max(1, len(query_set))
         phrase_bonus = 1.0 if normalize(question) in normalize(row.get("text", "")) else 0.0
-        score = (rarity * (0.55 + coverage)) + phrase_bonus
+        id_bonus = 5.0 * len(query_set.intersection(id_tokens))
+        score = (rarity * (0.55 + coverage)) + phrase_bonus + id_bonus
         scored.append((score, coverage, row, sorted(overlap)))
     scored.sort(key=lambda item: (item[0], item[1], item[2].get("id", "")), reverse=True)
 
