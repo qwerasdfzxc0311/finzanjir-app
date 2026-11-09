@@ -181,6 +181,10 @@ fun UnifiedWorkflowScreen() {
                     Text("Tuzatish so‘rash", fontSize = 10.sp)
                 }
                 OutlinedButton(onClick = {
+                    changeCase(c, "NOT_CONFIRMED", "Mutaxassis signalni yetarli dalil bilan tasdiqlamadi; ayblov chiqarilmadi")
+                    notice = "Signal tasdiqlanmadi deb qayd etildi. Bu shaxsga ayblov emas."
+                }, modifier = Modifier.weight(1f)) { Text("Tasdiqlanmadi", fontSize = 10.sp) }
+                OutlinedButton(onClick = {
                     val request = "DEMO-REQUEST:${c.id} | ${c.category} | bank tomonidan tekshirish so‘raladi"
                     changeCase(c, "BANK_REVIEW_REQUESTED", "Mock bank so‘rovi tayyorlandi; tashqi bankka yuborilmadi", request = request)
                     notice = "Mock bank so‘rovi Case ichida qayd etildi. Haqiqiy bank API ulanmagan."
