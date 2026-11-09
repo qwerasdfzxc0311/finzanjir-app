@@ -1,0 +1,192 @@
+{
+  "date": "2026-11-10",
+  "method": "Python sqlite3 FTS5 simulation over the exact 5,607-record candidate JSON; lexical FTS retrieval plus bounded simple evidence coverage, not BM25.",
+  "candidate_records": 5607,
+  "candidate_sha256": "f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250",
+  "core_questions": {
+    "passed": 17,
+    "total": 17,
+    "android_runtime_test": false,
+    "items": [
+      {
+        "query": "FINZANJIR nima va maqsadi nima",
+        "top_id": "FZ24-7617799e9c8a03",
+        "pass": true
+      },
+      {
+        "query": "Muallif kim",
+        "top_id": "98717d52b29e0536",
+        "pass": true
+      },
+      {
+        "query": "16 qatlam haqida batafsil",
+        "top_id": "V4-L01",
+        "pass": true
+      },
+      {
+        "query": "L12 nima",
+        "top_id": "V4-L12",
+        "pass": true
+      },
+      {
+        "query": "Risk Engine qanday ishlashi ko‘zda tutilgan",
+        "top_id": "07666953acd82672",
+        "pass": true
+      },
+      {
+        "query": "Explainable Risk Score nima",
+        "top_id": "72fec88c9345aa27",
+        "pass": true
+      },
+      {
+        "query": "Fraud Graph nima",
+        "top_id": "FZ24-641842224e9de7",
+        "pass": true
+      },
+      {
+        "query": "Timeline nima",
+        "top_id": "DOC-finzanjir-konsepsiya-v14-a3092434e60b49fb",
+        "pass": true
+      },
+      {
+        "query": "Case Management nima",
+        "top_id": "DOC-finzanjir-konsepsiya-v14-ab0fa2ce926a1c61",
+        "pass": true
+      },
+      {
+        "query": "FIN-RECOVERY nima",
+        "top_id": "FZ24-45de13c42bdea1",
+        "pass": true
+      },
+      {
+        "query": "ReCAL nima",
+        "top_id": "5d4f49c7f3946b0d",
+        "pass": true,
+        "warning": "No independent ReCAL definition found; query must not conflate it with FIN-RECOVERY."
+      },
+      {
+        "query": "Human Review nima",
+        "top_id": "FZ24-641842224e9de7",
+        "pass": true
+      },
+      {
+        "query": "bank integratsiyasi qanday rejalashtirilgan",
+        "top_id": "DOC-finzanjir-qoshimcha-amaliy-talablar-7ccb6afa0f626b17",
+        "pass": true
+      },
+      {
+        "query": "shubhali aybdor degani emas nima",
+        "top_id": "7ebe9928d561150f",
+        "pass": true
+      },
+      {
+        "query": "CVV OTP saqlanadimi",
+        "top_id": "FZ24-6e61f0fcde2fc1",
+        "pass": true
+      },
+      {
+        "query": "prototype real bankga ulanganmi",
+        "top_id": "4339e68254db0c47",
+        "pass": true
+      },
+      {
+        "query": "mutaxassislar qanday qatnashadi",
+        "top_id": "FZ24-9711afe12cadd7",
+        "pass": true
+      }
+    ]
+  },
+  "layer_direct_ids": {
+    "passed": 16,
+    "total": 16,
+    "items": [
+      {
+        "query": "L01 nima?",
+        "record_id": "V4-L01",
+        "pass": true
+      },
+      {
+        "query": "L02 nima?",
+        "record_id": "V4-L02",
+        "pass": true
+      },
+      {
+        "query": "L03 nima?",
+        "record_id": "V4-L03",
+        "pass": true
+      },
+      {
+        "query": "L04 nima?",
+        "record_id": "V4-L04",
+        "pass": true
+      },
+      {
+        "query": "L05 nima?",
+        "record_id": "V4-L05",
+        "pass": true
+      },
+      {
+        "query": "L06 nima?",
+        "record_id": "V4-L06",
+        "pass": true
+      },
+      {
+        "query": "L07 nima?",
+        "record_id": "V4-L07",
+        "pass": true
+      },
+      {
+        "query": "L08 nima?",
+        "record_id": "V4-L08",
+        "pass": true
+      },
+      {
+        "query": "L09 nima?",
+        "record_id": "V4-L09",
+        "pass": true
+      },
+      {
+        "query": "L10 nima?",
+        "record_id": "V4-L10",
+        "pass": true
+      },
+      {
+        "query": "L11 nima?",
+        "record_id": "V4-L11",
+        "pass": true
+      },
+      {
+        "query": "L12 nima?",
+        "record_id": "V4-L12",
+        "pass": true
+      },
+      {
+        "query": "L13 nima?",
+        "record_id": "V4-L13",
+        "pass": true
+      },
+      {
+        "query": "L14 nima?",
+        "record_id": "V4-L14",
+        "pass": true
+      },
+      {
+        "query": "L15 nima?",
+        "record_id": "V4-L15",
+        "pass": true
+      },
+      {
+        "query": "L16 nima?",
+        "record_id": "V4-L16",
+        "pass": true
+      }
+    ]
+  },
+  "approximate_fts5_database_bytes": 11616256,
+  "limitations": [
+    "This is a Python SQLite FTS5 simulation; the Android implementation uses SQLite FTS4 and has not yet been run on a device.",
+    "The active Android asset in GitHub remains 1,121 records. The 5,607-record candidate is not yet installed as the active asset.",
+    "Retrieval hit rate is not answer factuality or answer quality. Human review and a held-out answer-quality benchmark remain required.",
+    "The FTS5 database byte estimate is not a device RAM, CPU, battery or APK-size measurement."
+  ]
+}
