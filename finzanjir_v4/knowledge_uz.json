@@ -1418,7 +1418,7 @@
   },
   {
     "id": "AI-V4-001",
-    "text": "Joriy GitHub v4 branchida FINZANJIR AI sahifasi, Gemini API chaqiruv moduli, ixtiyoriy Google Search grounding va 71 ta manbaga bog‘langan knowledge yozuvi qo‘shilgan. Bu source-level implementatsiya; yangi API kaliti bilan haqiqiy Gemini/Google Search javobi Streamlit Cloud’da hali sinovdan o‘tmagan.",
+    "text": "Joriy GitHub v4 branchida FINZANJIR AI sahifasi, Gemini API chaqiruv moduli, ixtiyoriy Google Search grounding va 957 ta manbaga bog‘langan knowledge yozuvi mavjud. Ularning 820 tasi 25 bobli integratsiyalashgan kitobning 1–24-boblari PDF sahifalari 5–331 dan ajratilgan matn segmentlaridir. Barcha yozuvlar candidate_not_authoritative. Bu source-level implementatsiya; yangi API kaliti bilan haqiqiy Gemini/Google Search javobi Streamlit Cloud’da hali sinovdan o‘tmagan.",
     "language": "uz",
     "approval": "candidate_not_authoritative",
     "source_package": "FINZANJIR V14 / AI V1 / V317 audit / v4 source audit",
