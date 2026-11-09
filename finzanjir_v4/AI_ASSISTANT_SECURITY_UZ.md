@@ -40,7 +40,7 @@ Joriy v4 JSON bazasi 137 yozuvdan iborat:
 
 Har bir yozuvda source_id, source_version, source_section, source_path, approval va record_type saqlanadi. knowledge_manifest.json manbalar va ochiq bo‘shliqlarni qayd etadi.
 
-Muhim: bu 137 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FINZANJIR_AI.zip v0.6.0 korpusining to‘liq importi emas. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. To‘liq arxiv importi, manba sahifalari bilan crosswalk, duplicate/conflict tekshiruvi va ekspert tasdig‘i keyingi bosqichdir.
+Muhim: bu 137 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FINZANJIR_AI.zip v0.6.0 korpusining to‘liq importi emas. 25 bobli kitobning 1–24-boblari faqat qisqa xulosa ko‘rinishida kiritilgan; 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga kiritilmagan. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. To‘liq arxiv importi, manba sahifalari bilan crosswalk, duplicate/conflict tekshiruvi va ekspert tasdig‘i keyingi bosqichdir.
 
 ## 4. Qidiruv chegaralari
 
