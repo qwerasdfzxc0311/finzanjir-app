@@ -29,12 +29,13 @@ Google Search o‘chirilgan bo‘lsa, modelga Google Search tool berilmaydi. Yoq
 
 ## 3. Bilimlar bazasi
 
-Joriy v4 JSON bazasi 137 yozuvdan iborat:
+Joriy v4 JSON bazasi 957 yozuvdan iborat:
 - 33 — v3 legacy candidate yozuvlari;
 - 16 — v4 qatlam katalogi;
 - 22 — v4 repository konsepsiya yozuvlari;
 - 42 — V14/AI arxitekturasi, AI baholash va V317 korpus auditidan tanlangan yozuvlar;
-- 24 — 25 bobli integratsiyalashgan kitobning 1–24-boblari bo‘yicha sahifali xulosalar.
+- 24 — 25 bobli kitobning 1–24-boblari bo‘yicha xulosalar;
+- 820 — PDF sahifalari 5–331 dan matn segmentlari.
 
 **Barcha 137 yozuv candidate_not_authoritative.** Hozircha authoritative/approved yozuv yo‘q.
 
