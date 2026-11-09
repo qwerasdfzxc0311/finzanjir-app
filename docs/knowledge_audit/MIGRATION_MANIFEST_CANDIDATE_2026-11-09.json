@@ -1,0 +1,39 @@
+{
+  "project": "FINZANJIR",
+  "package": "knowledge-migration-audit-2026-11-09",
+  "status": "CANDIDATE_NOT_APK_VERIFIED",
+  "target_record_count": 5580,
+  "ai_v2_1_record_count": 4656,
+  "ai_v2_1_ids_preserved": 4656,
+  "new_document_chunks": 893,
+  "canonical_layer_records": 16,
+  "id_duplicates": 0,
+  "exact_normalized_text_duplicate_groups": 3,
+  "records_in_exact_duplicate_groups": 6,
+  "approval_counts": {
+    "not_auto_promoted": 300,
+    "candidate": 812,
+    "index_only": 881,
+    "unclassified": 2097,
+    "author_visible_on_direct_request": 5,
+    "author_confirmed_project_philosophy": 12,
+    "candidate_not_authoritative": 1458,
+    "verified_source_candidate; current legal text must be rechecked before legal advice": 15
+  },
+  "audience_counts": {
+    "general": 4656,
+    "general_and_expert": 444,
+    "expert": 420,
+    "expert_and_author": 60
+  },
+  "asset_sha256": "1069110ed74ad8b87c5d5c081f598598396928f52868e07bc6777e2ca816bda6",
+  "ai_v2_1_sha256": "dbab49e8cff3e935cb43f83038a154dba28475835462958451b0002bdfc76c06",
+  "known_visual_gaps": {
+    "pdf_pages_text_extracted": 304,
+    "embedded_pdf_images": 37,
+    "embedded_images_ocr_attempted": 17,
+    "standalone_diagram_images_ocr_attempted": 5,
+    "ocr_results_merged_into_knowledge_asset": false
+  },
+  "note": "This is a candidate migration manifest, not the active Android app manifest. The 5,580-record asset must be installed and SHA-256 verified before changing the active manifest."
+}
