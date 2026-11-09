@@ -24,10 +24,10 @@ Barcha yozuvlar `candidate_not_authoritative`. Ular bank tomonidan tasdiqlangan 
 GitHub branchidagi qidiruv kodi BM25-uslubidagi term weighting, lotin/kirill normallashtirish, fuqarolik/mutaxassis ko‘rinishi, manba/maqom ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni qo‘llaydi. Aynan bir xil matnli yozuvlar korpusda saqlanadi, lekin qidiruv javobida takrorlanmaydi; tegishli manba izlari birga ko‘rsatiladi.
 
 ## 2026-11-09 migratsiya nomzodi
-- Candidate asset: 5,580 yozuv; SHA-256: `1069110ed74ad8b87c5d5c081f598598396928f52868e07bc6777e2ca816bda6`.
+- Candidate asset: 5,607 yozuv; SHA-256: `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`.
 - AI v2.1 dagi 4,656 yozuv ID bo‘yicha to‘liq saqlangan.
 - 893 yangi hujjat bo‘lagi va 16 ta `V4-L01` ... `V4-L16` qatlam yozuvi mavjud.
 - ID dublikatlari: 0; aynan bir xil matnli guruhlar: 3. Manba izini yo‘qotmaslik uchun yozuvlar o‘chirilmagan.
 - 23/23 retrieval smoke-test PASS — Python BM25-ekvivalent test, Android runtime testi emas.
-- 304 PDF sahifasidan matn ajratilgan. 37 PDF ichki tasvirining faqat 17 tasida va 5 mustaqil diagramma tasvirida dastlabki OCR urinishlari bo‘lgan; OCR natijalari candidate assetga kiritilmagan.
+- 304 PDF sahifasidan matn ajratilgan. 37 PDF ichki tasvirining 26 tasida OCR urinishlari bajarildi; 22 ta tasvir va 5 mustaqil diagrammadan 27 ta OCR candidate yozuvi qo‘shildi. Barcha OCR yozuvlari vizual tekshiruv talab qiladi.
 - **Muhim:** 5,580 yozuvli JSON hali aktiv Android asset emas. Asset almashtirish, manifest SHA-256 tekshiruvi, Android build va telefon sinovi bajarilgandan keyingina aktiv import deb e’lon qilinadi.
