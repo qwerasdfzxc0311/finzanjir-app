@@ -635,6 +635,12 @@ elif page == "FINZANJIR AI":
         "Google Search yoqilsa, Gemini qidiruvdan ham foydalanishi mumkin. Haqiqiy mijoz ma’lumoti, "
         "karta raqami, PIN, CVV, OTP yoki parol kiritmang. Gemini so‘rovlari store=false bilan yuboriladi; ilova savollarni o‘zining doimiy bilimlar bazasiga yozmaydi."
     )
+    response_mode = st.radio(
+        "Javob uslubi",
+        ["Sodda tushuntirish", "Ekspert tahlili"],
+        horizontal=True,
+        key="finzanjir_ai_response_mode",
+    )
     use_google_search = st.checkbox(
         "Google Search orqali yangilangan internet manbalarini ham tekshirish",
         value=False,
@@ -666,6 +672,7 @@ elif page == "FINZANJIR AI":
                             gemini_key,
                             use_google_search=use_google_search,
                             model=gemini_model,
+                            response_mode=response_mode,
                         )
                     st.markdown("### Javob")
                     st.markdown(result["answer"])
