@@ -1,7 +1,7 @@
 # FINZANJIR Android — bilimlar korpusi importi
 
 ## Joriy import
-Android ilovasining hozirgi aktiv asseti lokal assets ichidan **1,121 ta strukturali yozuv** o‘qiydi. 5,580 yozuvli yangi migratsiya alohida candidate paket sifatida tekshirilmoqda; u aktiv assetga hali ko‘chirilmagan:
+Android ilovasining hozirgi aktiv asseti lokal assets ichidan **1,121 ta strukturali yozuv** o‘qiydi. 5,607 yozuvli migratsiya alohida candidate paket sifatida tekshirilmoqda; u aktiv assetga hali ko‘chirilmagan:
 - V4 korpusi: 957 yozuv;
 - FINZANJIR V14 original PDF: 164 sahifa yozuvi (1–164).
 
@@ -21,13 +21,20 @@ Barcha yozuvlar `candidate_not_authoritative`. Ular bank tomonidan tasdiqlangan 
 - To‘liq arxiv importi uchun asl fayllar, ularning versiyasi va manba registri talab qilinadi.
 
 ## Android qidiruvi
-GitHub branchidagi qidiruv kodi BM25-uslubidagi term weighting, lotin/kirill normallashtirish, fuqarolik/mutaxassis ko‘rinishi, manba/maqom ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni qo‘llaydi. Aynan bir xil matnli yozuvlar korpusda saqlanadi, lekin qidiruv javobida takrorlanmaydi; tegishli manba izlari birga ko‘rsatiladi.
+Yangi no-BM25 branchdagi qidiruv SQLite FTS4, lotin/kirill normallashtirish, oqim tarzida import, fuqaro/mutaxassis filtri, manba/maqom va yengil dalil sintezidan foydalanadi. Korpusning to‘liq matni RAMda indekslanmaydi; faqat kichik candidate to‘plami olinadi. Bu generativ LLM emas, lokal qoidaviy javob yadrosidir.
 
 ## 2026-11-09 migratsiya nomzodi
 - Candidate asset: 5,607 yozuv; SHA-256: `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`.
 - AI v2.1 dagi 4,656 yozuv ID bo‘yicha to‘liq saqlangan.
 - 893 yangi hujjat bo‘lagi va 16 ta `V4-L01` ... `V4-L16` qatlam yozuvi mavjud.
 - ID dublikatlari: 0; aynan bir xil matnli guruhlar: 3. Manba izini yo‘qotmaslik uchun yozuvlar o‘chirilmagan.
-- 23/23 retrieval smoke-test PASS — Python BM25-ekvivalent test, Android runtime testi emas.
+- 17/17 asosiy savol Python SQLite FTS5 simulyatsiyasida mos yozuv topdi; bu Android FTS4 runtime testi emas.
 - 304 PDF sahifasidan matn ajratilgan. 37 PDF ichki tasvirining 26 tasida OCR urinishlari bajarildi; 22 ta tasvir va 5 mustaqil diagrammadan 27 ta OCR candidate yozuvi qo‘shildi. Barcha OCR yozuvlari vizual tekshiruv talab qiladi.
-- **Muhim:** 5,580 yozuvli JSON hali aktiv Android asset emas. Asset almashtirish, manifest SHA-256 tekshiruvi, Android build va telefon sinovi bajarilgandan keyingina aktiv import deb e’lon qilinadi.
+- **Muhim:** 5,607 yozuvli JSON hali aktiv Android asset emas. Asset almashtirish, manifest SHA-256 tekshiruvi, Android build va telefon sinovi bajarilgandan keyingina aktiv import deb e’lon qilinadi.
+
+## 2026-11-10 yengil AI yadrosi
+- BM25 olib tashlangan kod branchi: `ai-core-lightweight-fts4-2026-11-10`.
+- SQLite FTS4 + streaming JSON import; birinchi importdan keyin lokal SQLite bazasi ishlatiladi.
+- 5,607 yozuvli assetni xavfsiz joylashtirish skripti: `tools/activate_5607_knowledge.sh`.
+- Yangi import faqat SHA-256 `f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250`, 5,607 yozuv, takrorlanmaydigan ID, 16 qatlam va 27 OCR candidate tekshiruvlaridan o‘tganda qabul qilinadi.
+- Hozirgi aktiv asset hanuz 1,121 yozuv; to‘liq 5,607 aktiv import hali bajarilmagan.
