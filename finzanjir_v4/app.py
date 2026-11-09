@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import streamlit as st
+import ai_assistant
 
 st.set_page_config(
     page_title="FINZANJIR | Ochiq namoyish",
@@ -420,6 +421,7 @@ pages = [
     "Yagona ish jarayoni",
     "Signallar reyestri",
     "16 qatlam",
+    "FINZANJIR AI",
     "Case markazi",
     "Human Review",
     "Banklararo tahlil (sintetik)",
@@ -607,6 +609,89 @@ elif page == "Signallar reyestri":
         st.markdown('<div class="panel"><b>Signal / indikator</b><p class="small">Kuzatilgan belgi yoki qoida natijasi. Tekshiruvni boshlashga yordam beradi, lekin o‘zi bilan ayblov yoki yakuniy xulosa bermaydi.</p></div>', unsafe_allow_html=True)
     with right:
         st.markdown('<div class="panel"><b>Dalil</b><p class="small">Manbasi, vaqti, mazmuni va ishonchlilik cheklovi ko‘rsatilgan material. Dalil tasdiqlashi ham, inkor etishi ham mumkin.</p></div>', unsafe_allow_html=True)
+
+elif page == "FINZANJIR AI":
+    st.markdown("## FINZANJIR AI — bilim va tushuntirish yordamchisi")
+    st.caption("Ichki loyiha bilimlari + Gemini. Google Search alohida yoqiladi; javoblar loyiha qarori yoki ekspert xulosasini almashtirmaydi.")
+    st.markdown(
+        '<div class="callout"><b>Bu yordamchi nimalarni qiladi?</b><br>'
+        '<span class="small">FINZANJIR konsepsiyasi, 16 qatlam, signal, dalil, Case va Human Review haqida hujjatlarga tayangan holda tushuntiradi. '
+        'Joriy yoki tashqi ma’lumot kerak bo‘lsa Google Search grounding orqali manba qidirishi mumkin.</span></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("")
+    try:
+        gemini_config = st.secrets.get("gemini", {})
+        gemini_enabled = gemini_config.get("enabled", False) is True
+        gemini_key = str(gemini_config.get("api_key", "") or "").strip()
+        gemini_model = str(gemini_config.get("model", ai_assistant.DEFAULT_MODEL) or ai_assistant.DEFAULT_MODEL)
+        request_cap = max(1, min(int(gemini_config.get("max_requests_per_session", 5)), 20))
+    except Exception:
+        gemini_enabled, gemini_key = False, ""
+        gemini_model, request_cap = ai_assistant.DEFAULT_MODEL, 5
+
+    st.info(
+        "Maxfiylik: savolingiz va unga mos ichki bilim parchalari Gemini xizmatiga yuboriladi. "
+        "Google Search yoqilsa, Gemini qidiruvdan ham foydalanishi mumkin. Haqiqiy mijoz ma’lumoti, "
+        "karta raqami, PIN, CVV, OTP yoki parol kiritmang. Savollar ilova tomonidan doimiy bilimlar bazasiga yozilmaydi."
+    )
+    use_google_search = st.checkbox(
+        "Google Search orqali yangilangan internet manbalarini ham tekshirish",
+        value=False,
+        help="Qonunchilik, xalqaro tajriba yoki joriy ma’lumot kerak bo‘lganda yoqing. Google Search grounding qo‘shimcha xarajat keltirishi mumkin.",
+    )
+    question = st.text_area(
+        "Savolingizni yozing",
+        placeholder="Masalan: FINZANJIRning 16 qatlami qanday qilib Case va Human Review jarayoniga bog‘lanadi?",
+        max_chars=ai_assistant.MAX_QUESTION_CHARS,
+        height=115,
+        key="finzanjir_ai_question",
+    )
+    if not gemini_enabled:
+        st.warning("AI hozircha o‘chirilgan. Muallif Streamlit Secrets ichida [gemini] enabled = true qilib, yangi API kalitini xavfsiz kiritishi kerak.")
+    elif not gemini_key:
+        st.warning("Gemini API kaliti topilmadi. Streamlit Cloud → App settings → Secrets bo‘limida [gemini] api_key sozlang. Kalitni GitHub yoki chatga joylashtirmang.")
+    else:
+        used_requests = int(st.session_state.get("finzanjir_ai_requests_used", 0))
+        st.caption(f"Ushbu brauzer sessiyasidagi so‘rovlar: {used_requests}/{request_cap}. Bu yumshoq sessiya cheklovi, Google billing limiti emas.")
+        if st.button("Savolga javob olish", type="primary", disabled=not question.strip(), key="finzanjir_ai_submit"):
+            if used_requests >= request_cap:
+                st.error("Ushbu sessiya uchun ajratilgan AI so‘rovlari tugadi.")
+            else:
+                st.session_state.finzanjir_ai_requests_used = used_requests + 1
+                try:
+                    with st.spinner("Ichki bilimlar tekshirilmoqda va javob tayyorlanmoqda..."):
+                        result = ai_assistant.answer_question(
+                            question,
+                            gemini_key,
+                            use_google_search=use_google_search,
+                            model=gemini_model,
+                        )
+                    st.markdown("### Javob")
+                    st.markdown(result["answer"])
+                    if use_google_search:
+                        if result["google_sources"]:
+                            st.markdown("### Google Search manbalari")
+                            for source in result["google_sources"]:
+                                st.markdown(f"- [{source['title']}]({source['url']})")
+                        else:
+                            st.warning("Gemini javobida tekshiriladigan Google Search manbalari qaytmadi. Tashqi faktlarni mustaqil tekshiring.")
+                        if result["google_queries"]:
+                            st.caption("Qidiruv so‘rovlari: " + " · ".join(result["google_queries"]))
+                    with st.expander("Javobda ishlatilgan FINZANJIR ichki bilimlari", expanded=False):
+                        st.caption(f"Bilimlar bazasidagi yozuvlar: {result['knowledge_records_total']}")
+                        for item in result["internal_evidence"]:
+                            st.markdown(f"**{item['id']}** · {item['approval']} · {item['source_path']}")
+                            st.write(item["text"])
+                    st.caption("Model: " + result["model"] + " · Ichki bilimlar candidate_not_authoritative bo‘lsa, rasmiy tasdiq deb talqin qilinmaydi.")
+                except ai_assistant.AssistantError as exc:
+                    st.error(str(exc))
+    st.markdown("### Muhim chegaralar")
+    st.markdown("- AI bilimlar bazasini, Case yoki Human Review holatini o‘zgartira olmaydi.")
+    st.markdown("- Tashqi qidiruv natijalari FINZANJIRning rasmiy qoidasi sifatida qabul qilinmaydi.")
+    st.markdown("- Ichki hujjatlarda topilmagan loyiha fakti tasdiqlangan deb aytilmaydi.")
+    st.markdown("- AI javobi xato bo‘lishi mumkin; muhim qarorlar asl hujjat va vakolatli ekspert bilan tekshiriladi.")
+    st.warning("Sessiya bo‘yicha so‘rov soni faqat oddiy xarajat nazorati. U kuchli abuse-protection yoki Google billing limitining o‘rnini bosmaydi. Ommaviy ishga tushirishdan oldin Google AI Studio/Cloud kvota va billing ogohlantirishlarini sozlash kerak.")
 
 elif page == "Case markazi":
     st.markdown("## Case markazi — sintetik namuna")
@@ -807,7 +892,7 @@ elif page == "Atamalar va cheklovlar":
             {"Qism": "Case va Human Review", "Holat": "Sintetik namoyish; haqiqiy vakolat va doimiy saqlash yo‘q"},
             {"Qism": "Qatlamlararo aloqa", "Holat": "Jarayon darajasidagi ko‘rinish; rasmiy LINK-ID emas"},
             {"Qism": "Bank integratsiyasi", "Holat": "Mavjud emas"},
-            {"Qism": "AI moduli", "Holat": "Ushbu v4 interfeysga ulanmagan; alohida gate"},
+            {"Qism": "AI moduli", "Holat": "Gemini + ichki candidate bilimlar; Google Search ixtiyoriy; yangi kalit/Secrets talab qilinadi"},
             {"Qism": "Production tayyorligi", "Holat": "Tasdiqlanmagan"},
         ],
         use_container_width=True, hide_index=True,
