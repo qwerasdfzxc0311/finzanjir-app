@@ -5,19 +5,25 @@
 
 ## Hozirgi interfeys
 
-v4 ommaviy interfeysi yagona, mobilga mos va **read-only** ko‘rish rejimida ishlab chiqilmoqda. Tashrifchilar bo‘limlar orasida yurishi, qatlamlarni qidirishi va sintetik misollarni ko‘rishi mumkin. Ommaviy interfeysda Case holatini saqlash, Human Review qarorini kiritish, ma’lumot yozish yoki sozlamani o‘zgartirish tugmalari yo‘q.
+v4 ommaviy interfeysi yagona, mobilga mos va **read-only** ko‘rish rejimida ishlab chiqilmoqda. Bo‘lim tanlash, qatlam qidiruvi va sintetik misol tanlash faqat ko‘rsatiladigan ma’lumotni o‘zgartiradi. Ommaviy interfeysda Case holatini saqlash, Human Review qarorini kiritish, ma’lumot yozish yoki tizim sozlamalarini o‘zgartirish funksiyasi yo‘q.
 
-## Asosiy bo‘limlar
+## Ochiq bo‘limlar
 
-- Bosh sahifa — loyiha maqsadi, chegaralari va jarayonning umumiy ko‘rinishi.
-- Yagona ish jarayoni — hodisadan ma’lumot sifati, signal/dalil, Case mezonlari va Human Reviewgacha.
-- 16 qatlam — har bir qatlamning sodda izohi, maqsadi, savoli, talab darajasidagi kirish/chiqishi va cheklovi.
-- Signal va dalillar — indikator, dalil, qarshi dalil va noma’lum jihatlarni ajratish.
-- Case markazi — faqat sintetik Case va rozilik doirasining alohida ko‘rinishi.
-- Human Review — mutaxassis ko‘rib chiqishi kerak bo‘lgan savollar va mumkin bo‘lgan natijalar; qaror kiritish yo‘q.
-- Qatlamlararo xarita — jarayon bosqichlari va mazmuniy qatlam qamrovi; rasmiy LINK-ID yoki texnik API deb ko‘rsatilmaydi.
-- Sintetik sinovlar — tushuntiruvchi ssenariylar, real aniqlik da’vosi emas.
-- Atamalar va cheklovlar — oddiy va texnik izohlar.
+1. Bosh sahifa — loyiha maqsadi, chegaralari va umumiy jarayon.
+2. Boshqaruv paneli — v4 dagi to‘rtta sintetik namuna bo‘yicha holatlar.
+3. Sun’iy bank laboratoriyasi — v3 dagi alohida 4 manbali/400 ssenariyli laboratoriya yo‘nalishi haqida; v4 ga hali ulanmagan.
+4. Yagona ish jarayoni — hodisadan ma’lumot sifati, signal/dalil, Case mezonlari va Human Reviewgacha.
+5. Signallar reyestri — indikator, dalil, qarshi dalil va noma’lum jihatlar.
+6. 16 qatlam — har bir qatlamning sodda izohi, maqsadi, savoli, talab darajasidagi kirish/chiqishi va cheklovi.
+7. Case markazi — sintetik Case va rozilik doirasining alohida ko‘rinishi.
+8. Human Review — mutaxassis ko‘rib chiqishi kerak bo‘lgan savollar va mumkin bo‘lgan natijalar; qaror kiritish yo‘q.
+9. Banklararo tahlil — atribut mosligi bo‘yicha ehtiyot chegaralari; real banklararo grafik emas.
+10. KPI dashboard — faqat sintetik jarayon sonlari; aniqlik yoki FP/FN natijasi emas.
+11. Fuqaro uchun tushuntirish — konsepsiyani sodda tilda izohlash.
+12. Audit jurnali — ko‘rgazmali vaqt chizig‘i; doimiy audit ombori emas.
+13. Qatlamlararo xarita — jarayon bosqichlari va mazmuniy qatlam qamrovi; rasmiy LINK-ID yoki texnik API emas.
+14. Sintetik sinovlar — tushuntiruvchi ssenariylar, real aniqlik da’vosi emas.
+15. Atamalar va cheklovlar — oddiy va texnik izohlar.
 
 ## Ishga tushirish
 
@@ -34,9 +40,9 @@ streamlit run finzanjir_v4/app.py
 
 ## Halol holat va cheklovlar
 
-- Barcha ko‘rsatilgan hodisalar sintetik namuna.
+- Barcha v4 hodisalari sintetik namuna.
 - 16 qatlam katalogi talablar mazmunini tushuntiradi; barcha qatlamlar to‘liq implementatsiya qilingan yoki ekspertlar tasdiqlagan degani emas.
-- Har bir qatlam holati PLANNED / EXPERT_VALIDATION_PENDING deb qaraladi.
+- Har bir qatlam PLANNED / EXPERT_VALIDATION_PENDING holatida ko‘riladi.
 - Qatlamlararo ko‘rinish jarayon xaritasi; rasmiy LINK-ID, mustaqil servis yoki API mavjudligini anglatmaydi.
 - Case va Human Review faqat ko‘rgazmali; haqiqiy reviewer autentifikatsiyasi, vakolat nazorati va doimiy audit ulanmagan.
 - 400 hodisali v3 laboratoriyasi v4 yagona jarayoniga hali integratsiya qilinmagan.
