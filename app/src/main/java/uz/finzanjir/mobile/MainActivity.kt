@@ -48,7 +48,7 @@ private fun FinzanjirApp() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(page: String, select: (String) -> Unit) {
-    val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
+    val nav = listOf("Bosh sahifa", "Yagona tizim", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
     Scaffold(
         topBar = {
             TopAppBar(title = { Column {
@@ -58,11 +58,11 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
         },
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
-                val bottom = listOf("Bosh sahifa", "Jarayon", "Signallar", "AI yordamchi")
+                val bottom = listOf("Bosh sahifa", "Yagona tizim", "Signallar", "AI yordamchi")
                 bottom.forEachIndexed { i, label ->
                     NavigationBarItem(selected = page == label, onClick = { select(label) },
                         icon = { Icon(listOf(Icons.Default.Dashboard, Icons.Default.AccountTree, Icons.Default.Bolt, Icons.Default.Psychology)[i], null) },
-                        label = { Text(listOf("Bosh", "Jarayon", "Signal", "AI")[i], fontSize = 9.sp) })
+                        label = { Text(listOf("Bosh", "Yagona", "Signal", "AI")[i], fontSize = 9.sp) })
                 }
             }
         }, containerColor = Canvas
@@ -72,7 +72,8 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                 nav.forEach { Tab(page == it, { select(it) }, text = { Text(it, fontSize = 10.sp) }) }
             }
             when (page) {
-                "Bosh sahifa" -> Home { select("Jarayon") }
+                "Bosh sahifa" -> Home { select("Yagona tizim") }
+                "Yagona tizim" -> UnifiedWorkflowScreen()
                 "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
                     "1. Hodisa va manba — hozircha namoyish ma’lumotlari sintetik",
                     "2. Ma’lumot sifati — yetishmayotgan, eskirgan yoki zid ma’lumotlarni belgilash",
