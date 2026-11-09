@@ -90,6 +90,27 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
         return []
     query_set = set(query_tokens)
     rows = load_knowledge()
+    normalized_question = normalize(question)
+    normalized_tokens = set(normalized_question.split())
+    for number in range(1, 17):
+        if f"l{number:02d}" in normalized_tokens or f"l{number}" in normalized_tokens:
+            target_id = f"V4-L{number:02d}"
+            target = next((row for row in rows if row.get("id") == target_id), None)
+            if target:
+                return [{
+                    "id": target["id"],
+                    "text": target["text"],
+                    "approval": target.get("approval", "unknown"),
+                    "source_package": target.get("source_package", "unknown"),
+                    "source_path": target.get("source_path", "unknown"),
+                    "source_id": target.get("source_id", "unknown"),
+                    "source_version": target.get("source_version", "unknown"),
+                    "source_section": target.get("source_section", "unknown"),
+                    "record_type": target.get("record_type", "unknown"),
+                    "score": 999.0,
+                    "coverage": 1.0,
+                    "matched_terms": ["exact_layer_id"],
+                }]
     scored = []
     for row in rows:
         body_tokens = tokens(row.get("text", ""))
@@ -112,20 +133,7 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
     # A broad "16 layers" question needs the complete layer catalogue, not an arbitrary top-k slice.
     normalized_question = normalize(question)
     asks_all_layers = ("16 qatlam" in normalized_question) or ("qatlamlar" in normalized_question)
-    normalized_tokens = set(normalized_question.split())
-    specific_layer_number = next(
-        (number for number in range(1, 17)
-         if f"l{number:02d}" in normalized_tokens or f"l{number}" in normalized_tokens),
-        None,
-    )
-    if specific_layer_number and not asks_all_layers:
-        target_id = f"V4-L{specific_layer_number:02d}"
-        target = next((row for row in rows if row.get("id") == target_id), None)
-        if target:
-            selected = [(999.0, 1.0, target, ["exact_layer_id"])]
-            selected.extend(item for item in scored if item[2]["id"] != target_id)
-            scored = selected
-    elif asks_all_layers:
+    if asks_all_layers:
         selected = []
         seen_ids = set()
         for row in sorted(
@@ -159,7 +167,7 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
                     selected.append(item)
             scored = selected
 
-    return [
+    return [    return [
         {
             "id": row["id"],
             "text": row["text"],
