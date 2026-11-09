@@ -53,7 +53,7 @@ Muhim: bu 113 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FI
 ## 5. Gemini va Google Search
 
 - SDK: Google tomonidan tavsiya etilgan google-genai 2.3.0 yoki undan yangi; Interactions API shu versiyadan boshlab mavjud.
-- Model default: gemini-3.6-flash; Streamlit Secrets orqali almashtirilishi mumkin.
+- Model default: gemini-3.8-flash; Streamlit Secrets orqali almashtirilishi mumkin.
 - Google Search: Gemini API built-in grounding tool; alohida checkbox bilan yoqiladi.
 - Grounding manbalari API javobidan olinadi; manba qaytmasa, UI buni ochiq ko‘rsatadi.
 - Google Search grounding Gemini 3 oilasida qidiruv so‘rovlari bo‘yicha xarajat keltirishi mumkin. Bir savol uchun model bir nechta qidiruv so‘rovini bajarishi mumkin.
@@ -66,7 +66,7 @@ Streamlit Cloud → App settings → Secrets ichiga quyidagi shaklda kiritiladi.
     [gemini]
     enabled = true
     api_key = "YANGI_GEMINI_API_KEY"
-    model = "gemini-3.6-flash"
+    model = "gemini-3.8-flash"
     max_requests_per_session = 5
 
 Qoidalar:
