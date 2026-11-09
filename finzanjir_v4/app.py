@@ -415,11 +415,17 @@ def render_event_detail(event_id: str) -> None:
 # It changes the displayed page only; no public data or settings can be edited.
 pages = [
     "Bosh sahifa",
+    "Boshqaruv paneli",
+    "Sun’iy bank laboratoriyasi",
     "Yagona ish jarayoni",
+    "Signallar reyestri",
     "16 qatlam",
-    "Signal va dalillar",
     "Case markazi",
     "Human Review",
+    "Banklararo tahlil (sintetik)",
+    "KPI dashboard",
+    "Fuqaro uchun tushuntirish",
+    "Audit jurnali",
     "Qatlamlararo xarita",
     "Sintetik sinovlar",
     "Atamalar va cheklovlar",
@@ -479,6 +485,47 @@ if page == "Bosh sahifa":
         'production vakolati yoki real firibgarlik aniqligi mavjud deb da’vo qilinmaydi. FINZANJIR karta, hisob yoki tranzaksiyani avtomatik bloklamaydi.</div>',
         unsafe_allow_html=True,
     )
+
+elif page == "Boshqaruv paneli":
+    st.markdown("## Boshqaruv paneli — namoyish holati")
+    st.caption("Bu ko‘rsatkichlar faqat quyidagi to‘rtta v4 sintetik namunasidan hisoblanadi. Ular real bank statistikasi emas.")
+    counts = {code: sum(1 for event in EVENTS.values() if event["status"] == code) for code in ("HUMAN_REVIEW", "DATA_REVIEW", "RECHECK", "MONITOR")}
+    a, b, c, d = st.columns(4)
+    with a: metric("Sintetik hodisalar", str(len(EVENTS)), "v4 namuna to‘plami", "📥")
+    with b: metric("Inson ko‘rigi", str(counts["HUMAN_REVIEW"]), "Case namunasi", "👤")
+    with c: metric("Ma’lumot tekshiruvi", str(counts["DATA_REVIEW"]), "Majburiy maydon", "🧾")
+    with d: metric("Qayta tekshiruv / kuzatuv", str(counts["RECHECK"] + counts["MONITOR"]), "Yakka indikator yoki kuzatuv", "🔎")
+    st.markdown("### Holatlar taqsimoti")
+    st.dataframe(
+        [{"Holat": status_text(code), "Soni": number, "Izoh": {
+            "HUMAN_REVIEW": "Bir nechta sintetik indikator — inson ko‘rigi namunasi",
+            "DATA_REVIEW": "Ma’lumot maydoni yetishmaydi",
+            "RECHECK": "Yakka indikator — qo‘shimcha kontekst kerak",
+            "MONITOR": "Ko‘rsatilgan qoidalarda signal aniqlanmadi",
+        }[code]} for code, number in counts.items()],
+        use_container_width=True, hide_index=True,
+    )
+    st.markdown("### Barcha namuna hodisalari")
+    st.dataframe(
+        [{"Hodisa ID": event_id, "Manba": event["source"], "Holat": event["status_uz"],
+          "Signal soni": len(event["signals"]), "Case": event["case_id"] or "Ochilmagan"}
+         for event_id, event in EVENTS.items()],
+        use_container_width=True, hide_index=True,
+    )
+    st.info("Bu panel v4 ning to‘rtta ko‘rgazmali yozuvini jamlaydi. U v3 dagi 400 hodisali laboratoriya statistikasi bilan aralashtirilmaydi.")
+
+elif page == "Sun’iy bank laboratoriyasi":
+    st.markdown("## Sun’iy bank laboratoriyasi")
+    st.caption("Bu bo‘lim oldingi v3 sinov yo‘nalishining holatini tushuntiradi; v4 ichida laboratoriya ishga tushirilmaydi.")
+    a, b, c = st.columns(3)
+    with a: metric("Sintetik manbalar", "4", "v3 laboratoriya dizayni", "🏦")
+    with b: metric("Sintetik ssenariylar", "400", "v3 deterministik to‘plami", "🧪")
+    with c: metric("v4 bilan integratsiya", "Yo‘q", "Alohida ishlab chiqish bosqichi", "🔗")
+    st.markdown("### Laboratoriya qanday ishlashi ko‘zda tutilgan?")
+    render_pipeline()
+    st.markdown("### Boshqaruv amallari haqida")
+    st.write("v3 laboratoriyasida START, PAUSE, STOP, RESUME, RESET va favqulodda KILL SWITCH boshqaruvlari mavjud bo‘lgan. Ommaviy v4 ko‘rinishida bu amallar ataylab chiqarilmagan: tashrifchi sinov navbatini yoki natijalarni o‘zgartira olmaydi.")
+    st.warning("400 ta sintetik hodisa v3 branchdagi alohida modulga tegishli. Ular v4 dagi to‘rtta namuna bilan bir xil ma’lumotlar to‘plami emas va hozir v4 jarayoniga ulanmagan.")
 
 elif page == "Yagona ish jarayoni":
     st.markdown("## Hodisadan inson ko‘rigigacha")
@@ -549,7 +596,7 @@ elif page == "16 qatlam":
     st.markdown("2. Bir qatlamdan boshqasiga o‘tadigan ma’lumot manba, vaqt va versiya izini yo‘qotmasligi kerak.")
     st.markdown("3. Qatlamlararo aloqa takliflari rasmiy LINK-ID yoki tayyor texnik API degani emas.")
 
-elif page == "Signal va dalillar":
+elif page == "Signallar reyestri":
     st.markdown("## Signal reyestri va dalil tafsilotlari")
     st.caption("Signal — indikator. U yakuniy xulosa, aybdorlik yoki avtomatik bloklash buyrug‘i emas.")
     chosen = st.selectbox("Hodisani tanlang", list(EVENTS.keys()), format_func=lambda x: f"{x} · {EVENTS[x]['title']}")
@@ -602,6 +649,66 @@ elif page == "Case markazi":
             st.caption("Bu ko‘rgazmali vaqt chizig‘i. Doimiy va o‘zgartirib bo‘lmaydigan audit jurnali emas.")
     st.markdown("### Case ochilmasligi ham to‘g‘ri natija bo‘lishi mumkin")
     st.write("Ma’lumot yetishmasa DATA_REVIEW, yakka noaniq indikator bo‘lsa RECHECK, mezonlar bajarilmasa NO_CASE holati saqlanadi. Tizim har bir hodisadan majburan Case yasamasligi kerak.")
+
+elif page == "Banklararo tahlil (sintetik)":
+    st.markdown("## Banklararo tahlil — sintetik konsepsiya")
+    st.caption("Maqsad — qonuniy ruxsat etilgan va zarur bo‘lgan atributlarni turli bank manbalari kesimida ehtiyotkorlik bilan solishtirish.")
+    st.markdown('<div class="panel"><b>Misol:</b> bir xil psevdonim qurilma belgisi ikki sintetik bank yozuvida uchrashi mumkin. Bu tekshiruv uchun moslik indikatori, lekin shaxs bir xil yoki aybdor degan isbot emas.</div>', unsafe_allow_html=True)
+    st.markdown("### Chegaralar")
+    st.markdown("- Hozirgi v4 da banklararo haqiqiy API yoki ma’lumot almashinuvi yo‘q.")
+    st.markdown("- v3 da alohida sintetik atribut mosligi ko‘rinishi ishlab chiqilgan, lekin v4 ga integratsiya qilinmagan.")
+    st.markdown("- Qabul qiluvchi bank maydoni bo‘lmasa, A → B → C pul o‘tkazma zanjiri deb xulosa qilinmaydi.")
+    st.markdown("- Umumiy qurilma, IP yoki boshqa atribut mosligi aybdorlik isboti emas.")
+    st.info("Bu sahifa banklararo tahlilning maqsadi va ehtiyot chegaralarini ko‘rsatadi; real banklararo grafik yoki mablag‘ oqimini ko‘rsatmaydi.")
+
+elif page == "KPI dashboard":
+    st.markdown("## KPI dashboard — sintetik jarayon ko‘rsatkichlari")
+    st.caption("Bu ko‘rsatkichlar faqat v4 dagi to‘rtta sintetik namuna bo‘yicha jarayon holatlarini sanaydi.")
+    counts = {code: sum(1 for event in EVENTS.values() if event["status"] == code) for code in ("HUMAN_REVIEW", "DATA_REVIEW", "RECHECK", "MONITOR")}
+    a, b, c, d = st.columns(4)
+    with a: metric("Jami namunalar", str(len(EVENTS)), "Sintetik", "📥")
+    with b: metric("Case namunasi", str(sum(1 for event in EVENTS.values() if event["case_id"])), "Haqiqiy Case emas", "📁")
+    with c: metric("Signal yozuvlari", str(sum(len(event["signals"]) for event in EVENTS.values())), "Sintetik indikatorlar", "📡")
+    with d: metric("Case ochilmagan", str(sum(1 for event in EVENTS.values() if not event["case_id"])), "Bu xato bo‘lishi shart emas", "🧭")
+    st.dataframe(
+        [{"Holat": status_text(code), "Namunalar soni": number} for code, number in counts.items()],
+        use_container_width=True, hide_index=True,
+    )
+    st.warning("Bu aniqlik, precision, recall, FP/FN yoki real firibgarlik darajasi emas. Bunday KPI uchun ekspert tasdiqlagan etalon ma’lumot va aniq metodika kerak.")
+
+elif page == "Fuqaro uchun tushuntirish":
+    st.markdown("## Fuqaro uchun sodda tushuntirish")
+    st.caption("FINZANJIR konsepsiyasi oddiy tilda qanday ishlashi mumkin?")
+    st.markdown("### Agar operatsiyada noodatiy holat ko‘rinsa nima bo‘ladi?")
+    steps = [
+        ("1. Belgi kuzatiladi", "Masalan, yangi qurilma yoki odatdagidan farqli operatsiya. Bu hali firibgarlik degani emas."),
+        ("2. Ma’lumot tekshiriladi", "Tizim kerakli ma’lumot to‘liqmi, manbasi ma’lummi va boshqa ma’lumotga zid emasmi — shuni tekshiradi."),
+        ("3. Rozilik alohida ko‘riladi", "Qurilmadan foydalanish, hisobdan foydalanish va aynan pul o‘tkazmasiga rozilik bir xil narsa emas."),
+        ("4. Zarur bo‘lsa Case tayyorlanadi", "Case — tekshiruv uchun jamlangan ma’lumotlar. Bu ayblov yoki hukm emas."),
+        ("5. Inson mutaxassis ko‘radi", "Mutaxassis dalillarni, qarshi dalillarni va noma’lum savollarni ko‘rib chiqadi."),
+    ]
+    for title, description in steps:
+        st.markdown(f'<div class="step"><div class="step-title">{title}</div><div class="small">{description}</div></div>', unsafe_allow_html=True)
+    st.markdown("### Fuqaro uchun muhim tamoyillar")
+    st.markdown("- Noodatiy signal avtomatik aybdorlik degani emas.")
+    st.markdown("- FINZANJIR karta, hisob yoki tranzaksiyani o‘zi bloklamaydi.")
+    st.markdown("- Ma’lumot yetarli bo‘lmasa, buni yashirmasdan ko‘rsatishi kerak.")
+    st.markdown("- Haqiqiy murojaat, e’tiroz va ma’lumot olish tartibi tegishli vakolatli tashkilotlar bilan kelishilishi kerak.")
+    st.warning("Bu tushuntirish konsepsiya namunasidir. Hozircha fuqaro uchun haqiqiy shaxsiy kabinet yoki Case qidiruvi mavjud emas.")
+
+elif page == "Audit jurnali":
+    st.markdown("## Audit jurnali — ko‘rgazmali namuna")
+    st.caption("Audit izi kim, qachon, qaysi obyekt bilan nima qilganini tekshirish imkonini berishi kerak.")
+    st.dataframe(
+        [
+            {"Vaqt": "10:42:00", "Amal": "SYNTHETIC_EVENT_RECEIVED", "Obyekt": "SYN-ATO-001", "Holat": "NAMUNA"},
+            {"Vaqt": "10:42:01", "Amal": "SIGNALS_RECORDED", "Obyekt": "SIG-001…003", "Holat": "NAMUNA"},
+            {"Vaqt": "10:42:02", "Amal": "EVIDENCE_AND_UNKNOWNS_LINKED", "Obyekt": "CASE-SYN-0001", "Holat": "NAMUNA"},
+            {"Vaqt": "10:42:03", "Amal": "CASE_CANDIDATE_FOR_HUMAN_REVIEW", "Obyekt": "CASE-SYN-0001", "Holat": "NAMUNA"},
+        ],
+        use_container_width=True, hide_index=True,
+    )
+    st.warning("Bu ko‘rgazmali jadval. U doimiy, o‘zgartirib bo‘lmaydigan yoki haqiqiy foydalanuvchi amallarini yozadigan audit ombori emas.")
 
 elif page == "Human Review":
     st.markdown("## Human Review — inson ko‘rigi")
