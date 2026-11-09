@@ -13,7 +13,7 @@ data class KnowledgeAnswer(
 )
 
 object FinzanjirKnowledgeBase {
-    const val VERSION = "v4-corpus-0.4.0"
+    const val VERSION = "v4-corpus-0.4.1+v14"
     private const val ASSET = "finzanjir_knowledge.json"
 
     private data class Record(
@@ -69,7 +69,7 @@ object FinzanjirKnowledgeBase {
         }
 
         if (selected.isEmpty()) return insufficient()
-        val best = selected.take(5)
+        val best = if (q.contains("16 qatlam") || q.contains("barcha qatlam") || q.contains("qatlamlar")) selected else selected.take(5)
         val answer = buildString {
             append(best.first().first.text)
             if (best.size > 1) {
