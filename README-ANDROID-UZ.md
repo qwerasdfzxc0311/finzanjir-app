@@ -10,6 +10,16 @@ Ishchi branch: `finzanjir-android-v1`. Asosiy FINZANJIR V3/V4 branchlari o‘zga
 - Barcha ekranlar yuqori bo‘lim navigatsiyasidan ochiladi; pastki navigatsiya asosiy to‘rtta bo‘limni ham beradi.
 - API kalitlari APK yoki repository ichiga joylanmaydi.
 
+
+## Yagona bog‘langan jarayon — integratsiya bosqichi 1
+- Fuqaro murojaati, avtomatik demo-signal, Case reyestri, Human Review, tuzatish so‘rovi, mock bank so‘rovi/javobi va audit tarixi bitta Case ID atrofida bog‘landi.
+- Case holati va voqealar tarixi ilova qurilmasidagi SharedPreferences ichida saqlanadi; ilova qayta ochilganda demo Case'lar saqlanib qoladi.
+- “Jarayon”, “Signallar”, “Case”, “Human Review” va “Yagona tizim” navigatsiyalari bir xil workflow ma’lumotlariga olib boradi.
+- Signal yaratish hozircha sodda, izohlanadigan demo qoidalariga asoslangan; u real firibgarlikni aniqlash modeli yoki kalibrlangan Risk Score emas.
+- Bank adapteri hozircha faqat lokal mock so‘rov/javobni qayd etadi. Hech qanday bankka tarmoq so‘rovi yuborilmaydi.
+- Hozircha production autentifikatsiya, server RBAC, shifrlangan server audit jurnali, real bank API, push-xabarnoma va ko‘p qurilmali sinxronlash mavjud emas. Maxfiy yoki to‘lov ma’lumotlarini demo maydonlariga kiritmang.
+- Bu bosqich modullarni umumiy Case holatiga ulaydi; keyingi bosqichlarda rolga mos ish maydonlari, dalil/qarshi dalil obyektlari, signal reyestri, server API kontrakti va avtomatlashtirilgan testlar qo‘shilishi kerak.
+
 ## Bilimlar bazasi
 - Android assets ichida 1,121 ta strukturali yozuv mavjud: V4 korpusidagi 957 yozuv + V14 original PDFning 164 sahifa yozuvi.
 - Har bir V14 sahifa yozuvida original PDF sahifasi, source_id, source_version, source_section, source_path va candidate maqomi saqlanadi.

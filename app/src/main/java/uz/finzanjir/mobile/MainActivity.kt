@@ -48,21 +48,21 @@ private fun FinzanjirApp() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(page: String, select: (String) -> Unit) {
-    val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
+    val nav = listOf("Bosh sahifa", "Yagona tizim", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
     Scaffold(
         topBar = {
             TopAppBar(title = { Column {
                 Text("FINZANJIR", color = Navy, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                Text("Ochiq mutaxassislar prototipi · v1", color = Muted, fontSize = 10.sp)
+                Text("Yagona bog‘langan ish jarayoni · demo", color = Muted, fontSize = 10.sp)
             } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Canvas))
         },
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
-                val bottom = listOf("Bosh sahifa", "Jarayon", "Signallar", "AI yordamchi")
+                val bottom = listOf("Bosh sahifa", "Yagona tizim", "Signallar", "AI yordamchi")
                 bottom.forEachIndexed { i, label ->
                     NavigationBarItem(selected = page == label, onClick = { select(label) },
                         icon = { Icon(listOf(Icons.Default.Dashboard, Icons.Default.AccountTree, Icons.Default.Bolt, Icons.Default.Psychology)[i], null) },
-                        label = { Text(listOf("Bosh", "Jarayon", "Signal", "AI")[i], fontSize = 9.sp) })
+                        label = { Text(listOf("Bosh", "Yagona", "Signal", "AI")[i], fontSize = 9.sp) })
                 }
             }
         }, containerColor = Canvas
@@ -72,25 +72,8 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                 nav.forEach { Tab(page == it, { select(it) }, text = { Text(it, fontSize = 10.sp) }) }
             }
             when (page) {
-                "Bosh sahifa" -> Home { select("Jarayon") }
-                "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
-                    "1. Hodisa va manba — hozircha namoyish ma’lumotlari sintetik",
-                    "2. Ma’lumot sifati — yetishmayotgan, eskirgan yoki zid ma’lumotlarni belgilash",
-                    "3. 16 qatlam — tegishli talab va nazorat yo‘nalishlarini ko‘rib chiqish",
-                    "4. Signal — kuzatuvni qayd etish; signal aybdorlik hukmi emas",
-                    "5. Dalil va qarshi dalil — tasdiqlovchi hamda rad etuvchi ma’lumotlar",
-                    "6. Rozilik doirasi — qurilma, hisob va aniq o‘tkazma roziligini ajratish",
-                    "7. Case mezonlari — yetarli asos bo‘lsa tekshiruv ishini shakllantirish",
-                    "8. Human Review — vakolatli inson tekshiradi va natijani qayd etadi",
-                    "9. Audit izi — kim, qachon, qaysi manbaga tayanganini saqlash"
-                ))
-                "Signallar" -> InfoList("Signal reyestri", "Signal — tekshirish indikatori, yakuniy xulosa emas", listOf(
-                    "SIG-DEMO-001 · Qurilma atributi mosligi · kontekst talab qiladi",
-                    "SIG-DEMO-002 · Vaqt ketma-ketligi noodatiy · qayta tekshiruv",
-                    "SIG-DEMO-003 · Rozilik doirasi noaniq · UNKNOWN",
-                    "SIG-DEMO-004 · Manba ma’lumoti to‘liq emas · DATA_REVIEW",
-                    "Har bir signal uchun manba, vaqt, ishonchlilik, tasdiqlash/rad etish munosabati va noma’lumlar talab qilinadi"
-                ))
+                "Bosh sahifa" -> Home { select("Yagona tizim") }
+                "Yagona tizim", "Jarayon", "Signallar", "Case", "Human Review" -> UnifiedWorkflowScreen()
                 "16 qatlam" -> InfoList("16 qatlam katalogi", "Katalog ko‘rsatilishi to‘liq implementatsiya degani emas", listOf(
                     "L01 Evidence & Data Provenance — dalil kelib chiqishi va manba izi",
                     "L02 Data Quality & Reliability — ma’lumot sifati va ishonchliligi",
@@ -108,23 +91,6 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                     "L14 Bank Integration Readiness — bank integratsiyasiga tayyorlik",
                     "L15 Performance & Capacity Management — samaradorlik va quvvatni boshqarish",
                     "L16 Impact & Harm Reduction — ta’sir va zarar kamayishini o‘lchash"
-                ))
-                "Case" -> InfoList("Case markazi", "Sintetik namuna; real bank Case emas", listOf(
-                    "CASE-DEMO-001 · CASE_CANDIDATE",
-                    "Tasdiqlovchi dalillar: hali namoyish uchun to‘liq manbali dalil ulanmagan",
-                    "Qarshi dalillar: alohida qayd etilishi shart",
-                    "Rozilik: qurilma / hisob / aniq o‘tkazma alohida tekshiriladi",
-                    "Unknown: qurilma kimning nazoratida bo‘lgan?",
-                    "Unknown: o‘tkazma aynan qaysi usulda tasdiqlangan?",
-                    "Case ochilishi firibgarlik tasdiqlandi degani emas"
-                ))
-                "Human Review" -> InfoList("Human Review", "Yakuniy qaror vakolatli insonda qoladi", listOf(
-                    "Dalillarni manba, vaqt va ishonchlilik bo‘yicha tekshirish",
-                    "Rozilik doirasini alohida aniqlash",
-                    "Qarshi dalillar va muqobil izohlarni ko‘rib chiqish",
-                    "Noma’lum yoki yetishmayotgan ma’lumotlarni qayd etish",
-                    "Natija: tasdiqlash / rad etish / qo‘shimcha ma’lumot / qayta tekshiruv",
-                    "AI tavsiyasi rasmiy qaror o‘rnini bosmaydi"
                 ))
                 "AI yordamchi" -> KnowledgeAssistant()
                 else -> InfoList("Prototip cheklovlari", "Mavjud bo‘lmagan imkoniyatlar bor deb ko‘rsatilmaydi", listOf(
