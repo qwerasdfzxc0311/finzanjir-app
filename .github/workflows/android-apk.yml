@@ -10,8 +10,6 @@ on:
       - '.github/workflows/android-apk.yml'
 permissions:
   contents: read
-actions:
-  read: true
 jobs:
   build:
     runs-on: ubuntu-latest
