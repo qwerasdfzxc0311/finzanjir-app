@@ -1,0 +1,641 @@
+[
+  {
+    "id": "FZ24-61bb2e79bc62e1",
+    "text": "FINZANJIR — raqamli moliyaviy xavfsizlik platformasi konsepsiyasi; mavjud bank va to‘lov tizimlarini almashtirmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-7617799e9c8a03",
+    "text": "FINZANJIRning maqsadi xavf signallarini imkon qadar erta aniqlash, kontekstlash, tushuntirish, audit izini saqlash va qonuniy recovery jarayonini qo‘llab-quvvatlash",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-641842224e9de7",
+    "text": "Master Flow konseptual ravishda ma’lumot/signallar → Validation → Normalization → Risk Engine → Cross-Match → Fraud Graph → Risk Signal/Explainability → Case Management → Human/Bank Review → Protection/Recovery → vakolatli natija → Audit/KPI → Feedback",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-1d82be6db19171",
+    "text": "Master Flow kelajakdagi to‘liq platforma modelidir; hozirgi prototipda real bank API, real-time Data Exchange, Production monitoring va to‘liq avtomatik orchestration mavjud deb da’vo qilinmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-27d282456c6526",
+    "text": "Risk Engine ruxsat etilgan signallarni kontekst va bog‘liqlik bilan tahlil qilib, qo‘shimcha tekshiruv zarurati haqida risk kontekstini shakllantirishga xizmat qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-9af1970d1a4943",
+    "text": "Risk Score signal mavjudligi, ishonchliligi va umumiy risk darajasini ifodalovchi analitik mexanizm; ballning o‘zi yakuniy qaror yoki firibgarlik isboti emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-71ad6dd5f5ec34",
+    "text": "Fraud Graph hodisalar, qurilma, tarmoq, tranzaksiya, karta, hisob yoki qabul qiluvchi kabi qonuniy mavjud obyektlar orasidagi bog‘liqliklarni ko‘rishni osonlashtiradi; shaxsni avtomatik aybdor qilmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-1db21d3bc5a4dc",
+    "text": "Case Management signal va kontekstni tekshiruvga yaroqli hodisa sifatida boshqarish, izlarni saqlash va vakolatli ko‘rib chiqishga tayyorlashga xizmat qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-4afa53ae99c992",
+    "text": "Human/Bank Review avtomatik signalni vakolatli ko‘rib chiqishdan ajratadi; risk signali yakuniy huquqiy hukm emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-45de13c42bdea1",
+    "text": "FIN-RECOVERY hodisadan keyin zararni kamaytirish, qonuniy nizolash/murojaat, izlarni saqlash va recovery imkoniyatlarini muvofiqlashtirish yo‘nalishidir",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-d23d6299f8e1b9",
+    "text": "Explainable Risk “nega signal berildi?” savoliga asosiy indikatorlar, vaqt, manba va model/rule konteksti bilan audit qilinadigan tushuntirish berishga yo‘naltiriladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-a1bf2d05a3589f",
+    "text": "Asosiy tamoyil: shubhali signal ≠ firibgar/aybdor. Risk indikatori yoki Case yakuniy huquqiy xulosa emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-6e61f0fcde2fc1",
+    "text": "FINZANJIR OTP, CVV/CVC, PIN, parol yoki boshqa maxfiy credentiallarni so‘rash uchun mo‘ljallanmagan",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-1f1119e4890c65",
+    "text": "Ichki bilim yetarli bo‘lmasa, FINZANJIR faktni uydirmasligi, xavfsiz cheklangan javob berishi yoki ishonchli/rasmiy manbaga yo‘naltirishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-7a297a3e5609f0",
+    "text": "AI FINZANJIRning barcha qismi emas; u odam bilan muloqot, tushuntirish, bilimdan foydalanish, yo‘naltirish va o‘rganish qatlamini kuchaytiruvchi komponent",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-49ebb208c785dc",
+    "text": "Authoritative KB rasmiy bilimni saqlaydi; Secondary Learning KB AI o‘rgangan candidate materialni alohida saqlaydi. AI Authoritative KBni o‘zi o‘zgartirmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-c8d765f18dbf51",
+    "text": "False Positive xavfsiz holatning xavfli deb belgilanilishi; u foydalanuvchi tajribasi va operator yuklamasiga ta’sir qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-810b1f6770c13a",
+    "text": "False Negative xavfli holatning o‘tkazib yuborilishi; pilot va ground-truth orqali alohida o‘lchanishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-ffbe522b3691d7",
+    "text": "87/100 kabi qiymatlar prototipdagi sintetik/demo qiymat bo‘lishi mumkin; real model aniqligi yoki firibgarlik ehtimoli sifatida talqin qilinmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-998082633dc408",
+    "text": "FINZANJIR real bank ma’lumotlari, real pul yoki maxfiy credentiallarga ega deb taqdim etilmasligi kerak; bunday integratsiya qonuniy va texnik talablarga bog‘liq",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-9711afe12cadd7",
+    "text": "Hodisalardan keyingi feedback, regression, audit va mutaxassis xulosalari kelajakdagi qoidalar/model/knowledge yangilanishlariga asos bo‘lishi mumkin",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-534f2f478527e3",
+    "text": "Risk baholash bitta signal bilan tugamaydi; hodisa, kanal, qurilma, identifikatsiya, tranzaksiya konteksti va bog‘liq signallar birgalikda ko‘rilishi mumkin",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-4eb36bb26b8842",
+    "text": "FINZANJIR bank yoki to‘lov tashkilotining o‘rnini bosuvchi tizim emas; u ruxsat etilgan integratsiya va jarayonlarni qo‘llab-quvvatlovchi xavfsizlik/risk platformasi konsepsiyasidir",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FZ24-dd3a91ae8ccf05",
+    "text": "FINZANJIRni tushuntirishda avval “nima”, “muammo”, “qanday ishlaydi”, “nima qilmaydi”, “hozirgi prototip chegarasi” va “kelajak” ketma-ketligi berilishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-evidence",
+    "text": "Har bir xavf signali yoki xulosani imkon qadar manba, dalil va tushuntirish bilan bog‘lash; bitta signalni ayb isboti deb qabul qilmaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-human_review",
+    "text": "Muhim tekshiruv va vakolatli natijalarni inson/bank review jarayoniga qoldirish; AI yakuniy huquqiy hukm chiqarmasligi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-prototype_boundary",
+    "text": "Hozirgi prototipdagi mavjud imkoniyatlar bilan kelajakdagi MVP/Pilot/Production integratsiyasini alohida ko‘rsatish; real bank API yoki production integratsiyasini mavjud deb da’vo qilmaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-fallback",
+    "text": "Dalil yetarli bo‘lmasa faktni to‘qimaslik, noaniqlikni ochiq aytish, savolni aniqlashtirish yoki ishonchli manbani tekshirishga yo‘naltirish",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-privacy",
+    "text": "Maxfiylik, data minimization, qonuniylik va ruxsat tamoyillarini hisobga olish; keraksiz maxfiy ma’lumotlarni so‘ramaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-current_data",
+    "text": "Hozirgi vaqtga bog‘liq ma’lumotlarni statik bilimdan ajratish; sana, manba va yangilanish vaqtini talab qilish",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-risk_verdict",
+    "text": "Yuqori risk yoki shubhali signal mijozni avtomatik ravishda firibgar yoki aybdor qilmaydi. Signal qo‘shimcha tekshiruv uchun kontekstdir; dalil, qarama-qarshi dalil, graph va vakolatli review orqali baholanadi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-bank_boundary",
+    "text": "FINZANJIR mavjud bank tizimlarini almashtirmaydi. Bank/to‘lov tashkilotlari bilan real integratsiya qonuniy API, ruxsat etilgan ma’lumot almashinuvi, xavfsizlik, huquqiy asos va audit talablariga bog‘liq; hozirgi prototipni production integratsiya deb ko‘rsatmaslik kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "FINZ-P-uncertainty",
+    "text": "AI yetarli dalil bo‘lmasa bilmayman deb ochiq aytishi, manbani tekshirishi va faktni uydirmasligi kerak. Bilmay qolgan holatda aniqlik so‘rashi yoki ishonchli manbaga yo‘naltirishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "legacy_candidate"
+  },
+  {
+    "id": "V4-L01",
+    "text": "L01 — Evidence & Data Provenance. Maqsad: Har bir muhim ma’lumotning manbasi, olingan vaqti, olish usuli va versiyasini qayd etish; manbasi noma’lum yozuvni tasdiqlangan dalil deb ko‘rsatmaslik. Asosiy savol: Ma’lumot qayerdan, qachon va qanday usulda olingan? Kirish ma’lumotlari: Manba ID, hodisa vaqti, qabul vaqti, olish usuli va yozuv versiyasi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L02",
+    "text": "L02 — Data Quality & Reliability. Maqsad: Ma’lumotning to‘liqligi, eskirishi, dublikati va ziddiyatlarini aniqlash; yetishmayotgan maydon ta’sirini ochiq ko‘rsatish. Asosiy savol: Tahlil uchun zarur ma’lumot yetarlimi va o‘zaro mosmi? Kirish ma’lumotlari: Majburiy maydonlar, format, vaqt belgisi, dublikat va o‘zaro tekshiriladigan qiymatlar. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L03",
+    "text": "L03 — Risk & Uncertainty. Maqsad: Xavf indikatorlari, noaniqliklar va yetishmayotgan dalillarni ajratish; ballni aybdorlik hukmiga aylantirmaslik. Asosiy savol: Qaysi kuzatilgan holat qo‘shimcha tekshiruvni talab qiladi va nimasi noma’lum? Kirish ma’lumotlari: Tekshirilgan hodisa maydonlari, kontekst, signal qoidalari va ma’lumot sifati. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L04",
+    "text": "L04 — Human Oversight & Correction. Maqsad: Muhim yoki noaniq holatni inson ko‘rigiga yo‘naltirish; tuzatish va qaror sabablarini qayd etish. Asosiy savol: Qachon inson ko‘rigi shart va xulosa qanday asoslanadi? Kirish ma’lumotlari: Case konteksti, signal, dalil, qarshi dalil, noma’lumlar va oldingi ko‘rik izi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L05",
+    "text": "L05 — Rule & Model Governance. Maqsad: Qoida/model/config versiyasi, tasdiqlash vakolati, o‘zgarish tarixi va rollback nazoratini belgilash. Asosiy savol: Qaysi qoida yoki model ishladi va bu versiya tasdiqlanganmi? Kirish ma’lumotlari: Qoida ID, model/config versiyasi, tasdiqlash va o‘zgarish so‘rovi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L06",
+    "text": "L06 — Data Disclosure & Sharing Control. Maqsad: Tashqi uzatishdan oldin maqsad, huquqiy/ruxsat asosi, qabul qiluvchi va minimal zarur maydonlarni tekshirish. Asosiy savol: Kimga, nima maqsadda va qaysi eng kam ma’lumot uzatilishi mumkin? Kirish ma’lumotlari: Uzatish maqsadi, oluvchi, ruxsat asosi, ma’lumot toifasi va maydonlar. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L07",
+    "text": "L07 — Automation Safety & Control. Maqsad: Avtomatik jarayon chegarasi, sabab kodi, xavfsiz to‘xtash va qo‘lda ko‘rik yo‘lini belgilash. Asosiy savol: Qaysi ish avtomatlashtiriladi, qaysi ish inson tasdig‘ini talab qiladi? Kirish ma’lumotlari: Jarayon holati, amal turi, ruxsat darajasi va xavfsizlik qoidalari. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L08",
+    "text": "L08 — Transaction Chain & Case Correlation. Maqsad: Bir Case ichidagi hodisalar nima sababdan bog‘langanini ko‘rsatish; to‘liq bo‘lmagan zanjirni isbot deb ko‘rsatmaslik. Asosiy savol: Hodisalar nima sababdan bog‘landi va qaysi qismi tasdiqlanmagan? Kirish ma’lumotlari: Hodisa ID, vaqt va qonuniy mavjud bog‘lovchi atributlar. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L09",
+    "text": "L09 — Citizen Transparency & Appeal. Maqsad: Fuqaro uchun jarayon holati va tushunarli izohni loyihalash; e’tiroz/tuzatish yo‘lini ko‘rsatish va maxfiylikni saqlash. Asosiy savol: Fuqaro o‘z jarayoni haqida nimani bilishi va qayerga murojaat qilishi mumkin? Kirish ma’lumotlari: Fuqaro ko‘rishi mumkin bo‘lgan holat, izoh, murojaat kanali va oshkor etish cheklovi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L10",
+    "text": "L10 — Privacy & Data Lifecycle. Maqsad: Ma’lumot maqsadi, saqlash muddati, kirish, arxivlash va o‘chirish qoidalarini belgilash. Asosiy savol: Ma’lumotni saqlashga nima asos bor, kim ko‘ra oladi va qachon o‘chiriladi? Kirish ma’lumotlari: Ma’lumot toifasi, maqsad, rol, saqlash muddati va o‘chirish talabi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L11",
+    "text": "L11 — Security Incident Response. Maqsad: Xavfsizlik hodisasini tasniflash, eskalatsiya, dalilni saqlash va tiklash bosqichlarini belgilash. Asosiy savol: Xavfsizlik hodisasi yuz bersa kim nima qiladi va tizim qanday tiklanadi? Kirish ma’lumotlari: Ogohlantirish, vaqt, ta’sir doirasi, tizim holati va hodisa dalillari. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L12",
+    "text": "L12 — Knowledge Governance & AI Reliability. Maqsad: AI javobini manbaga bog‘lash; dalil yetmasa bilmaslikni bildirish; tasdiqlanmagan bilimni authoritative deb ko‘rsatmaslik. Asosiy savol: Javob qaysi manbaga tayangan va manba yetarlimi? Kirish ma’lumotlari: Bilim yozuvi, manba, versiya, tasdiqlash holati, savol va qidiruv natijasi. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L13",
+    "text": "L13 — Testing & Independent Evaluation. Maqsad: Talab, test, kutilgan/haqiqiy natija va dalil izchilligini tekshirish; qamrov cheklovlarini hujjatlashtirish. Asosiy savol: Nimani sinadik, qanday natija kutdik va amalda nima kuzatildi? Kirish ma’lumotlari: Talab ID, test ID, muhit, input, expected, actual va log/artifact. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L14",
+    "text": "L14 — Bank Integration Readiness. Maqsad: Bank integratsiyasini faqat huquqiy/hamkorlik shartlari, texnik spetsifikatsiya va xavfsizlik tasdiqlanganda baholash. Asosiy savol: Bank bilan xavfsiz va qonuniy ulanish uchun nima tayyor bo‘lishi kerak? Kirish ma’lumotlari: API/schema, autentifikatsiya, ruxsat, sandbox, SLA va kelishuv. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L15",
+    "text": "L15 — Performance & Capacity Management. Maqsad: Javob vaqti, xato ulushi, resurslar, yuklama va tiklanish mezonlarini belgilash. Asosiy savol: Tizim kerakli yuklamada barqaror va tez ishlay oladimi? Kirish ma’lumotlari: Yuklama profili, javob vaqti, xato, CPU/RAM, navbat va tiklanish. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-L16",
+    "text": "L16 — Impact & Harm Reduction. Maqsad: False Positive/False Negative va salbiy ta’sir metrikalarini formula, denominator, segment va taqqoslash usuli bilan belgilash. Asosiy savol: Tizim xato signal bersa yoki xavfli holatni o‘tkazib yuborsa, ta’siri qanday o‘lchanadi? Kirish ma’lumotlari: Ekspert tasdiqlagan etalon, qarorlar, segmentlar, xato turlari va zarar ko‘rsatkichlari. Hozirgi katalog holati: PLANNED; bu qatlam v4 da to‘liq implementatsiya qilingan yoki ekspert tasdiqlagan degani emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 arxitektura va 16 qatlam katalogi",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "layer_catalog_candidate"
+  },
+  {
+    "id": "V4-CORE-001",
+    "text": "FINZANJIR — moliyaviy firibgarlik xavfini signal, kontekst, dalil, qarshi dalil, noma’lum savollar va inson ko‘rigiga bog‘lab tahlil qilishga qaratilgan konsepsiya. U bank va to‘lov tizimlarini almashtirmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-002",
+    "text": "FINZANJIRning asosiy vazifasi shubhali holatni yakuniy ayblovga aylantirish emas; tekshiriladigan ma’lumot va asoslangan inson ko‘rigiga tayyorlashdir.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-003",
+    "text": "FINZANJIR karta, hisob yoki tranzaksiyani avtomatik bloklamaydi. Signal yoki Case shaxsning aybdorligini anglatmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-004",
+    "text": "FINZANJIRda qurilmadan foydalanishga rozilik, hisobdan foydalanishga rozilik va aynan muayyan pul o‘tkazmasiga rozilik alohida doiralar sifatida tekshiriladi; bitta umumiy rozilik maydoniga qisqartirilmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-005",
+    "text": "Signal — kuzatilgan indikator. Evidence — manbasi, vaqti va cheklovi ko‘rsatilgan tasdiqlovchi yoki inkor etuvchi material. Unknown — hali tasdiqlanmagan yoki yetishmayotgan muhim fakt. Ular bir-birining o‘rnini bosmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-006",
+    "text": "Contradiction — ikki manba yoki maydon qiymatlari o‘rtasidagi ziddiyat. Bunday holat yashirilmasligi, ma’lumot sifati yoki qayta tekshiruv yo‘nalishiga berilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-007",
+    "text": "Yagona ish jarayoni: sintetik manba/hodisa → ma’lumot sifati tekshiruvi → 16 qatlam mazmuniy tahlili → signal va dalillar → Case ochish mezonlari → zarur bo‘lsa Case → Human Review → inson qarori va audit izi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-008",
+    "text": "Ma’lumot yetishmasa DATA_REVIEW; bitta noaniq indikator yoki yetarli bo‘lmagan dalil bo‘lsa RECHECK yoki monitoring; Case mezonlari bajarilmasa NO_CASE; bir nechta mustaqil tekshiriladigan indikator va mezonlar bajarilsa CASE_CANDIDATE yo‘nalishi ko‘riladi. Bu oqim konseptual va ekspert tekshiruvini talab qiladi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-009",
+    "text": "Bir qurilma, IP, telefon raqami yoki boshqa umumiy atributning mos kelishi shaxs aybdorligini isbotlamaydi. Bog‘lanishning manbasi va nima sababdan bog‘langani ko‘rsatilishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-010",
+    "text": "Case — tekshiruv uchun bog‘langan hodisa, signal, dalil, qarshi dalil va noma’lum savollar jamlanmasi. Case ochilishi ayblov yoki huquqiy hukm emas.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-011",
+    "text": "Human Review — vakolatli insonning dalillarni ko‘rib chiqishi va asoslangan harakatni qayd etishi. AI yoki avtomatik signal inson vakolatini almashtirmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-012",
+    "text": "FINZANJIR banklararo ma’lumotni faqat qonuniy asos, ruxsat etilgan maqsad, zarur minimal maydonlar va xavfsiz integratsiya shartlari mavjud bo‘lganda ko‘rib chiqishi mumkin. Hozirgi v4 da haqiqiy bank API yoki bank ma’lumotlari yo‘q.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-013",
+    "text": "Hozirgi v4 — ochiq ko‘rish uchun sintetik namoyish prototipi. Undagi Case va Human Review ko‘rgazmali; haqiqiy reviewer autentifikatsiyasi, SSO/RBAC, doimiy audit va production saqlash mavjud deb ko‘rsatilmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/README.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-014",
+    "text": "v3 laboratoriyasida to‘rtta sun’iy bank manbasi va 400 ta deterministik sintetik hodisa ssenariysi bor. Bu v3 alohida laboratoriyasi; v4 ning to‘rtta ko‘rgazmali hodisasi bilan aralashtirilmasligi va v4 ga ulangan deb aytilmasligi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v3/README.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-015",
+    "text": "v3 offline AI extractive lexical retrieval bo‘lib, generativ LLM emas. Uning 33 ga yaqin bilim kartalari candidate_not_authoritative maqomida; bu v4 Gemini integratsiyasi mavjudligini anglatmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v3/README.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-016",
+    "text": "FINZANJIR AI ichki bilim yetarli bo‘lmasa faktni to‘qimasligi, manba va tasdiqlash holatini ko‘rsatishi, kerak bo‘lsa savolni aniqlashtirishi yoki ishonchli tashqi manbani tekshirishi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-017",
+    "text": "Tashqi internet natijasi FINZANJIRning authoritative bilimiga avtomatik qo‘shilmaydi. Uni candidate material sifatida alohida saqlash va loyiha egasi yoki vakolatli ekspert tasdig‘idan keyingina rasmiy bilimga o‘tkazish mumkin.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-018",
+    "text": "Sintetik testlar real firibgarlik aniqligi, precision, recall, false-positive yoki false-negative darajasini isbotlamaydi. Bunday metrikalar uchun ekspert tasdiqlagan ground-truth va aniq metodika kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/README.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-019",
+    "text": "v4 qatlamlar katalogidagi nom va vazifalar loyiha hujjatlaridan olingan talab mazmunidir. Har bir qatlam hozir PLANNED yoki ekspert validatsiyasi kutilayotgan holatda; to‘liq implementatsiya da’vo qilinmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-020",
+    "text": "Ommaviy v4 interfeysi ma’lumotni ko‘rish va navigatsiya uchun. AI savol-javobi ham loyiha ma’lumotlarini tahrirlamasligi, Case holatini o‘zgartirmasligi va bank amallarini bajarmasligi kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/README.md",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-021",
+    "text": "FINZANJIRdagi AI yordamchi moduli — tushuntirish va bilimdan foydalanish komponenti; u butun FINZANJIR tizimi emas va mustaqil ravishda huquqiy qaror, risk hukmi yoki bank amali chiqarmaydi.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v3/knowledge_uz.json",
+    "record_type": "project_concept_candidate"
+  },
+  {
+    "id": "V4-CORE-022",
+    "text": "AI javobida loyiha hujjati, candidate bilim, tashqi internet manbasi va modelning umumiy izohi bir-biridan aniq ajratilishi kerak. Tashqi manba ichki loyiha qaroriga zid bo‘lsa, zidlikni yashirmasdan ko‘rsatish kerak.",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR v4 repository documentation",
+    "source_path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+    "record_type": "project_concept_candidate"
+  }
+]
