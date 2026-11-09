@@ -30,7 +30,7 @@ Asosiy bo‘limlar:
 Savol → Uzbek Latin/Cyrillic normalizatsiyasi → ichki bilim qidiruvi → manba/versiya/maqom → Gemini javobi → ixtiyoriy Google Search grounding → manbalarni ko‘rsatish.
 
 - Python SDK: google-genai (Google tavsiya qilgan rasmiy GenAI SDK).
-- Default model: gemini-3.6-flash.
+- Default model: gemini-3.8-flash.
 - Google Search grounding foydalanuvchi checkbox orqali alohida yoqiladi.
 - Grounding URL manbalari Gemini API javobidan olinadi.
 - Gemini API kaliti faqat Streamlit Secrets orqali o‘qiladi.
@@ -40,7 +40,7 @@ Savol → Uzbek Latin/Cyrillic normalizatsiyasi → ichki bilim qidiruvi → man
 
 ### Google Search va xarajat
 
-Google Search grounding qo‘shimcha xarajat keltirishi mumkin. Gemini bir so‘rov uchun bir nechta qidiruv query bajarishi ehtimoli bor. Google AI Studio/Cloud’da quota, API key restriction va billing alerts sozlang.
+Google Search grounding qo‘shimcha xarajat keltirishi mumkin. Gemini bir so‘rov uchun bir nechta qidiruv query bajarishi ehtimoli bor. Gemini Interactions API chaqiruvida store=false ishlatiladi, shuning uchun server-side Interaction tarixi saqlash o‘chiriladi; bu Google providerning so‘rovni qayta ishlash shartlarini bekor qilmaydi. Google AI Studio/Cloud’da quota, API key restriction va billing alerts sozlang.
 
 Brauzer sessiyasidagi 5 ta so‘rov cheklovi yumshoq UI nazorati xolos; u billing cap yoki kuchli rate limit emas. Public release oldidan server-side rate limiting va abuse protection alohida kerak.
 
