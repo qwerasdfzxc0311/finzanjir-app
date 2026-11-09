@@ -9,6 +9,8 @@ import java.util.Locale
 import java.util.UUID
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -94,6 +96,7 @@ private object WorkflowRepository {
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT).format(Date(time))
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnifiedWorkflowScreen() {
     val context = LocalContext.current
@@ -118,7 +121,7 @@ fun UnifiedWorkflowScreen() {
         refresh(updated.id)
     }
 
-    Column(Modifier.fillMaxSize().padding(14.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(14.dp)) {
         Text("Yagona FINZANJIR ish jarayoni", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Text("Fuqaro → signal → Case → Human Review → tuzatish yoki bank ko‘rigi → natija", fontSize = 11.sp,
             modifier = Modifier.padding(top = 4.dp, bottom = 10.dp))
@@ -153,13 +156,13 @@ fun UnifiedWorkflowScreen() {
             Text("Hozircha Case yo‘q. Yuqoridagi murojaat shaklidan demo Case yarating.", fontSize = 12.sp,
                 modifier = Modifier.padding(vertical = 8.dp))
         } else {
-            LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                items(cases, key = { it.id }) { c ->
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                cases.forEach { c ->
                     Card(onClick = { selectedId = c.id }, colors = CardDefaults.cardColors(
                         containerColor = if (c.id == selectedId) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface)) {
                         Column(Modifier.padding(10.dp)) {
                             Text(c.id, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                            Text("${c.category} · ${c.status}", fontSize = 10.sp)
+                            Text(c.category + " · " + c.status, fontSize = 10.sp)
                             Text(c.description, fontSize = 11.sp, maxLines = 2)
                         }
                     }
