@@ -14,8 +14,8 @@ from typing import Any
 
 KB_PATH = Path(__file__).with_name("knowledge_uz.json")
 MAX_QUESTION_CHARS = 1200
-MAX_KB_HITS = 7
-MAX_CONTEXT_CHARS = 7200
+MAX_KB_HITS = 18
+MAX_CONTEXT_CHARS = 12000
 DEFAULT_MODEL = "gemini-3.6-flash"
 
 _CYRILLIC_TO_LATIN = str.maketrans({
@@ -38,6 +38,9 @@ _ALIASES = {
     "qatlamlar":"qatlam", "tizimi":"tizim", "tizimni":"tizim",
     "rozilik":"consent", "ruxsat":"consent", "o'tkazma":"transfer",
     "o‘tkazma":"transfer", "pul":"money", "firibgar":"fraud",
+    "ko'rigi":"review", "ko‘rigi":"review", "korigi":"review",
+    "jarayoni":"jarayon", "jarayonlar":"jarayon", "kartani":"karta", "kartaga":"karta",
+    "bloklaydimi":"blokla", "bloklamaydi":"blokla", "xavfi":"xavf", "qatlamning":"qatlam",
 }
 _STOP = set("va yoki bu shu u uchun bilan ham nima qanday qaysi haqida kerak mumkin orqali uning ular bir bor yoq yo'q emas deb".split())
 
@@ -85,8 +88,9 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
     if not query_tokens:
         return []
     query_set = set(query_tokens)
+    rows = load_knowledge()
     scored = []
-    for row in load_knowledge():
+    for row in rows:
         body_tokens = tokens(row.get("text", ""))
         if not body_tokens:
             continue
@@ -101,6 +105,24 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
         score = (rarity * (0.55 + coverage)) + phrase_bonus
         scored.append((score, coverage, row, sorted(overlap)))
     scored.sort(key=lambda item: (item[0], item[1], item[2].get("id", "")), reverse=True)
+
+    # A broad "16 layers" question needs the complete layer catalogue, not an arbitrary top-k slice.
+    normalized_question = normalize(question)
+    asks_all_layers = ("16 qatlam" in normalized_question) or ("qatlamlar" in normalized_question)
+    if asks_all_layers:
+        selected = []
+        seen_ids = set()
+        for row in sorted(
+            (item for item in rows if item.get("record_type") == "layer_catalog_candidate"),
+            key=lambda item: item.get("id", ""),
+        ):
+            selected.append((0.0, 0.0, row, ["layer_catalog"]))
+            seen_ids.add(row["id"])
+        for item in scored:
+            if item[2]["id"] not in seen_ids and len(selected) < 19:
+                selected.append(item)
+        scored = selected
+
     return [
         {
             "id": row["id"],
@@ -108,12 +130,15 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
             "approval": row.get("approval", "unknown"),
             "source_package": row.get("source_package", "unknown"),
             "source_path": row.get("source_path", "unknown"),
+            "source_id": row.get("source_id", "unknown"),
+            "source_version": row.get("source_version", "unknown"),
+            "source_section": row.get("source_section", "unknown"),
             "record_type": row.get("record_type", "unknown"),
             "score": round(score, 3),
             "coverage": round(coverage, 3),
             "matched_terms": matched,
         }
-        for score, coverage, row, matched in scored[: max(1, min(int(limit), 10))]
+        for score, coverage, row, matched in scored[: max(1, min(int(limit), 20))]
     ]
 
 
@@ -155,7 +180,9 @@ def build_prompt(question: str, evidence: list[dict[str, Any]], use_google_searc
     for item in evidence:
         context_lines.append(
             f"[ICHKI MANBA: {item['id']} | maqom: {item['approval']} | "
-            f"fayl: {item['source_path']} | tur: {item['record_type']}]\n{item['text']}"
+            f"manba: {item['source_id']} | versiya: {item['source_version']} | "
+            f"bo‘lim: {item['source_section']} | fayl: {item['source_path']} | "
+            f"tur: {item['record_type']}]\n{item['text']}"
         )
     context = "\n\n".join(context_lines) if context_lines else (
         "Ichki FINZANJIR bilimlar bazasidan bu savolga mos yozuv topilmadi."
