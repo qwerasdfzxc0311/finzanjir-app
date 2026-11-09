@@ -32,7 +32,7 @@ object FinzanjirKnowledgeBase {
     private const val ASSET = "finzanjir_knowledge.json"
     private const val MANIFEST = "knowledge_manifest.json"
     private const val DB_NAME = "finzanjir_knowledge_v6.db"
-    private const val DB_VERSION = 1
+    private const val DB_VERSION = 2
     private const val MAX_CANDIDATES = 48
     private const val MAX_ANSWER_RECORDS = 6
 
@@ -63,6 +63,7 @@ object FinzanjirKnowledgeBase {
             )""")
             db.execSQL("CREATE VIRTUAL TABLE knowledge_fts USING fts4(search_text, tokenize=unicode61)")
             db.execSQL("CREATE TABLE knowledge_state(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execSQL("CREATE TABLE token_lexicon(term TEXT PRIMARY KEY)")
             db.execSQL("CREATE INDEX knowledge_meta_type ON knowledge_meta(record_type)")
             db.execSQL("CREATE INDEX knowledge_meta_approval ON knowledge_meta(approval)")
         }
@@ -70,6 +71,7 @@ object FinzanjirKnowledgeBase {
             db.execSQL("DROP TABLE IF EXISTS knowledge_fts")
             db.execSQL("DROP TABLE IF EXISTS knowledge_meta")
             db.execSQL("DROP TABLE IF EXISTS knowledge_state")
+            db.execSQL("DROP TABLE IF EXISTS token_lexicon")
             onCreate(db)
         }
     }
@@ -200,6 +202,7 @@ object FinzanjirKnowledgeBase {
             val ftsInsert = database.compileStatement(
                 "INSERT INTO knowledge_fts(docid,search_text) VALUES(?,?)"
             )
+            val lexiconInsert = database.compileStatement("INSERT OR IGNORE INTO token_lexicon(term) VALUES(?)")
             var imported = 0
             JsonReader(InputStreamReader(FileInputStream(staged), Charsets.UTF_8)).use { reader ->
                 reader.beginArray()
@@ -214,8 +217,14 @@ object FinzanjirKnowledgeBase {
                     val rowId = metaInsert.executeInsert()
                     ftsInsert.clearBindings()
                     ftsInsert.bindLong(1, rowId)
-                    ftsInsert.bindString(2, normalize(r.text + " " + r.id + " " + r.sourceSection + " " + r.recordType + " " + r.domain))
+                    val searchable = normalize(r.text + " " + r.id + " " + r.sourceSection + " " + r.recordType + " " + r.domain)
+                    ftsInsert.bindString(2, searchable)
                     ftsInsert.executeInsert()
+                    searchable.split(" ").filter { it.length >= 3 && it.length <= 32 }.distinct().forEach { term ->
+                        lexiconInsert.clearBindings()
+                        lexiconInsert.bindString(1, term)
+                        lexiconInsert.executeInsert()
+                    }
                     imported++
                 }
                 reader.endArray()
@@ -307,9 +316,10 @@ object FinzanjirKnowledgeBase {
     private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
         val terms = queryTerms(question).take(10)
         if (terms.isEmpty()) return emptyList()
+        val correctedTerms = correctTerms(database, terms)
         val expressions = listOf(
-            terms.take(5).joinToString(" AND ") { "\"" + it + "\"" },
-            terms.joinToString(" OR ") { "\"" + it + "\"" }
+            correctedTerms.take(5).joinToString(" AND ") { "\"" + it + "\"" },
+            correctedTerms.joinToString(" OR ") { "\"" + it + "\"" }
         ).distinct()
         val gathered = LinkedHashMap<String, Record>()
         for (expression in expressions) {
@@ -327,6 +337,46 @@ object FinzanjirKnowledgeBase {
             if (gathered.size >= MAX_CANDIDATES) break
         }
         return gathered.values.toList()
+    }
+
+    private fun correctTerms(database: SQLiteDatabase, terms: List<String>): List<String> {
+        return terms.map { term ->
+            val exact = database.rawQuery("SELECT 1 FROM token_lexicon WHERE term=? LIMIT 1", arrayOf(term)).use { it.moveToFirst() }
+            if (exact || term.length < 5) term
+            else {
+                val min = (term.length - 1).coerceAtLeast(4)
+                val max = term.length + 1
+                val candidates = ArrayList<String>()
+                database.rawQuery("SELECT term FROM token_lexicon WHERE length(term) BETWEEN ? AND ? LIMIT 600", arrayOf(min.toString(), max.toString())).use { c ->
+                    while (c.moveToNext()) candidates += c.getString(0)
+                }
+                candidates.asSequence()
+                    .map { it to editDistanceAtMostOne(term, it) }
+                    .filter { it.second }
+                    .map { it.first }
+                    .sortedBy { kotlin.math.abs(it.length - term.length) }
+                    .firstOrNull() ?: term
+            }
+        }.distinct()
+    }
+
+    private fun editDistanceAtMostOne(a: String, b: String): Boolean {
+        if (kotlin.math.abs(a.length - b.length) > 1) return false
+        var i = 0
+        var j = 0
+        var edits = 0
+        while (i < a.length && j < b.length) {
+            if (a[i] == b[j]) { i++; j++ }
+            else {
+                edits++
+                if (edits > 1) return false
+                if (a.length > b.length) i++
+                else if (b.length > a.length) j++
+                else { i++; j++ }
+            }
+        }
+        if (i < a.length || j < b.length) edits++
+        return edits <= 1
     }
 
     private fun queryMeta(database: SQLiteDatabase, sql: String, args: Array<String>): List<Record> {
