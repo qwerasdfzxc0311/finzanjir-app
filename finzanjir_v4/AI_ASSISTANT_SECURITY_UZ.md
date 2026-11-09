@@ -29,17 +29,18 @@ Google Search o‘chirilgan bo‘lsa, modelga Google Search tool berilmaydi. Yoq
 
 ## 3. Bilimlar bazasi
 
-Joriy v4 JSON bazasi 113 yozuvdan iborat:
+Joriy v4 JSON bazasi 137 yozuvdan iborat:
 - 33 — v3 legacy candidate yozuvlari;
 - 16 — v4 qatlam katalogi;
 - 22 — v4 repository konsepsiya yozuvlari;
-- 42 — V14/AI arxitekturasi, AI baholash va V317 korpus auditidan tanlangan yozuvlar.
+- 42 — V14/AI arxitekturasi, AI baholash va V317 korpus auditidan tanlangan yozuvlar;
+- 24 — 25 bobli integratsiyalashgan kitobning 1–24-boblari bo‘yicha sahifali xulosalar.
 
-**Barcha 113 yozuv candidate_not_authoritative.** Hozircha authoritative/approved yozuv yo‘q.
+**Barcha 137 yozuv candidate_not_authoritative.** Hozircha authoritative/approved yozuv yo‘q.
 
 Har bir yozuvda source_id, source_version, source_section, source_path, approval va record_type saqlanadi. knowledge_manifest.json manbalar va ochiq bo‘shliqlarni qayd etadi.
 
-Muhim: bu 113 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FINZANJIR_AI.zip v0.6.0 korpusining to‘liq importi emas. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. To‘liq arxiv importi, manba sahifalari bilan crosswalk, duplicate/conflict tekshiruvi va ekspert tasdig‘i keyingi bosqichdir.
+Muhim: bu 137 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FINZANJIR_AI.zip v0.6.0 korpusining to‘liq importi emas. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. To‘liq arxiv importi, manba sahifalari bilan crosswalk, duplicate/conflict tekshiruvi va ekspert tasdig‘i keyingi bosqichdir.
 
 ## 4. Qidiruv chegaralari
 
@@ -48,7 +49,7 @@ Muhim: bu 113 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FI
 - “16 qatlam” savolida 16 qatlam yozuvining barchasi kontekstga qo‘shiladi.
 - Qidiruv mosligi/score haqiqat ehtimoli emas.
 - R@k/P@k faqat ekspert belgilagan relevant gold set bilan o‘lchanishi mumkin.
-- Topilmagan yozuv “FINZANJIRda umuman mavjud emas” degani emas; faqat joriy 113 yozuvli korpusda topilmagan bo‘lishi mumkin.
+- Topilmagan yozuv “FINZANJIRda umuman mavjud emas” degani emas; faqat joriy 137 yozuvli korpusda topilmagan bo‘lishi mumkin.
 
 ## 5. Gemini va Google Search
 
