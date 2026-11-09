@@ -104,6 +104,7 @@ object FinzanjirKnowledgeBase {
         val rows = when {
             layerNumber != null -> exactLayer(database, layerNumber)
             layerOverview -> allLayers(database)
+            authorQuestion -> authorRecords(database)
             else -> retrieve(database, question, expertMode, authorQuestion)
         }.filter { r ->
             val type = r.recordType.lowercase(Locale.ROOT)
@@ -113,7 +114,7 @@ object FinzanjirKnowledgeBase {
         }
         if (rows.isEmpty()) return insufficient(count(context))
 
-        val selected = if (layerNumber != null || layerOverview) {
+        val selected = if (layerNumber != null || layerOverview || authorQuestion) {
             rows.map { Candidate(it, 100) }
         } else {
             scoreCandidates(question, rows).distinctBy { normalize(it.record.text) }.take(MAX_ANSWER_RECORDS)
@@ -266,6 +267,15 @@ object FinzanjirKnowledgeBase {
     private fun allLayers(database: SQLiteDatabase): List<Record> =
         queryMeta(database,
             "SELECT m.* FROM knowledge_meta m WHERE m.record_type LIKE '%layer%' OR m.id LIKE 'V4-L%' ORDER BY m.id",
+            emptyArray())
+
+    private fun authorRecords(database: SQLiteDatabase): List<Record> =
+        queryMeta(database,
+            """SELECT m.* FROM knowledge_meta m
+               WHERE m.record_type IN ('author_biography','founder_multilingual_bio')
+                  OR m.approval='author_visible_on_direct_request'
+               ORDER BY CASE WHEN m.approval='author_visible_on_direct_request' THEN 0 ELSE 1 END,
+                        m.id LIMIT 8""",
             emptyArray())
 
     private fun retrieve(database: SQLiteDatabase, question: String, expertMode: Boolean, authorQuestion: Boolean): List<Record> {
