@@ -51,7 +51,7 @@ Streamlit Cloud → App settings → Secrets:
     [gemini]
     enabled = true
     api_key = "YANGI_GEMINI_API_KEY"
-    model = "gemini-3.6-flash"
+    model = "gemini-3.8-flash"
     max_requests_per_session = 5
 
 **Xavfsizlik:** oldin chatga yuborilgan Gemini kaliti oshkor bo‘lgan deb hisoblanadi va bekor qilinishi kerak. Yangi kalitni faqat Streamlit Secrets ichiga kiriting. GitHub, commit, README yoki chatga hech qachon yozmang. Repository .gitignore fayli .streamlit/secrets.toml ni chiqarib tashlaydi.
