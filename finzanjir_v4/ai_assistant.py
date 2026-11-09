@@ -112,7 +112,7 @@ def retrieve(question: str, limit: int = MAX_KB_HITS) -> list[dict[str, Any]]:
     # A broad "16 layers" question needs the complete layer catalogue, not an arbitrary top-k slice.
     normalized_question = normalize(question)
     asks_all_layers = ("16 qatlam" in normalized_question) or ("qatlamlar" in normalized_question)
-    specific_layer = re.search(r"\\bl(0[1-9]|1[0-6])\\b", normalized_question)
+    specific_layer = re.search(r"\bl(0[1-9]|1[0-6])\b", normalized_question)
     if specific_layer and not asks_all_layers:
         target_id = f"V4-L{int(specific_layer.group(1)):02d}"
         target = next((row for row in rows if row.get("id") == target_id), None)
