@@ -1,21 +1,9 @@
 package uz.finzanjir.mobile
 
-/**
- * FINZANJIR knowledge layer — prototype implementation.
- *
- * This is a structured, source-aware knowledge mechanism, not a claim that
- * the complete V14 dossier or every AI corpus record has already been imported.
- * Each entry keeps its meaning, explanation, keywords, source and status.
- */
-data class KnowledgeEntry(
-    val id: String,
-    val title: String,
-    val shortMeaning: String,
-    val explanation: String,
-    val keywords: List<String>,
-    val source: String,
-    val status: String = "CONCEPT"
-)
+import android.content.Context
+import org.json.JSONArray
+import java.text.Normalizer
+import java.util.Locale
 
 data class KnowledgeAnswer(
     val answer: String,
@@ -25,138 +13,156 @@ data class KnowledgeAnswer(
 )
 
 object FinzanjirKnowledgeBase {
-    const val VERSION = "prototype-kb-0.1"
-    const val PRIMARY_SOURCE = "FINZANJIR V14 — loyiha konsepsiyasi (2026)"
+    const val VERSION = "v4-corpus-0.4.0"
+    private const val ASSET = "finzanjir_knowledge.json"
 
-    // The source labels are explicit. No entry is silently promoted to a
-    // bank-approved rule, operational capability, or verified fact.
-    val entries = listOf(
-        KnowledgeEntry(
-            "CORE-001", "FINZANJIR nima?",
-            "Raqamli moliyaviy xavfsizlik platformasi konsepsiyasi.",
-            "FINZANJIR fuqarolar, banklar va to‘lov infratuzilmasi uchun firibgarlik xavfini erta aniqlash, signal va dalillarni tartiblash, ogohlantirish hamda vakolatli inson tekshiruvini qo‘llab-quvvatlashga qaratilgan loyiha konsepsiyasidir. Hozirgi Android ilova — mutaxassislar ko‘rib chiqishi uchun prototip; u to‘liq bank platformasi yoki sinovdan o‘tgan ishlab chiqarish tizimi deb hisoblanmaydi.",
-            listOf("finzanjir", "platforma", "loyiha", "konsepsiya", "maqsad", "nima"),
-            PRIMARY_SOURCE
-        ),
-        KnowledgeEntry(
-            "CORE-002", "FINZANJIR avtomatik bloklaydimi?",
-            "Yo‘q. FINZANJIR avtomatik karta yoki tranzaksiya bloklash mexanizmi sifatida ta’riflanmaydi.",
-            "Loyihaning asosiy yondashuvi — signal va kontekstni yig‘ish, xavfga oid dalillarni hamda qarshi dalillarni ko‘rsatish, noma’lum jihatlarni alohida qayd etish va zarur bo‘lsa Case ochish hamda Human Review jarayonini qo‘llab-quvvatlash. Yakuniy qaror vakolatli inson yoki tegishli tashkilot vakolatida qoladi. Ball yoki indikatorning o‘zi avtomatik aybdorlik yoki bloklash qarori bo‘la olmaydi.",
-            listOf("bloklash", "avtomatik", "karta", "tranzaksiya", "90 ball", "human review"),
-            "FINZANJIR loyiha qoidalari; V14 konsepsiyasi bilan uyg‘unlashtirilgan"
-        ),
-        KnowledgeEntry(
-            "CORE-003", "Signal nima?",
-            "Tekshirishga sabab bo‘lishi mumkin bo‘lgan kuzatuv yoki indikator.",
-            "Signal — o‘z-o‘zidan firibgarlik isboti ham, shaxs aybdorligining hukmi ham emas. Signal qaysi manbadan olingani, qachon kuzatilgani, qanchalik ishonchli ekani, qaysi holatni tasdiqlashi yoki rad etishi mumkinligi bilan birga ko‘riladi. Yetishmayotgan ma’lumot va muqobil izohlar ham qayd etiladi.",
-            listOf("signal", "indikator", "dalil", "kuzatuv", "shubha"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-004", "Case nima?",
-            "Bir-biriga aloqador signallar, dalillar va tekshiruv holatlarini birlashtiruvchi ish yozuvi.",
-            "Case — tekshiruv uchun kontekstni bir joyga jamlash vositasi. Unda hodisa, manba, vaqt, rozilik doirasi, tasdiqlovchi va rad etuvchi dalillar, noma’lum jihatlar, ko‘rilgan choralar va audit izi saqlanishi ko‘zda tutiladi. Case ochilishi firibgarlik tasdiqlandi degani emas.",
-            listOf("case", "ish", "hodisa", "case ochish", "reyestr"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-005", "Human Review nima?",
-            "Vakolatli inson tomonidan dalillar va kontekstni ko‘rib chiqish.",
-            "Human Review jarayonida mutaxassis manba ishonchliligini, hodisalar ketma-ketligini, rozilik chegarasini, tasdiqlovchi va qarshi dalillarni hamda noma’lum jihatlarni tekshiradi. Natija tasdiqlash, rad etish, qo‘shimcha ma’lumot so‘rash yoki qayta tekshiruv bo‘lishi mumkin. AI yoki avtomatik qoida inson vakolatini egallamaydi.",
-            listOf("human review", "inson", "ko‘rib chiqish", "mutaxassis", "qaror"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-006", "Rozilik doirasi nima?",
-            "Foydalanuvchi aynan nimaga rozilik berganini alohida aniqlash.",
-            "Qurilmadan foydalanishga ruxsat berish, hisobdan foydalanishga ruxsat berish va muayyan pul o‘tkazmasini tasdiqlash bir xil rozilik emas. Tekshiruvda rozilik qaysi obyektga, qaysi vaqtga va qaysi amal doirasiga tegishli ekani aniqlanishi kerak. Bir turdagi rozilik boshqasini avtomatik isbotlamaydi.",
-            listOf("rozilik", "consent", "qurilma", "hisob", "o‘tkazma", "ruxsat"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-007", "Qarshi dalil va noma’lum holat",
-            "Faqat shubhani kuchaytiruvchi belgilar emas, uni zaiflashtiruvchi ma’lumotlar ham tekshiriladi.",
-            "Tizim tasdiqlovchi dalillar bilan birga rad etuvchi yoki muqobil izoh beruvchi dalillarni ham ko‘rsatishi kerak. Ma’lumot topilmagan bo‘lsa, uni avtomatik ravishda yolg‘on yoki firibgarlik deb belgilash mumkin emas. Bunday holat UNKNOWN yoki yetarli ma’lumot yo‘q deb qayd etiladi.",
-            listOf("qarshi dalil", "unknown", "noma’lum", "rad etish", "noaniqlik", "false positive"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-008", "16 qatlam nimani anglatadi?",
-            "Xavfsizlik, dalil, sifat, boshqaruv va tekshiruv talablarini qatlamlar bo‘yicha tartiblash modeli.",
-            "16 qatlam — konsepsiyadagi funksional va boshqaruv yo‘nalishlarini bir-biridan ajratib ko‘rish uchun ishlatiladigan arxitektura modeli. Ilovada qatlam nomlari ko‘rsatilishi ularning barchasi to‘liq kodlangan, bankda ishlayotgan yoki mustaqil ekspertizadan o‘tganini anglatmaydi. Har bir qatlam uchun talab, ma’lumot manbasi, sinov, qabul mezoni va ochiq savollar alohida tekshirilishi kerak.",
-            listOf("16 qatlam", "layer", "arxitektura", "qatlamlar", "talab"),
-            PRIMARY_SOURCE
-        ),
-        KnowledgeEntry(
-            "CORE-009", "Banklararo signal almashish",
-            "Bir bank ko‘rmaydigan kontekstni qonuniy va xavfsiz tartibda bog‘lash maqsadi.",
-            "Banklararo yondashuvning maqsadi — tegishli huquqiy asos, ma’lumotlarni minimallashtirish, rozilik va vakolatlar, xavfsiz integratsiya hamda audit talablariga rioya qilgan holda bir nechta manbadagi signallarni bog‘lash imkoniyatini o‘rganish. Hozirgi prototipda real bank API ulanishi mavjud deb da’vo qilinmaydi.",
-            listOf("banklararo", "bank", "API", "integratsiya", "signal almashish"),
-            PRIMARY_SOURCE
-        ),
-        KnowledgeEntry(
-            "CORE-010", "FINZANJIR AI vazifasi",
-            "Loyiha bilimlarini topish, izohlash va manbasini ko‘rsatishga yordam beruvchi yordamchi.",
-            "AI foydalanuvchi savolini tushunib, ichki bilimlar bazasidan mos parchalarni qidirishi, ularning manbasi, versiyasi va maqomini ko‘rsatishi, keyin sodda va texnik izoh berishi kerak. Manbada javob bo‘lmasa, buni ochiq aytadi va taxminni fakt sifatida bermaydi. AI rasmiy bank, huquqiy yoki ekspert qarorini almashtirmaydi.",
-            listOf("AI", "sun’iy ong", "bilimlar bazasi", "qidiruv", "manba", "uydirmaslik"),
-            PRIMARY_SOURCE
-        ),
-        KnowledgeEntry(
-            "CORE-011", "Prototipning hozirgi chegarasi",
-            "Mutaxassislar fikri va keyingi ishlab chiqish uchun namoyish qilinadigan dastlabki model.",
-            "Prototip konsepsiya va ish jarayonini ko‘rsatish uchun xizmat qiladi. Sintetik ma’lumotlar real bank ma’lumotlari emas. Bank API, production autentifikatsiya, to‘liq RBAC, real vaqt risk modeli, mustaqil audit va bank muhitidagi sinovlar mavjud deb ko‘rsatilmaydi. Bu cheklovlarni ochiq ko‘rsatish mutaxassis bahosi uchun muhim.",
-            listOf("prototip", "MVP", "cheklov", "sinov", "real bank", "production"),
-            "FINZANJIR loyiha qoidalari"
-        ),
-        KnowledgeEntry(
-            "CORE-012", "Muallifning ijtimoiy maqsadi",
-            "Moliyaviy xavfsizlik va savodxonlikni oshirishga hissa qo‘shish.",
-            "V14 hujjatida loyiha motivatsiyasi faqat tijoriy mahsulot yaratish bilan cheklanmasligi, balki fuqarolarni moliyaviy firibgarlikdan oldinroq ogohlantirish, xavf sabablarini tushuntirish va moliyaviy xavfsizlik madaniyatini kuchaytirishga qaratilgani bayon etiladi. Hujjat 100 foiz himoya yoki daromad kafolatini va’da qilmaydi.",
-            listOf("muallif", "motivatsiya", "ijtimoiy maqsad", "fuqaro", "moliyaviy savodxonlik"),
-            PRIMARY_SOURCE
-        )
+    private data class Record(
+        val id: String,
+        val text: String,
+        val approval: String,
+        val sourceId: String,
+        val sourceVersion: String,
+        val sourceSection: String,
+        val sourcePath: String,
+        val recordType: String
     )
 
-    fun search(question: String): KnowledgeAnswer {
+    @Volatile private var cached: List<Record>? = null
+
+    fun count(context: Context): Int = load(context).size
+
+    fun search(context: Context, question: String): KnowledgeAnswer {
         val q = normalize(question)
         if (q.isBlank()) return KnowledgeAnswer(
-            "Savolingizni yozing. Masalan: “Case nima?” yoki “FINZANJIR avtomatik bloklaydimi?”",
-            emptyList(), "NO_QUERY", "Bilimlar bazasi prototip holatida."
+            "Savolingizni yozing. Masalan: “Case nima?”, “L13 nimani anglatadi?” yoki “FINZANJIR avtomatik bloklaydimi?”",
+            emptyList(), "NO_QUERY",
+            "Bilimlar bazasi prototip korpusi; barcha yozuvlar tasdiqlanmagan nomzod materialidir."
         )
 
-        val ranked = entries.map { entry ->
-            val haystack = normalize(entry.title + " " + entry.shortMeaning + " " + entry.explanation + " " + entry.keywords.joinToString(" "))
-            val tokens = q.split(" ").filter { it.length >= 2 }.distinct()
-            val score = tokens.count { token -> haystack.contains(token) } +
-                if (haystack.contains(q)) 3 else 0
-            entry to score
-        }.filter { it.second > 0 }.sortedByDescending { it.second }.take(3)
+        val queryTokens = tokens(q)
+        if (queryTokens.isEmpty()) return insufficient()
 
-        if (ranked.isEmpty()) return KnowledgeAnswer(
-            "Mavjud FINZANJIR bilim yozuvlarida bu savolga yetarli asos topilmadi. Taxminni fakt sifatida aytmayman. Savolni boshqacha ifodalash yoki tegishli hujjat bo‘limini kiritish kerak.",
-            emptyList(), "INSUFFICIENT_EVIDENCE",
-            "Javob topilmagani firibgarlik yoki noto‘g‘ri holat borligini anglatmaydi."
-        )
+        val records = load(context)
+        val layerId = Regex("\\bL(0?[1-9]|1[0-6])\\b", RegexOption.IGNORE_CASE)
+            .find(question)?.groupValues?.get(1)?.toIntOrNull()
+        val layerRecords = records.filter { it.recordType == "layer_catalog_candidate" }
 
-        val best = ranked.first().first
-        val extra = ranked.drop(1).joinToString("\n\n") { it.first.title + ": " + it.first.shortMeaning }
-        val answer = buildString {
-            append(best.title).append("\n")
-            append(best.shortMeaning).append("\n\n")
-            append(best.explanation)
-            if (extra.isNotBlank()) append("\n\nBog‘liq tushunchalar:\n").append(extra)
+        val selected: List<Pair<Record, Int>> = if (layerId != null) {
+            val id = "V4-L%02d".format(Locale.ROOT, layerId)
+            val exact = layerRecords.filter { it.id.equals(id, true) }
+            if (exact.isNotEmpty()) exact.map { it to 1000 } else emptyList()
+        } else if (q.contains("16 qatlam") || q.contains("barcha qatlam") || q.contains("qatlamlar")) {
+            layerRecords.sortedBy { it.id }.map { it to 100 }
+        } else {
+            val ranked = records.mapNotNull { record ->
+                val body = normalize(record.text + " " + record.id + " " + record.recordType)
+                val bodyTokens = tokens(body).toSet()
+                val overlap = queryTokens.toSet().intersect(bodyTokens)
+                if (overlap.isEmpty()) null else {
+                    val coverage = overlap.size.toDouble() / queryTokens.toSet().size.coerceAtLeast(1)
+                    val phraseBonus = if (body.contains(q)) 3 else 0
+                    val idBonus = if (normalize(record.id).contains(q)) 8 else 0
+                    record to (overlap.size * 2 + (coverage * 4).toInt() + phraseBonus + idBonus)
+                }
+            }.sortedByDescending { it.second }.take(5)
+            ranked
         }
+
+        if (selected.isEmpty()) return insufficient()
+        val best = selected.take(5)
+        val answer = buildString {
+            append(best.first().first.text)
+            if (best.size > 1) {
+                append("\n\nBog‘liq bilim yozuvlari:")
+                best.drop(1).forEach { (record, _) ->
+                    append("\n• ").append(record.id).append(" — ").append(record.text)
+                }
+            }
+        }
+        val sourceLines = best.map { (record, _) ->
+            "${record.id} | ${record.sourceId} | ${record.sourceVersion} | ${record.sourceSection} | ${record.sourcePath} | ${record.approval}"
+        }.distinct()
+
+        val allCandidate = best.all { it.first.approval == "candidate_not_authoritative" }
         return KnowledgeAnswer(
             answer,
-            ranked.map { it.first.id + " — " + it.first.source }.distinct(),
-            if (ranked.first().second >= 3) "MATCHED" else "PARTIAL_MATCH",
-            "Bu javob prototip bilim yozuvlariga asoslangan; rasmiy ekspert yoki bank qarori emas."
+            sourceLines,
+            if (best.first().second >= 5) "MOS YOZUV TOPILDI" else "QISMAN MOSLIK",
+            if (allCandidate) {
+                "Barcha topilgan yozuvlar candidate_not_authoritative: tasdiqlanmagan loyiha materiali. Qidiruv mosligi faktning to‘g‘riligini yoki ekspert tasdig‘ini anglatmaydi."
+            } else {
+                "Yozuv maqomini alohida tekshiring. Qidiruv mosligi faktning to‘g‘riligini anglatmaydi."
+            }
         )
     }
 
-    private fun normalize(value: String): String = value.lowercase()
-        .replace('ў', 'у').replace('қ', 'к').replace('ғ', 'г')
-        .replace('ҳ', 'х').replace('ё', 'е')
-        .replace(Regex("[^\\p{L}\\p{N}]+"), " ")
-        .trim()
+    private fun insufficient() = KnowledgeAnswer(
+        "Mavjud import qilingan bilim yozuvlarida bu savolga yetarli asos topilmadi. Taxminni fakt sifatida bermayman. Tegishli hujjat yoki bo‘lim import qilinishi kerak bo‘lishi mumkin.",
+        emptyList(), "YETARLI DALIL TOPILMADI",
+        "Topilmagan javob FINZANJIR konsepsiyasida bunday qoida yo‘q degani emas; korpus to‘liq emas."
+    )
+
+    private fun load(context: Context): List<Record> {
+        cached?.let { return it }
+        synchronized(this) {
+            cached?.let { return it }
+            val json = context.assets.open(ASSET).bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val array = JSONArray(json)
+            val rows = ArrayList<Record>(array.length())
+            for (i in 0 until array.length()) {
+                val item = array.optJSONObject(i) ?: continue
+                val id = item.optString("id").takeIf { it.isNotBlank() } ?: continue
+                val text = item.optString("text").takeIf { it.isNotBlank() } ?: continue
+                rows += Record(
+                    id = id,
+                    text = text,
+                    approval = item.optString("approval", item.optString("record_status", "unknown")),
+                    sourceId = item.optString("source_id", "unknown"),
+                    sourceVersion = item.optString("source_version", "unknown"),
+                    sourceSection = item.optString("source_section", "unknown"),
+                    sourcePath = item.optString("source_path", "unknown"),
+                    recordType = item.optString("record_type", "unknown")
+                )
+            }
+            if (rows.isEmpty()) throw IllegalStateException("FINZANJIR bilimlar bazasida yaroqli yozuv topilmadi.")
+            cached = rows
+            return rows
+        }
+    }
+
+    private fun tokens(value: String): List<String> = normalize(value)
+        .split(Regex("\\s+"))
+        .map { token ->
+            when (token) {
+                "qatlamlar", "qatlamning", "qatlamga" -> "qatlam"
+                "signallar", "signalni" -> "signal"
+                "dalillar", "dalilni" -> "dalil"
+                "bloklaydimi", "bloklamaydi", "bloklash" -> "blokla"
+                "tranzaksiya", "tranzaksiyalar" -> "operatsiya"
+                "ma'lumotlar", "malumotlar" -> "malumot"
+                "firibgarlik", "firibgarligi" -> "firibgar"
+                else -> token
+            }
+        }
+        .filter { it.length >= 2 && it !in setOf("va", "yoki", "bu", "shu", "uchun", "bilan", "ham", "nima", "qanday", "qaysi", "haqida") }
+        .distinct()
+
+    private fun normalize(value: String): String {
+        val lower = Normalizer.normalize(value.lowercase(Locale.ROOT), Normalizer.Form.NFKC)
+        val latin = buildString {
+            lower.forEach { c ->
+                append(when (c) {
+                    'а' -> "a"; 'б' -> "b"; 'в' -> "v"; 'г' -> "g"; 'д' -> "d"; 'е' -> "e"; 'ё' -> "yo"
+                    'ж' -> "j"; 'з' -> "z"; 'и' -> "i"; 'й' -> "y"; 'к' -> "k"; 'л' -> "l"; 'м' -> "m"
+                    'н' -> "n"; 'о' -> "o"; 'п' -> "p"; 'р' -> "r"; 'с' -> "s"; 'т' -> "t"; 'у' -> "u"
+                    'ф' -> "f"; 'х' -> "x"; 'ц' -> "ts"; 'ч' -> "ch"; 'ш' -> "sh"; 'щ' -> "sh"
+                    'ъ', 'ь' -> ""; 'ы' -> "i"; 'э' -> "e"; 'ю' -> "yu"; 'я' -> "ya"
+                    'ў' -> "o"; 'қ' -> "q"; 'ғ' -> "g"; 'ҳ' -> "h"
+                    '’', 'ʻ', '`' -> "'"
+                    else -> c.toString()
+                })
+            }
+        }
+        return latin.replace(Regex("[^a-z0-9']+"), " ").trim().replace(Regex("\\s+"), " ")
+    }
 }

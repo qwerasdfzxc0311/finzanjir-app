@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -144,6 +145,7 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
 
 @Composable
 private fun KnowledgeAssistant() {
+    val context = LocalContext.current
     var question by remember { mutableStateOf("") }
     var answer by remember { mutableStateOf<KnowledgeAnswer?>(null) }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -151,7 +153,7 @@ private fun KnowledgeAssistant() {
         Text("Savol bering. Yordamchi ichki bilim yozuvlaridan mos tushunchalarni topib, sodda izoh va manbani ko‘rsatadi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
         OutlinedTextField(value = question, onValueChange = { question = it }, modifier = Modifier.fillMaxWidth(),
             label = { Text("Masalan: Case nima va qachon ochiladi?") }, minLines = 2)
-        Button(onClick = { answer = FinzanjirKnowledgeBase.search(question) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Button(onClick = { answer = FinzanjirKnowledgeBase.search(context, question) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             Icon(Icons.Default.Search, null); Spacer(Modifier.width(7.dp)); Text("Bilimlardan izlash")
         }
         answer?.let { result ->
@@ -168,7 +170,7 @@ private fun KnowledgeAssistant() {
             }
         }
         Spacer(Modifier.height(12.dp))
-        Text("Bilimlar bazasi: ${FinzanjirKnowledgeBase.VERSION} · ${FinzanjirKnowledgeBase.entries.size} ta strukturali yozuv", color = Muted, fontSize = 10.sp)
+        Text("Bilimlar bazasi: ${FinzanjirKnowledgeBase.VERSION} · ${FinzanjirKnowledgeBase.count(context)} ta manbali yozuv", color = Muted, fontSize = 10.sp)
     }
 }
 
