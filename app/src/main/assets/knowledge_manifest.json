@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "knowledge_base_version": "0.4.0",
+  "knowledge_base_version": "0.4.1-android-import",
   "branch": "finzanjir-v4-unified-workflow-uz",
   "updated_date": "2026-11-09",
-  "record_count": 957,
+  "record_count": 1121,
   "approval_policy": "All records are candidate_not_authoritative. No record is promoted to authoritative knowledge by this prototype.",
   "records_by_type": {
     "legacy_candidate": 33,
@@ -11,7 +11,8 @@
     "project_concept_candidate": 22,
     "ai_architecture_candidate": 42,
     "book_chapter_summary_candidate": 24,
-    "book_page_candidate": 820
+    "book_page_candidate": 820,
+    "v14_page_candidate": 164
   },
   "sources": [
     {
@@ -76,9 +77,17 @@
       "path": "FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
       "version": "2026 integrated working book",
       "limitations": "PDF sahifalari 5–331 (24 bob) matn sifatida 820 provenance-linked segmentga ajratildi. 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga kiritilmadi. Diagramma/rasmlar va ayrim murakkab jadvallar matn ekstraksiyasida to‘liq saqlanmasligi mumkin."
+    },
+    {
+      "source_id": "SRC-V14-ORIGINAL",
+      "name": "FINZANJIR V14 original concept PDF",
+      "path": "FINZANJIR_KONSEPSIYA_V14.pdf",
+      "version": "V14 / 2026",
+      "limitations": "Original PDF text imported page-by-page with original page references. Diagram layouts, visual relationships and complex tables may need visual verification. Records remain candidate_not_authoritative."
     }
   ],
   "known_gaps": [
+    "V14 original PDF sahifalari sahifa darajasida import qilindi; diagramma, rasm va murakkab jadvallar vizual tekshiruv talab qiladi.",
     "25 bobli integratsiyalashgan kitobning PDF sahifalari 5–331 (1–24-boblar) 820 matn segmentiga ajratildi; 25-bobdagi shaxsiy muallif biografiyasi ataylab chiqarib tashlandi.",
     "PDF matn ekstraksiyasi diagramma, rasm va ayrim murakkab jadval tuzilishini to‘liq saqlamasligi mumkin; muhim vizual sahifalar alohida ko‘rik talab qiladi.",
     "Asl V14 alohida PDF sifatida sahifa-paragraf crosswalk bilan import qilinmagan; uning asosiy mazmuni integratsiyalashgan kitobning 1–24-boblarida aks etadi.",
@@ -88,7 +97,8 @@
     "33 ta legacy v3 yozuvining ayrimlarida asl section/page/version provenance saqlanmagan; ular candidate maqomida qoladi.",
     "Retrieval lexical va synonym-based; embedding/vector semantic search, R@k/P@k gold benchmark va to‘liq typo/morphology bahosi hali yo‘q.",
     "PDF diagramma/OCR importi, duplicate/conflict boshqaruv UI, authoritative bilimga tasdiqli promotion workflow va mustaqil retrieval benchmark hali implementatsiya qilinmagan.",
-    "Barcha 957 yozuv candidate_not_authoritative; hozircha authoritative/approved bilim yozuvi yo‘q."
+    "Barcha 957 yozuv candidate_not_authoritative; hozircha authoritative/approved bilim yozuvi yo‘q.",
+    "V8 bank texnik arxitektura PDFsi alohida to‘liq manba sifatida import qilinmagan; mavjud V4 kitobdagi havola va qisqa mazmun uning o‘rnini bosmaydi."
   ],
   "privacy_scope": {
     "public_kb": "Contains project design, requirements, technical concepts and chapter summaries only. Private author biography, sensitive personal history and conversation memory are intentionally excluded.",
