@@ -1,7 +1,9 @@
 import json
 import re
 import sys
+import types
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -114,6 +116,38 @@ class KnowledgeAssistantTests(unittest.TestCase):
     def test_missing_key_fails_closed(self):
         with self.assertRaises(ai.AssistantError):
             ai.answer_question("FINZANJIR nima?", "")
+
+
+    def test_gemini_call_is_stateless_and_uses_optional_google_search(self):
+        captured = {}
+
+        class FakeInteractions:
+            def create(self, **kwargs):
+                captured.update(kwargs)
+                return types.SimpleNamespace(output_text="FINZANJIR — loyiha konsepsiyasi.", steps=[])
+
+        class FakeClient:
+            def __init__(self, api_key):
+                captured["client_api_key"] = api_key
+                self.interactions = FakeInteractions()
+
+        fake_google = types.ModuleType("google")
+        fake_google.genai = types.SimpleNamespace(Client=FakeClient)
+        fake_key = "TEST_ONLY_NOT_A_REAL_GEMINI_KEY_12345"
+        with patch.dict(sys.modules, {"google": fake_google}):
+            result = ai.answer_question(
+                "FINZANJIR nima?",
+                fake_key,
+                use_google_search=True,
+                response_mode="Ekspert tahlili",
+            )
+        self.assertEqual(captured["client_api_key"], fake_key)
+        self.assertEqual(captured["tools"], [{"type": "google_search"}])
+        self.assertIs(captured["store"], False)
+        self.assertIn("texnik terminlar", captured["system_instruction"])
+        self.assertNotIn(fake_key, captured["input"])
+        self.assertTrue(result["google_search_requested"])
+        self.assertEqual(result["answer"], "FINZANJIR — loyiha konsepsiyasi.")
 
     def test_grounding_sources_are_filtered_and_deduplicated(self):
         class Obj:
