@@ -75,6 +75,7 @@ object FinzanjirKnowledgeBase {
     }
 
     @Volatile private var helper: DbHelper? = null
+    @Volatile private var preparedAssetSha: String? = null
     @Synchronized private fun db(context: Context): SQLiteDatabase {
         if (helper == null) helper = DbHelper(context.applicationContext)
         return helper!!.writableDatabase
@@ -128,14 +129,18 @@ object FinzanjirKnowledgeBase {
                 r.sourceSection + " | " + r.sourcePath + " | " + r.approval
         }.distinct()
         val approvals = selected.map { it.record.approval }.distinct()
-        val notice = when {
+        val statusNotice = when {
             approvals.all { it in setOf("candidate_not_authoritative", "candidate", "not_auto_promoted") } ->
-                "Manbalar loyiha konsepsiyasi yoki tasdiqlanmagan nomzod materiallaridir. Ular mutaxassis tasdig‘i yoki funksiya prototipda ishlayotganini isbotlamaydi."
-            approvals.any { it == "unclassified" || it == "unknown" } ->
-                "Ayrim yozuvlarning maqomi to‘liq aniqlanmagan. Manba va versiyani alohida tekshirish kerak."
+                "Topilgan manbalar loyiha konsepsiyasi yoki tasdiqlanmagan nomzod materiallaridir."
+            approvals.any { it in setOf("unclassified", "unknown") } ->
+                "Ayrim yozuvlarning maqomi to‘liq aniqlanmagan; manba va versiyani alohida tekshirish kerak."
             else ->
-                "Qidiruv mosligi mustaqil tasdiq emas. Risk signali aybdorlik isboti emas; yakuniy qaror vakolatli insonda qoladi."
+                "Qidiruv mosligi mustaqil tasdiq emas."
         }
+        val visualNotice = if (selected.any { it.record.recordType == "visual_ocr_candidate" })
+            " OCR yozuvlari vizual ekspert tekshiruvini kutadi." else ""
+        val notice = statusNotice + visualNotice +
+            " FINZANJIR konsepsiyasi va prototipi ishlab chiqilmoqda: matndagi modul yoki integratsiya tavsifi uning hozir amalda ishlayotganini anglatmaydi. Mutaxassislar bilan tekshirish va vakolatli inson nazorati ko‘zda tutiladi. Risk signali aybdorlik isboti emas."
         return KnowledgeAnswer(
             answer, sources,
             if (selected.first().score >= 6) "MOS BILIM TOPILDI" else "QISMAN MOSLIK",
@@ -144,6 +149,7 @@ object FinzanjirKnowledgeBase {
     }
 
     private fun ensureReady(context: Context) {
+        if (preparedAssetSha != null) return
         val database = db(context)
         val manifest = JSONObject(context.assets.open(MANIFEST).bufferedReader(Charsets.UTF_8).use { it.readText() })
         val expectedCount = manifest.optInt("record_count", -1)
@@ -174,6 +180,7 @@ object FinzanjirKnowledgeBase {
         }
         if (oldSha == actualSha && oldCount > 0 && (expectedCount <= 0 || oldCount == expectedCount)) {
             staged.delete()
+            preparedAssetSha = actualSha
             return
         }
 
@@ -215,6 +222,7 @@ object FinzanjirKnowledgeBase {
             database.execSQL("INSERT INTO knowledge_state(key,value) VALUES('corpus_sha256',?)", arrayOf(actualSha))
             database.execSQL("INSERT INTO knowledge_state(key,value) VALUES('record_count',?)", arrayOf(imported.toString()))
             database.setTransactionSuccessful()
+            preparedAssetSha = actualSha
         } finally {
             database.endTransaction()
             staged.delete()
