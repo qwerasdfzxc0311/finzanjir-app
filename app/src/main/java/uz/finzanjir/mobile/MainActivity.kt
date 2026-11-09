@@ -146,12 +146,22 @@ private fun KnowledgeAssistant() {
     val context = LocalContext.current
     var question by remember { mutableStateOf("") }
     var answer by remember { mutableStateOf<KnowledgeAnswer?>(null) }
+    var expertMode by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("FINZANJIR AI · bilim yordamchisi", color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
         Text("Savol bering. Yordamchi ichki bilim yozuvlaridan mos tushunchalarni topib, sodda izoh va manbani ko‘rsatadi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 8.dp)) {
+            FilterChip(selected = !expertMode, onClick = { expertMode = false }, label = { Text("Fuqaro") })
+            FilterChip(selected = expertMode, onClick = { expertMode = true }, label = { Text("Mutaxassis") })
+        }
+        Text(
+            if (expertMode) "Mutaxassis ko‘rinishi: texnik, qatlamlar, bank integratsiyasi va tarixiy loyiha manbalari ham qidiriladi. Bu demo ko‘rinish, autentifikatsiya emas."
+            else "Fuqaro ko‘rinishi: umumiy konsepsiya va fuqaro xavfsizligiga oid bilimlar qidiriladi.",
+            color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 8.dp)
+        )
         OutlinedTextField(value = question, onValueChange = { question = it }, modifier = Modifier.fillMaxWidth(),
             label = { Text("Masalan: Case nima va qachon ochiladi?") }, minLines = 2)
-        Button(onClick = { answer = FinzanjirKnowledgeBase.search(context, question) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Button(onClick = { answer = FinzanjirKnowledgeBase.search(context, question, expertMode) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             Icon(Icons.Default.Search, null); Spacer(Modifier.width(7.dp)); Text("Bilimlardan izlash")
         }
         answer?.let { result ->
