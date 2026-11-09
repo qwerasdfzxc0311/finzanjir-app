@@ -20,6 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val Navy = Color(0xFF10243D)
 private val Blue = Color(0xFF2878C8)
@@ -147,6 +151,16 @@ private fun KnowledgeAssistant() {
     var question by remember { mutableStateOf("") }
     var answer by remember { mutableStateOf<KnowledgeAnswer?>(null) }
     var expertMode by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    var loadedCount by remember { mutableStateOf<Int?>(null) }
+    var loadError by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        loading = true
+        try { loadedCount = withContext(Dispatchers.IO) { FinzanjirKnowledgeBase.count(context) } }
+        catch (e: Exception) { loadError = e.message ?: "Bilimlar bazasini ochib bo‘lmadi" }
+        finally { loading = false }
+    }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("FINZANJIR AI · bilim yordamchisi", color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
         Text("Savol bering. Yordamchi ichki bilim yozuvlaridan mos tushunchalarni topib, sodda izoh va manbani ko‘rsatadi.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 5.dp, bottom = 12.dp))
@@ -161,8 +175,17 @@ private fun KnowledgeAssistant() {
         )
         OutlinedTextField(value = question, onValueChange = { question = it }, modifier = Modifier.fillMaxWidth(),
             label = { Text("Masalan: Case nima va qachon ochiladi?") }, minLines = 2)
-        Button(onClick = { answer = FinzanjirKnowledgeBase.search(context, question, expertMode) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Icon(Icons.Default.Search, null); Spacer(Modifier.width(7.dp)); Text("Bilimlardan izlash")
+        Button(onClick = { scope.launch {
+            loading = true
+            loadError = null
+            try {
+                val result = withContext(Dispatchers.IO) { FinzanjirKnowledgeBase.search(context, question, expertMode) }
+                answer = result
+                loadedCount = result.recordCount
+            } catch (e: Exception) { loadError = e.message ?: "Qidiruvda xato yuz berdi" }
+            finally { loading = false }
+        } }, enabled = !loading && question.isNotBlank(), modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Icon(Icons.Default.Search, null); Spacer(Modifier.width(7.dp)); Text(if (loading) "Bilimlar tayyorlanmoqda…" else "FINZANJIR yadrosidan javob olish")
         }
         answer?.let { result ->
             Card(Modifier.fillMaxWidth().padding(top = 14.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -178,7 +201,9 @@ private fun KnowledgeAssistant() {
             }
         }
         Spacer(Modifier.height(12.dp))
-        Text("Bilimlar bazasi: ${FinzanjirKnowledgeBase.VERSION} · ${FinzanjirKnowledgeBase.count(context)} ta manbali yozuv", color = Muted, fontSize = 10.sp)
+        Text("Bilimlar yadrosi: ${FinzanjirKnowledgeBase.VERSION} · " + (loadedCount?.let { "$it ta yozuv tekshirildi" } ?: "bazani tayyorlash kutilmoqda"), color = Muted, fontSize = 10.sp)
+        loadError?.let { Text("Xato: $it", color = Color(0xFFB3261E), fontSize = 11.sp, modifier = Modifier.padding(top = 5.dp)) }
+        Text("Bu lokal qidiruv va dalilga tayangan javob sintezi. Risk Engine, Fraud Graph, bank API va boshqa platforma imkoniyatlari loyiha rejasida ishlab chiqilishi ko‘zda tutilgan; bu ekran ularning to‘liq ishlayotganini anglatmaydi.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 7.dp))
     }
 }
 
