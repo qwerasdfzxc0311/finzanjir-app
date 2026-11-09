@@ -1,15 +1,16 @@
 {
   "schema_version": "1.0",
-  "knowledge_base_version": "0.2.0",
+  "knowledge_base_version": "0.3.0",
   "branch": "finzanjir-v4-unified-workflow-uz",
   "updated_date": "2026-11-09",
-  "record_count": 113,
+  "record_count": 137,
   "approval_policy": "All records are candidate_not_authoritative. No record is promoted to authoritative knowledge by this prototype.",
   "records_by_type": {
     "legacy_candidate": 33,
     "layer_catalog_candidate": 16,
     "project_concept_candidate": 22,
-    "ai_architecture_candidate": 42
+    "ai_architecture_candidate": 42,
+    "book_chapter_summary_candidate": 24
   },
   "sources": [
     {
@@ -67,18 +68,29 @@
       "path": "finzanjir_v4/ai_assistant.py and app.py",
       "version": "v4 repository snapshot",
       "limitations": "Source-level implementation only; live Gemini and Google Search deployment still requires Secrets and runtime validation."
+    },
+    {
+      "source_id": "SRC-YAGONA-25B",
+      "name": "FINZANJIR Yagona Tizim Kitobi — 25 bobli integratsiyalashgan ishchi kitob",
+      "path": "FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "2026 integrated working book",
+      "limitations": "24 loyiha bobining qisqa xulosalari va sahifa havolalari kiritilgan. 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga ataylab kiritilmagan. Xulosalar asl to‘liq bob matni o‘rnini bosmaydi."
     }
   ],
   "known_gaps": [
-    "The full V14, V8, 16-layer deep explanation, and original FINZANJIR_AI v0.6.0 ZIP have not been fully ingested into this JSON corpus.",
+    "25 bobli integratsiyalashgan kitobning 1–24-boblari bo‘yicha 24 ta qisqa, sahifa ko‘rsatilgan xulosa kiritildi; boblarning to‘liq matni hali indekslanmagan.",
+    "Asl FINZANJIR_KONSEPSIYA_V14.pdf va V8 texnik arxitektura fayllari alohida, to‘liq sahifa-paragraf importi sifatida hozirgi korpusda yo‘q; ularning ayrim mazmuni integratsiyalashgan kitob xulosalarida aks etadi.",
+    "FINZANJIR_AI.zip v0.6.0 va uning asl finzanjir_knowledge.json, curated_notes.json, SOURCE_REGISTER.csv va FEATURE_REGISTRY.csv fayllari Library qidiruvida topilmadi; audit readiness hujjati ularni berilmagan deb qayd etadi.",
+    "25-bob muallif biografiyasi va shaxsiy hayotiy tafsilotlari ommaviy bilim bazasiga import qilinmadi.",
     "This is not the full 4,671-record V317 corpus. Only selected, source-described facts from the V317 audit are included.",
     "Some legacy v3 records do not preserve original section/page/version provenance.",
     "All current records remain candidate_not_authoritative pending source review and owner/expert approval.",
     "Retrieval is lexical and synonym-based, not a fully evaluated semantic/vector search system.",
-    "PDF/OCR/table extraction, duplicate/conflict governance UI, authoritative promotion workflow, and retrieval benchmark are not implemented."
+    "PDF/OCR/table extraction, duplicate/conflict governance UI, authoritative promotion workflow, and retrieval benchmark are not implemented.",
+    "V317 auditidagi 4 671 yozuv to‘liq ko‘chirilmagan; faqat AI arxitekturasi va auditdan tanlangan 9 ta yozuv bor."
   ],
   "privacy_scope": {
-    "public_kb": "Contains project concepts and technical design only; private author biography and personal conversation memory are intentionally excluded.",
+    "public_kb": "Contains project design, requirements, technical concepts and chapter summaries only. Private author biography, sensitive personal history and conversation memory are intentionally excluded.",
     "user_queries": "The v4 AI interface does not persist user questions in its project knowledge database.",
     "external_provider": "Each Gemini Interactions API request sets store=false to disable server-side Interaction storage. The user question and selected knowledge snippets are still transmitted to Google for processing; Google Search grounding may query public web sources. Provider service/security processing remains subject to Google's terms."
   }
