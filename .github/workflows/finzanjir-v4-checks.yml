@@ -69,6 +69,7 @@ jobs:
           assert "GEMINI_API_KEY" not in app and "AIza" not in app + assistant, "Possible API key literal found"
           assert "st.text_area(" in app and "st.button(" in app, "AI question input/action missing"
           assert "google_search" in assistant, "Google Search grounding is missing"
+          assert "store=False" in assistant, "Gemini Interactions must disable server-side storage"
           import json
           records = json.loads(knowledge)
           manifest_data = json.loads(manifest)
