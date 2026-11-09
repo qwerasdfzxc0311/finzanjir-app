@@ -76,7 +76,9 @@ jobs:
           assert len(records) == manifest_data["record_count"], "Knowledge manifest record count mismatch"
           assert len(records) >= 130, "Knowledge corpus unexpectedly small"
           chapters = [row for row in records if row.get("record_type") == "book_chapter_summary_candidate"]
+          page_chunks = [row for row in records if row.get("record_type") == "book_page_candidate"]
           assert len(chapters) == 24, "Expected 24 project chapter summaries"
+          assert len(page_chunks) == 820, "Expected 820 source-page text chunks"
           assert all(row.get("approval") == "candidate_not_authoritative" for row in records), "Candidate record was promoted without approval"
           assert all(row.get("source_id") and row.get("source_version") and row.get("source_section") for row in records), "Knowledge provenance is incomplete"
           for layer_number in range(1, 17):
