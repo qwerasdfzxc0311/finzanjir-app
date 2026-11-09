@@ -298,7 +298,7 @@ object FinzanjirKnowledgeBase {
             Regex("[әіңғүұқөһ]").containsMatchIn(q) -> "kk"
             Regex("[áǵńóúı]").containsMatchIn(q) || q.contains("qaraqalpaq") -> "kaa"
             Regex("[а-яё]").containsMatchIn(q) && !Regex("[қғңәіңұүөһ]").containsMatchIn(q) -> "ru"
-            Regex("\\\\b(what|who|why|how|english|author)\\\\b").containsMatchIn(q) -> "en"
+            Regex("\\b(what|who|why|how|english|author)\\b").containsMatchIn(q) -> "en"
             else -> "uz"
         }
     }
