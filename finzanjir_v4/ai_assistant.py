@@ -231,9 +231,9 @@ def build_prompt(question: str, evidence: list[dict[str, Any]], use_google_searc
             f"[ICHKI MANBA: {item['id']} | maqom: {item['approval']} | "
             f"manba: {item['source_id']} | versiya: {item['source_version']} | "
             f"bo‘lim: {item['source_section']} | fayl: {item['source_path']} | "
-            f"tur: {item['record_type']}]\\n{item['text']}"
+            f"tur: {item['record_type']}]\n{item['text']}"
         )
-    context = "\\n\\n".join(context_lines) if context_lines else (
+    context = "\n\n".join(context_lines) if context_lines else (
         "Ichki FINZANJIR bilimlar bazasidan bu savolga mos yozuv topilmadi."
     )
     context = context[:MAX_CONTEXT_CHARS]
