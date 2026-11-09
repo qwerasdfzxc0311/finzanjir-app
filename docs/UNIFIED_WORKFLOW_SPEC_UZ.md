@@ -14,6 +14,7 @@ Fuqaro murojaati, signal, Case, Human Review, tuzatish, bank ko‘rigi va yakuni
 ## Holatlar
 - `REVIEW_PENDING`: inson ko‘rigini kutmoqda.
 - `CORRECTION_REQUIRED`: qo‘shimcha ma’lumot yoki tuzatish so‘ralgan.
+- `NOT_CONFIRMED`: mutaxassis mavjud dalil bilan signalni tasdiqlamadi; ayblov chiqarilmaydi.
 - `BANK_REVIEW_REQUESTED`: mock bank adapteriga demo so‘rov tayyorlangan.
 - `BANK_RESPONSE_RECORDED`: demo bank javobi Case tarixiga kiritilgan.
 - `CLOSED`: demo Case yopilgan.
