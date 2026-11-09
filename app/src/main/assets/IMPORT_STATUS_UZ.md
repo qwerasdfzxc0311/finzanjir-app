@@ -1,7 +1,7 @@
 # FINZANJIR Android — bilimlar korpusi importi
 
 ## Joriy import
-Android ilovasi lokal assets ichidan **1,121 ta strukturali yozuv** o‘qiydi:
+Android ilovasining hozirgi aktiv asseti lokal assets ichidan **1,121 ta strukturali yozuv** o‘qiydi. 5,580 yozuvli yangi migratsiya alohida candidate paket sifatida tekshirilmoqda; u aktiv assetga hali ko‘chirilmagan:
 - V4 korpusi: 957 yozuv;
 - FINZANJIR V14 original PDF: 164 sahifa yozuvi (1–164).
 
@@ -21,4 +21,13 @@ Barcha yozuvlar `candidate_not_authoritative`. Ular bank tomonidan tasdiqlangan 
 - To‘liq arxiv importi uchun asl fayllar, ularning versiyasi va manba registri talab qilinadi.
 
 ## Android qidiruvi
-Android qidiruvi V4 va V14 sahifa yozuvlarini lokal JSON assetdan o‘qiydi. Lotin/kirill normallashtirish, manba izini chiqarish va yetarli dalil topilmaganda ochiq rad etish holati mavjud.
+GitHub branchidagi qidiruv kodi BM25-uslubidagi term weighting, lotin/kirill normallashtirish, fuqarolik/mutaxassis ko‘rinishi, manba/maqom ko‘rsatish va yetarli dalil bo‘lmagandagi fallbackni qo‘llaydi. Aynan bir xil matnli yozuvlar korpusda saqlanadi, lekin qidiruv javobida takrorlanmaydi; tegishli manba izlari birga ko‘rsatiladi.
+
+## 2026-11-09 migratsiya nomzodi
+- Candidate asset: 5,580 yozuv; SHA-256: `1069110ed74ad8b87c5d5c081f598598396928f52868e07bc6777e2ca816bda6`.
+- AI v2.1 dagi 4,656 yozuv ID bo‘yicha to‘liq saqlangan.
+- 893 yangi hujjat bo‘lagi va 16 ta `V4-L01` ... `V4-L16` qatlam yozuvi mavjud.
+- ID dublikatlari: 0; aynan bir xil matnli guruhlar: 3. Manba izini yo‘qotmaslik uchun yozuvlar o‘chirilmagan.
+- 23/23 retrieval smoke-test PASS — Python BM25-ekvivalent test, Android runtime testi emas.
+- 304 PDF sahifasidan matn ajratilgan. 37 PDF ichki tasvirining faqat 17 tasida va 5 mustaqil diagramma tasvirida dastlabki OCR urinishlari bo‘lgan; OCR natijalari candidate assetga kiritilmagan.
+- **Muhim:** 5,580 yozuvli JSON hali aktiv Android asset emas. Asset almashtirish, manifest SHA-256 tekshiruvi, Android build va telefon sinovi bajarilgandan keyingina aktiv import deb e’lon qilinadi.
