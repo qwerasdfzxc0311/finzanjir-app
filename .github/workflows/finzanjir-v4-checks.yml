@@ -32,9 +32,25 @@ jobs:
         run: |
           python - <<'PY'
           from streamlit.testing.v1 import AppTest
-          app = AppTest.from_file("finzanjir_v4/app.py", default_timeout=20).run()
+          app = AppTest.from_file("finzanjir_v4/app.py", default_timeout=30).run()
           if app.exception:
               raise AssertionError("\\n".join(str(item) for item in app.exception))
-          assert len(app.radio) >= 1, "Main navigation radio was not rendered"
-          assert any("Umumiy ko‘rinish" in str(item.value) for item in app.radio), "Dashboard page did not render"
+          assert len(app.radio) >= 1, "Main navigation was not rendered"
+          assert any("Bosh sahifa" in str(item.value) for item in app.radio), "Public home page was not rendered"
+          PY
+      - name: Verify public interface is read-only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("finzanjir_v4/app.py").read_text(encoding="utf-8")
+          forbidden = (
+              "st.button(", "st.form(", "st.form_submit_button(",
+              "st.text_area(", "st.session_state[", "sqlite3",
+              "save_feedback(", "review_case("
+          )
+          found = [item for item in forbidden if item in source]
+          assert not found, f"Public interface contains write-capable code: {found}"
+          for layer_number in range(1, 17):
+              assert f"L{layer_number:02d}" in source, f"Missing layer L{layer_number:02d}"
+          print("Read-only source check passed; all 16 layer IDs are present.")
           PY
