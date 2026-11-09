@@ -37,11 +37,11 @@ Joriy v4 JSON bazasi 957 yozuvdan iborat:
 - 24 — 25 bobli kitobning 1–24-boblari bo‘yicha xulosalar;
 - 820 — PDF sahifalari 5–331 dan matn segmentlari.
 
-**Barcha 137 yozuv candidate_not_authoritative.** Hozircha authoritative/approved yozuv yo‘q.
+**Barcha 957 yozuv candidate_not_authoritative.** Hozircha authoritative/approved yozuv yo‘q.
 
 Har bir yozuvda source_id, source_version, source_section, source_path, approval va record_type saqlanadi. knowledge_manifest.json manbalar va ochiq bo‘shliqlarni qayd etadi.
 
-Muhim: bu 137 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FINZANJIR_AI.zip v0.6.0 korpusining to‘liq importi emas. 25 bobli kitobning 1–24-boblari faqat qisqa xulosa ko‘rinishida kiritilgan; 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga kiritilmagan. V317 auditida qayd etilgan 4 671 yozuv ham to‘liq ko‘chirilmagan. To‘liq arxiv importi, manba sahifalari bilan crosswalk, duplicate/conflict tekshiruvi va ekspert tasdig‘i keyingi bosqichdir.
+Muhim: bu 957 yozuv to‘liq FINZANJIR arxivi emas. 25 bobli integratsiyalashgan kitobning 1–24-boblari PDF sahifalari 5–331 dan 820 matn segmentiga ajratilgan; diagramma va murakkab jadvallar matn ekstraksiyasida to‘liq saqlanmasligi mumkin. Asl V14/V8 PDFlarining alohida to‘liq crosswalk importi va FINZANJIR_AI.zip v0.6.0 korpusi hali bajarilmagan. 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga kiritilmagan. V317 auditidagi 4 671 yozuv ham to‘liq ko‘chirilmagan.
 
 ## 4. Qidiruv chegaralari
 
@@ -50,7 +50,7 @@ Muhim: bu 137 yozuv to‘liq V14, V8, 16 qatlam chuqur tushuntirishi yoki asl FI
 - “16 qatlam” savolida 16 qatlam yozuvining barchasi kontekstga qo‘shiladi.
 - Qidiruv mosligi/score haqiqat ehtimoli emas.
 - R@k/P@k faqat ekspert belgilagan relevant gold set bilan o‘lchanishi mumkin.
-- Topilmagan yozuv “FINZANJIRda umuman mavjud emas” degani emas; faqat joriy 137 yozuvli korpusda topilmagan bo‘lishi mumkin.
+- Topilmagan yozuv “FINZANJIRda umuman mavjud emas” degani emas; faqat joriy 957 yozuvli korpusda topilmagan bo‘lishi mumkin.
 
 ## 5. Gemini va Google Search
 
