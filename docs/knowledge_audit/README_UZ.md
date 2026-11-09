@@ -86,3 +86,10 @@ Bundan alohida `content_type` va `record_status` saqlanadi. Masalan, “muallif 
 6. Shundan keyingina alohida integratsiya rejasini tuzish va foydalanuvchiga ko‘rsatish.
 
 **Ushbu qayd dastlabki audit natijasidir. Yakuniy crosswalk, to‘liq manba nusxalari yoki bilim integratsiyasi bajarildi degani emas.**
+
+
+## 8. V14 bo‘yicha qo‘shimcha maxfiylik va doira nazorati
+
+- V14 mundarijasidagi 10-bob SINBAD va ATMOS yo‘nalishlarini tilga oladi. Foydalanuvchining amaldagi loyiha chegarasiga muvofiq, bu bob faol FINZANJIR bilimlar bazasiga ko‘chirilmaydi; manba arxivda o‘z holicha qoladi.
+- V14’ning muallif profili va loyiha pasporti sahifalarida shaxsiy aloqa ma’lumotlari bor. Android manifesti V14’ning 164 sahifasi ommaviy candidate yozuvlari sifatida import qilinganini ko‘rsatadi. Shuning uchun ommaviy AI qidiruvi va mualliflikni ko‘rsatishdan oldin shaxsiy aloqa maydonlari bo‘yicha alohida maxfiylik auditi talab qilinadi.
+- Mualliflikni ko‘rsatish mumkin, lekin muallifning shaxsiy aloqa ma’lumotlarini umumiy bilim qidiruvida chiqarish avtomatik ravishda ruxsat etilgan deb olinmaydi. Alohida muallif-only yoki ruxsat bilan ko‘rsatiladigan qatlam dizayni ko‘rib chiqiladi.
