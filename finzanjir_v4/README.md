@@ -1,33 +1,29 @@
-# FINZANJIR v4 — Yagona ish jarayoni prototipi
+# FINZANJIR v4 — Yagona ish jarayoni, ochiq ko‘rish prototipi
 
-**Development branch:** `finzanjir-v4-unified-workflow-uz`  
+**Branch:** `finzanjir-v4-unified-workflow-uz`  
 **Streamlit main file:** `finzanjir_v4/app.py`
 
-## Ishlab chiqish maqsadi
+## Hozirgi interfeys
 
-Bitta tushunarli operator interfeysida quyidagi zanjirni ko'rsatish:
+v4 ommaviy interfeysi yagona, mobilga mos va **read-only** ko‘rish rejimida ishlab chiqilmoqda. Tashrifchilar bo‘limlar orasida yurishi, qatlamlarni qidirishi va sintetik misollarni ko‘rishi mumkin. Ommaviy interfeysda Case holatini saqlash, Human Review qarorini kiritish, ma’lumot yozish yoki sozlamani o‘zgartirish tugmalari yo‘q.
 
-Manba/hodisa → ma'lumot sifati → 16 qatlam → signal/dalil/noma'lum → Case mezonlari → Case → Human Review → audit/yakun.
+## Asosiy bo‘limlar
 
-Bu yangi, alohida ishlab chiqish yo'nalishi. `main`, `concept-aligned-v1` va `finzanjir-v3-synthetic-ai-uz` branchlari saqlanadi va o'zgartirilmaydi.
-
-## Hozirgi holat
-
-- [x] Yangi branch ochildi.
-- [x] Yagona arxitektura blueprint yozildi.
-- [x] 16 qatlam nomlari va talab mazmuni manba reyestridan katalogga ko'chirildi.
-- [x] Dastlabki yagona UI poydevori yaratildi.
-- [ ] 16 qatlamlararo aloqa matritsasini manba bilan tekshirib, v4 ma'lumot modeliga kiritish.
-- [ ] v3 sintetik bank laboratoriyasini audit qilib, v4 pipeline bilan to'g'ri integratsiya qilish.
-- [ ] Case state machine va signal/evidence/unknown/consent modeli.
-- [ ] Human Review vakolatlari, review checklist va audit saqlovi.
-- [ ] L11 favqulodda boshqaruv va xavfsiz tiklash.
-- [ ] Regression/unit/integration testlar.
-- [ ] Streamlit Cloud brauzer va mobil tekshiruvi.
+- Bosh sahifa — loyiha maqsadi, chegaralari va jarayonning umumiy ko‘rinishi.
+- Yagona ish jarayoni — hodisadan ma’lumot sifati, signal/dalil, Case mezonlari va Human Reviewgacha.
+- 16 qatlam — har bir qatlamning sodda izohi, maqsadi, savoli, talab darajasidagi kirish/chiqishi va cheklovi.
+- Signal va dalillar — indikator, dalil, qarshi dalil va noma’lum jihatlarni ajratish.
+- Case markazi — faqat sintetik Case va rozilik doirasining alohida ko‘rinishi.
+- Human Review — mutaxassis ko‘rib chiqishi kerak bo‘lgan savollar va mumkin bo‘lgan natijalar; qaror kiritish yo‘q.
+- Qatlamlararo xarita — jarayon bosqichlari va mazmuniy qatlam qamrovi; rasmiy LINK-ID yoki texnik API deb ko‘rsatilmaydi.
+- Sintetik sinovlar — tushuntiruvchi ssenariylar, real aniqlik da’vosi emas.
+- Atamalar va cheklovlar — oddiy va texnik izohlar.
 
 ## Ishga tushirish
 
-Streamlit Cloud sozlamasida branch sifatida `finzanjir-v4-unified-workflow-uz`, main file path sifatida `finzanjir_v4/app.py` tanlanadi.
+Streamlit Cloud sozlamasida:
+- Branch: `finzanjir-v4-unified-workflow-uz`
+- Main file path: `finzanjir_v4/app.py`
 
 Lokal ishga tushirish:
 
@@ -36,12 +32,22 @@ pip install -r requirements.txt
 streamlit run finzanjir_v4/app.py
 ```
 
-## Muhim cheklovlar
+## Halol holat va cheklovlar
 
-Hozirgi UI foundation'dagi barcha yozuvlar sintetik namunalar. Human Review qarorlari faqat Streamlit session state'da saqlanadi; doimiy ma'lumotlar bazasi va audit jurnali hali ulanmagan. 400 hodisali v3 laboratoriyasi v4 ga hali integratsiya qilinmagan. 16 qatlam kartalari hozircha tushuntiruvchi katalog; qatlamlar to'liq implementatsiya qilingan deb bo'lmaydi. Qatlamlararo LINK-PROP nomzodlari rasmiy LINK-ID yoki mustaqil texnik interfeys hisoblanmaydi.
+- Barcha ko‘rsatilgan hodisalar sintetik namuna.
+- 16 qatlam katalogi talablar mazmunini tushuntiradi; barcha qatlamlar to‘liq implementatsiya qilingan yoki ekspertlar tasdiqlagan degani emas.
+- Har bir qatlam holati PLANNED / EXPERT_VALIDATION_PENDING deb qaraladi.
+- Qatlamlararo ko‘rinish jarayon xaritasi; rasmiy LINK-ID, mustaqil servis yoki API mavjudligini anglatmaydi.
+- Case va Human Review faqat ko‘rgazmali; haqiqiy reviewer autentifikatsiyasi, vakolat nazorati va doimiy audit ulanmagan.
+- 400 hodisali v3 laboratoriyasi v4 yagona jarayoniga hali integratsiya qilinmagan.
+- AI moduli v4 interfeysga ulanmagan va alohida tekshiruv bosqichi.
+- Haqiqiy bank API, mijoz ma’lumotlari, production SSO/RBAC va production tayyorligi mavjud deb da’vo qilinmaydi.
+- FINZANJIR karta, hisob yoki tranzaksiyani avtomatik bloklamaydi.
+- Sintetik sinovlar real firibgarlik aniqligi yoki bank sharoitidagi samaradorlikni isbotlamaydi.
 
-FINZANJIR karta, hisob yoki tranzaksiyani avtomatik bloklamaydi. Sintetik natijalar real bank aniqligi yoki production tayyorligini isbotlamaydi.
+## Ishlab chiqish qarorlari
 
-Batafsil:
-- `ARCHITECTURE_BLUEPRINT_UZ.md`
-- `LAYER_CATALOG_SOURCE_UZ.md`
+- Eski `main`, `concept-aligned-v1` va `finzanjir-v3-synthetic-ai-uz` branchlari o‘zgartirilmaydi.
+- Ommaviy v4 interfeysi ko‘rish uchun; tahrirlash yoki qaror yozish funksiyalari kiritilmaydi.
+- 16 qatlam nomi va vazifasi manba katalogidan olinadi; tasdiqlanmagan texnik aloqalar rasmiy aloqa sifatida ko‘rsatilmaydi.
+- Keyingi bosqichlar: qatlamlararo aloqa matritsasini manba bilan tekshirish, v3 laboratoriyasini auditdan keyin integratsiya qilish, Case state machine, testlar va mobil brauzer tekshiruvi.
