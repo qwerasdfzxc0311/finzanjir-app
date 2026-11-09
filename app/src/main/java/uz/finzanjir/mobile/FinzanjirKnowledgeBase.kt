@@ -132,7 +132,8 @@ object FinzanjirKnowledgeBase {
         val conflictBlock = if (conflicts.isEmpty()) "" else
             "\n\nMANBALARDA EHTIMOLIY ZIDLIK: bu bayonlar bir-biriga mos kelmasligi mumkin; ularni yashirmadim. Inson tekshiruvi zarur:\n" +
                 conflicts.joinToString("\n") { "• " + it }
-        val answer = modeIntro + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
+        val citizenHelp = if (expertMode) "" else citizenGlossary(question)
+        val answer = modeIntro + citizenHelp + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
         else baseAnswer) + conflictBlock
         val sources = selected.map { c ->
@@ -311,7 +312,8 @@ object FinzanjirKnowledgeBase {
     private fun detectLanguage(question: String): String {
         val q = question.lowercase(Locale.ROOT)
         return when {
-            q.contains("qaraqalpaq") || q.contains("qoraqalpoq") || q.contains("қарақалпақ") -> "kaa"
+            q.contains("qaraqalpaq") || q.contains("qoraqalpoq") || q.contains("қарақалпақ") ||
+                listOf("aqsha", "qalay", "jaqsi", "jaman", "menin", "bizdin", "qaysi").any { Regex("\\\\b" + it + "\\\\b").containsMatchIn(q) } -> "kaa"
             Regex("[әіңғүұқөһ]").containsMatchIn(q) -> "kk"
             Regex("[áǵńóúı]").containsMatchIn(q) || q.contains("qaraqalpaq") -> "kaa"
             Regex("[а-яё]").containsMatchIn(q) && !Regex("[қғңәіңұүөһ]").containsMatchIn(q) -> "ru"
@@ -440,6 +442,17 @@ object FinzanjirKnowledgeBase {
             }
             (if (index == 0) "" else "\n\nBog‘liq manba: ") + body
         }.joinToString("").take(5200)
+    }
+
+    private fun citizenGlossary(question: String): String {
+        val q = normalize(question)
+        val notes = ArrayList<String>()
+        if (q.contains("risk") || q.contains("xavf")) notes += "Risk Engine — xavf belgilarini bir joyga jamlab, tekshiruvga yordam beradigan baholash mexanizmi."
+        if (q.contains("fraud") || q.contains("graf")) notes += "Fraud Graph — karta, hisob, qurilma va tranzaksiyalar orasidagi bog‘lanishlarni ko‘rsatish usuli."
+        if (q.contains("case") || q.contains("hodisa")) notes += "Case — tekshirish uchun yig‘ilgan hodisa materiallari; Case ochilishi aybdorlikni anglatmaydi."
+        if (q.contains("human") || q.contains("review") || q.contains("inson")) notes += "Human Review — dalillarni vakolatli mutaxassisning inson sifatida ko‘rib chiqishi."
+        if (q.contains("recovery") || q.contains("tiklash")) notes += "FIN-RECOVERY — hodisadan keyingi tiklash jarayonini qo‘llab-quvvatlash konsepsiyasi; pul qaytishini kafolatlamaydi."
+        return if (notes.isEmpty()) "" else notes.joinToString("\\n", "Qisqa izoh:\\n", "\\n\\n") + ""
     }
 
     private fun detectConflicts(rows: List<Candidate>): List<String> {
