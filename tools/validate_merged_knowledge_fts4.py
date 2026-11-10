@@ -219,9 +219,9 @@ def main() -> None:
                 str(row["text"]),
                 " ".join(str(value) for value in aliases),
                 str(row["id"]),
-                str(row["source_section"]),
-                str(row["record_type"]),
-                str(row["domain"]),
+                str(row.get("source_section", row.get("section", "unknown"))),
+                str(row.get("record_type", row.get("kind", "unknown"))),
+                str(row.get("domain", "unclassified")),
             ])
             db.execute(
                 "INSERT INTO knowledge_meta(_id,id,body) VALUES(?,?,?)",
