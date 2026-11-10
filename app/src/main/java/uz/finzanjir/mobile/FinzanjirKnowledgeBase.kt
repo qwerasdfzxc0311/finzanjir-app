@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.JsonReader
 import android.util.JsonToken
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
@@ -32,7 +33,7 @@ object FinzanjirKnowledgeBase {
     private const val ASSET = "finzanjir_knowledge.json"
     private const val MANIFEST = "knowledge_manifest.json"
     private const val DB_NAME = "finzanjir_knowledge_v6.db"
-    private const val DB_VERSION = 2
+    private const val DB_VERSION = 4
     private const val MAX_CANDIDATES = 48
     private const val MAX_ANSWER_RECORDS = 6
 
@@ -48,31 +49,45 @@ object FinzanjirKnowledgeBase {
         val recordType: String,
         val audience: String,
         val domain: String,
-        val language: String
+        val language: String,
+        val legacyVersionsJson: String,
+        val legacyProvenanceJson: String
     )
     private data class Candidate(val record: Record, val score: Int)
 
     private class DbHelper(context: Context) :
         SQLiteOpenHelper(context.applicationContext, DB_NAME, null, DB_VERSION) {
         override fun onCreate(db: SQLiteDatabase) {
-            db.execSQL("""CREATE TABLE knowledge_meta(
+            db.execSQL("""CREATE TABLE IF NOT EXISTS knowledge_meta(
                 _id INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, body TEXT NOT NULL, approval TEXT NOT NULL,
                 source_id TEXT NOT NULL, source_version TEXT NOT NULL, source_section TEXT NOT NULL,
                 source_path TEXT NOT NULL, record_type TEXT NOT NULL, audience TEXT NOT NULL,
-                domain TEXT NOT NULL, language TEXT NOT NULL
+                domain TEXT NOT NULL, language TEXT NOT NULL,
+                legacy_versions_json TEXT NOT NULL DEFAULT '[]',
+                legacy_provenance_json TEXT NOT NULL DEFAULT '[]'
             )""")
-            db.execSQL("CREATE VIRTUAL TABLE knowledge_fts USING fts4(search_text, tokenize=unicode61)")
-            db.execSQL("CREATE TABLE knowledge_state(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
-            db.execSQL("CREATE TABLE token_lexicon(term TEXT PRIMARY KEY)")
-            db.execSQL("CREATE INDEX knowledge_meta_type ON knowledge_meta(record_type)")
-            db.execSQL("CREATE INDEX knowledge_meta_approval ON knowledge_meta(approval)")
+            db.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_fts USING fts4(search_text, tokenize=unicode61)")
+            db.execSQL("CREATE TABLE IF NOT EXISTS knowledge_state(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execSQL("CREATE TABLE IF NOT EXISTS token_lexicon(term TEXT PRIMARY KEY)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS knowledge_meta_type ON knowledge_meta(record_type)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS knowledge_meta_approval ON knowledge_meta(approval)")
         }
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            db.execSQL("DROP TABLE IF EXISTS knowledge_fts")
-            db.execSQL("DROP TABLE IF EXISTS knowledge_meta")
-            db.execSQL("DROP TABLE IF EXISTS knowledge_state")
-            db.execSQL("DROP TABLE IF EXISTS token_lexicon")
+            // Additive migration: retain the existing local index and all source history.
             onCreate(db)
+            ensureColumn(db, "knowledge_meta", "legacy_versions_json", "TEXT NOT NULL DEFAULT '[]'")
+            ensureColumn(db, "knowledge_meta", "legacy_provenance_json", "TEXT NOT NULL DEFAULT '[]'")
+        }
+
+        private fun ensureColumn(db: SQLiteDatabase, table: String, column: String, definition: String) {
+            val exists = db.rawQuery("PRAGMA table_info($table)", null).use { cursor ->
+                var found = false
+                while (cursor.moveToNext()) {
+                    if (cursor.getString(cursor.getColumnIndexOrThrow("name")) == column) found = true
+                }
+                found
+            }
+            if (!exists) db.execSQL("ALTER TABLE $table ADD COLUMN $column $definition")
         }
     }
 
@@ -136,10 +151,41 @@ object FinzanjirKnowledgeBase {
         val answer = modeIntro + citizenHelp + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
         else baseAnswer) + conflictBlock
-        val sources = selected.map { c ->
-            val r = c.record
-            r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
+        // Exact-text duplicates remain separate source records in SQLite.
+        // Collapse repeated answer text, but retain every matching provenance row.
+        val provenance = LinkedHashMap<String, Record>()
+        selected.forEach { candidate ->
+            val matchingSources = queryMeta(
+                database,
+                "SELECT m.* FROM knowledge_meta m WHERE m.body=?",
+                arrayOf(candidate.record.text)
+            )
+            matchingSources.forEach { source -> provenance.putIfAbsent(source.id, source) }
+            rows.filter { normalize(it.text) == normalize(candidate.record.text) }
+                .forEach { source -> provenance.putIfAbsent(source.id, source) }
+        }
+        val sources = provenance.values.flatMap { r ->
+            val lines = ArrayList<String>()
+            lines += r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
                 r.sourceSection + " | " + r.sourcePath + " | " + r.approval
+            val oldSources = safeArray(r.legacyProvenanceJson)
+            for (i in 0 until oldSources.length()) {
+                val old = oldSources.optJSONObject(i) ?: continue
+                lines += "LEGACY_PROVENANCE | " + old.optString("id") + " | " +
+                    old.optString("source_id") + " | " + old.optString("source_version") + " | " +
+                    old.optString("source_section") + " | " + old.optString("source_path") +
+                    " | " + old.optString("snapshot")
+            }
+            val versions = safeArray(r.legacyVersionsJson)
+            for (i in 0 until versions.length()) {
+                val version = versions.optJSONObject(i) ?: continue
+                val old = version.optJSONObject("provenance") ?: JSONObject()
+                lines += "HISTORICAL_VERSION | " + old.optString("id") + " | " +
+                    old.optString("source_id") + " | " + old.optString("source_version") + " | " +
+                    old.optString("source_section") + " | " + old.optString("source_path") +
+                    " | " + version.optString("version_status")
+            }
+            lines
         }.distinct()
         val approvals = selected.map { it.record.approval }.distinct()
         val statusNotice = when {
@@ -207,7 +253,8 @@ object FinzanjirKnowledgeBase {
             database.delete("token_lexicon", null, null)
             val metaInsert = database.compileStatement(
                 """INSERT INTO knowledge_meta(id,body,approval,source_id,source_version,source_section,
-                source_path,record_type,audience,domain,language) VALUES(?,?,?,?,?,?,?,?,?,?,?)"""
+                source_path,record_type,audience,domain,language,legacy_versions_json,legacy_provenance_json)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"""
             )
             val ftsInsert = database.compileStatement(
                 "INSERT INTO knowledge_fts(docid,search_text) VALUES(?,?)"
@@ -221,13 +268,17 @@ object FinzanjirKnowledgeBase {
                     if (r.id.isBlank() || r.text.isBlank()) continue
                     metaInsert.clearBindings()
                     listOf(r.id,r.text,r.approval,r.sourceId,r.sourceVersion,r.sourceSection,r.sourcePath,
-                        r.recordType,r.audience,r.domain,r.language).forEachIndexed { i, value ->
+                        r.recordType,r.audience,r.domain,r.language,r.legacyVersionsJson,r.legacyProvenanceJson).forEachIndexed { i, value ->
                         metaInsert.bindString(i + 1, value)
                     }
                     val rowId = metaInsert.executeInsert()
                     ftsInsert.clearBindings()
                     ftsInsert.bindLong(1, rowId)
-                    val searchable = normalize(r.text + " " + r.id + " " + r.sourceSection + " " + r.recordType + " " + r.domain)
+                    // Legacy text aliases remain searchable without creating duplicate records.
+                    val searchable = normalize(
+                        r.text + " " + r.searchAliases.joinToString(" ") + " " + r.id + " " +
+                            r.sourceSection + " " + r.recordType + " " + r.domain
+                    )
                     ftsInsert.bindString(2, searchable)
                     ftsInsert.executeInsert()
                     searchable.split(" ").filter { it.length >= 3 && it.length <= 32 }.distinct().forEach { term ->
@@ -257,7 +308,10 @@ object FinzanjirKnowledgeBase {
         var sourceId: String = "unknown", var sourceVersion: String = "unknown",
         var sourceSection: String = "unknown", var sourcePath: String = "unknown",
         var recordType: String = "unknown", var audience: String = "general",
-        var domain: String = "unclassified", var language: String = "und"
+        var domain: String = "unclassified", var language: String = "und",
+        var searchAliases: List<String> = emptyList(),
+        var legacyVersionsJson: String = "[]",
+        var legacyProvenanceJson: String = "[]"
     )
 
     private fun readRecord(reader: JsonReader): RawRecord {
@@ -276,11 +330,60 @@ object FinzanjirKnowledgeBase {
                 "audience" -> r.audience = readScalar(reader)
                 "domain" -> r.domain = readScalar(reader)
                 "source_language", "language" -> r.language = readScalar(reader)
+                "search_aliases" -> r.searchAliases = readStringArray(reader)
+                "legacy_versions" -> r.legacyVersionsJson = readJsonValue(reader).toString()
+                "legacy_provenance" -> r.legacyProvenanceJson = readJsonValue(reader).toString()
                 else -> reader.skipValue()
             }
         }
         reader.endObject()
         return r
+    }
+
+    private fun readJsonValue(reader: JsonReader): Any? = when (reader.peek()) {
+        JsonToken.BEGIN_OBJECT -> {
+            val obj = JSONObject()
+            reader.beginObject()
+            while (reader.hasNext()) {
+                val key = reader.nextName()
+                obj.put(key, readJsonValue(reader))
+            }
+            reader.endObject()
+            obj
+        }
+        JsonToken.BEGIN_ARRAY -> {
+            val array = JSONArray()
+            reader.beginArray()
+            while (reader.hasNext()) array.put(readJsonValue(reader))
+            reader.endArray()
+            array
+        }
+        JsonToken.STRING, JsonToken.NUMBER -> reader.nextString()
+        JsonToken.BOOLEAN -> reader.nextBoolean()
+        JsonToken.NULL -> { reader.nextNull(); JSONObject.NULL }
+        else -> { reader.skipValue(); JSONObject.NULL }
+    }
+
+    private fun readStringArray(reader: JsonReader): List<String> {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return emptyList()
+        }
+        if (reader.peek() != JsonToken.BEGIN_ARRAY) {
+            reader.skipValue()
+            return emptyList()
+        }
+        val values = ArrayList<String>()
+        reader.beginArray()
+        while (reader.hasNext()) {
+            when (reader.peek()) {
+                JsonToken.STRING, JsonToken.NUMBER -> values.add(reader.nextString())
+                JsonToken.NULL -> reader.nextNull()
+                else -> reader.skipValue()
+            }
+        }
+        reader.endArray()
+        return values
     }
 
     private fun readScalar(reader: JsonReader): String = when (reader.peek()) {
@@ -394,6 +497,12 @@ object FinzanjirKnowledgeBase {
         return edits <= 1
     }
 
+    private fun safeArray(json: String): JSONArray = try {
+        JSONArray(json)
+    } catch (_: Exception) {
+        JSONArray()
+    }
+
     private fun queryMeta(database: SQLiteDatabase, sql: String, args: Array<String>): List<Record> {
         val rows = ArrayList<Record>()
         database.rawQuery(sql, args).use { c ->
@@ -410,7 +519,9 @@ object FinzanjirKnowledgeBase {
                     recordType = c.getString(c.getColumnIndexOrThrow("record_type")),
                     audience = c.getString(c.getColumnIndexOrThrow("audience")),
                     domain = c.getString(c.getColumnIndexOrThrow("domain")),
-                    language = c.getString(c.getColumnIndexOrThrow("language"))
+                    language = c.getString(c.getColumnIndexOrThrow("language")),
+                    legacyVersionsJson = c.getString(c.getColumnIndexOrThrow("legacy_versions_json")),
+                    legacyProvenanceJson = c.getString(c.getColumnIndexOrThrow("legacy_provenance_json"))
                 )
             }
         }

@@ -52,7 +52,7 @@ private fun FinzanjirApp() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(page: String, select: (String) -> Unit) {
-    val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "16 qatlam", "Case", "Human Review", "AI yordamchi", "Cheklovlar")
+    val nav = listOf("Bosh sahifa", "Jarayon", "Signallar", "Risk Engine", "Cross-Match", "Fraud Graph", "Timeline", "Case", "Human Review", "FIN-RECOVERY", "Fuqaro oynasi", "Mutaxassis ish joyi", "16 qatlam", "AI yordamchi", "Cheklovlar")
     Scaffold(
         topBar = {
             TopAppBar(title = { Column {
@@ -77,24 +77,8 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
             }
             when (page) {
                 "Bosh sahifa" -> Home { select("Jarayon") }
-                "Jarayon" -> InfoList("Yagona ish jarayoni", "Hodisadan inson ko‘rigigacha", listOf(
-                    "1. Hodisa va manba — hozircha namoyish ma’lumotlari sintetik",
-                    "2. Ma’lumot sifati — yetishmayotgan, eskirgan yoki zid ma’lumotlarni belgilash",
-                    "3. 16 qatlam — tegishli talab va nazorat yo‘nalishlarini ko‘rib chiqish",
-                    "4. Signal — kuzatuvni qayd etish; signal aybdorlik hukmi emas",
-                    "5. Dalil va qarshi dalil — tasdiqlovchi hamda rad etuvchi ma’lumotlar",
-                    "6. Rozilik doirasi — qurilma, hisob va aniq o‘tkazma roziligini ajratish",
-                    "7. Case mezonlari — yetarli asos bo‘lsa tekshiruv ishini shakllantirish",
-                    "8. Human Review — vakolatli inson tekshiradi va natijani qayd etadi",
-                    "9. Audit izi — kim, qachon, qaysi manbaga tayanganini saqlash"
-                ))
-                "Signallar" -> InfoList("Signal reyestri", "Signal — tekshirish indikatori, yakuniy xulosa emas", listOf(
-                    "SIG-DEMO-001 · Qurilma atributi mosligi · kontekst talab qiladi",
-                    "SIG-DEMO-002 · Vaqt ketma-ketligi noodatiy · qayta tekshiruv",
-                    "SIG-DEMO-003 · Rozilik doirasi noaniq · UNKNOWN",
-                    "SIG-DEMO-004 · Manba ma’lumoti to‘liq emas · DATA_REVIEW",
-                    "Har bir signal uchun manba, vaqt, ishonchlilik, tasdiqlash/rad etish munosabati va noma’lumlar talab qilinadi"
-                ))
+                "Jarayon" -> WorkflowPanel("Jarayon")
+                "Signallar" -> WorkflowPanel("Signallar")
                 "16 qatlam" -> InfoList("16 qatlam katalogi", "Katalog ko‘rsatilishi to‘liq implementatsiya degani emas", listOf(
                     "L01 Evidence & Data Provenance — dalil kelib chiqishi va manba izi",
                     "L02 Data Quality & Reliability — ma’lumot sifati va ishonchliligi",
@@ -113,23 +97,9 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                     "L15 Performance & Capacity Management — samaradorlik va quvvatni boshqarish",
                     "L16 Impact & Harm Reduction — ta’sir va zarar kamayishini o‘lchash"
                 ))
-                "Case" -> InfoList("Case markazi", "Sintetik namuna; real bank Case emas", listOf(
-                    "CASE-DEMO-001 · CASE_CANDIDATE",
-                    "Tasdiqlovchi dalillar: hali namoyish uchun to‘liq manbali dalil ulanmagan",
-                    "Qarshi dalillar: alohida qayd etilishi shart",
-                    "Rozilik: qurilma / hisob / aniq o‘tkazma alohida tekshiriladi",
-                    "Unknown: qurilma kimning nazoratida bo‘lgan?",
-                    "Unknown: o‘tkazma aynan qaysi usulda tasdiqlangan?",
-                    "Case ochilishi firibgarlik tasdiqlandi degani emas"
-                ))
-                "Human Review" -> InfoList("Human Review", "Yakuniy qaror vakolatli insonda qoladi", listOf(
-                    "Dalillarni manba, vaqt va ishonchlilik bo‘yicha tekshirish",
-                    "Rozilik doirasini alohida aniqlash",
-                    "Qarshi dalillar va muqobil izohlarni ko‘rib chiqish",
-                    "Noma’lum yoki yetishmayotgan ma’lumotlarni qayd etish",
-                    "Natija: tasdiqlash / rad etish / qo‘shimcha ma’lumot / qayta tekshiruv",
-                    "AI tavsiyasi rasmiy qaror o‘rnini bosmaydi"
-                ))
+                "Case" -> WorkflowPanel("Case")
+                "Human Review" -> WorkflowPanel("Human Review")
+                "Risk Engine", "Cross-Match", "Fraud Graph", "Timeline", "FIN-RECOVERY", "Fuqaro oynasi", "Mutaxassis ish joyi" -> PlatformPanel(page)
                 "AI yordamchi" -> KnowledgeAssistant()
                 else -> InfoList("Prototip cheklovlari", "Mavjud bo‘lmagan imkoniyatlar bor deb ko‘rsatilmaydi", listOf(
                     "Bank API yoki haqiqiy bank ma’lumotlari ulanmagan",
@@ -141,6 +111,246 @@ private fun MainScreen(page: String, select: (String) -> Unit) {
                     "Production xavfsizlik, server RBAC, audit va bank integratsiyalari hali sinovdan o‘tmagan"
                 ))
             }
+        }
+    }
+}
+
+@Composable
+private fun WorkflowPanel(page: String) {
+    val context = LocalContext.current
+    var snapshot by remember(page) { mutableStateOf(WorkflowStore.load(context)) }
+    var reason by remember { mutableStateOf("") }
+    var actionError by remember { mutableStateOf<String?>(null) }
+
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
+        Text(
+            when (page) {
+                "Jarayon" -> "Yagona FINZANJIR ish oqimi"
+                "Signallar" -> "Signal reyestri"
+                "Case" -> "Case markazi"
+                else -> "Human Review"
+            },
+            color = Navy, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold
+        )
+        Text(
+            "Barcha tegishli oynalar bitta sintetik Event / Signal / Case zanjiridan foydalanadi. Demo ma’lumotlari real bank yozuvi emas.",
+            color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 5.dp, bottom = 10.dp)
+        )
+        Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+            Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                Text("Event ID: ${snapshot.eventId}", color = Ink, fontSize = 11.sp)
+                Text("Signal ID: ${snapshot.signalId}", color = Ink, fontSize = 11.sp)
+                Text("Case ID: ${snapshot.caseId}", color = Ink, fontSize = 11.sp)
+                Text("Case holati: ${snapshot.caseStatus}", color = Blue, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 5.dp))
+                Text("Review holati: ${snapshot.reviewStatus}", color = Muted, fontSize = 10.sp)
+            }
+        }
+
+        when (page) {
+            "Jarayon" -> {
+                Text("Event → Signal → Case → Human Review → Audit", color = Navy, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(top = 13.dp, bottom = 7.dp))
+                snapshot.records.forEach { WorkflowRecordCard(it) }
+            }
+            "Signallar" -> {
+                Text("Signal — tekshiruv indikatori, ayblov yoki firibgarlik isboti emas.", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(vertical = 8.dp))
+                snapshot.records.filter { it.type == "SIGNAL" }.forEach { WorkflowRecordCard(it) }
+            }
+            "Case" -> {
+                Text("Dalillar, qarshi dalillar va noma’lumlar bir Case ID ostida saqlanadi.", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(vertical = 8.dp))
+                snapshot.records.filter { it.type in setOf("EVIDENCE", "COUNTER_EVIDENCE", "UNKNOWN", "HUMAN_REVIEW") }.forEach { WorkflowRecordCard(it) }
+            }
+            "Human Review" -> {
+                Text("AI yoki signal yakuniy qaror chiqarmaydi. Quyidagi demo amallar faqat review holatini va audit yozuvini o‘zgartiradi.", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(vertical = 8.dp))
+                snapshot.records.filter { it.type in setOf("EVIDENCE", "COUNTER_EVIDENCE", "UNKNOWN", "HUMAN_REVIEW") }.forEach { WorkflowRecordCard(it) }
+                OutlinedTextField(
+                    value = reason, onValueChange = { reason = it },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    label = { Text("Ko‘rib chiqish sababi") }, minLines = 2
+                )
+                val decisions = listOf(
+                    "SUPPORTED_FOR_FURTHER_CHECK" to "Tekshiruvni davom ettirish",
+                    "NOT_SUPPORTED" to "Asos yetarli emas",
+                    "MORE_INFORMATION" to "Qo‘shimcha ma’lumot",
+                    "RECHECK" to "Qayta tekshirish",
+                    "ESCALATED" to "Vakolatli mutaxassisga yuborish"
+                )
+                decisions.forEach { (code, label) ->
+                    OutlinedButton(
+                        onClick = {
+                            try {
+                                snapshot = WorkflowStore.recordReview(context, code, reason)
+                                reason = ""
+                                actionError = null
+                            } catch (e: Exception) {
+                                actionError = e.message ?: "Review amalini saqlab bo‘lmadi"
+                            }
+                        },
+                        enabled = reason.trim().length >= 4,
+                        modifier = Modifier.fillMaxWidth().padding(top = 5.dp)
+                    ) { Text(label) }
+                }
+                actionError?.let { Text(it, color = Color(0xFFB3261E), fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp)) }
+            }
+        }
+
+        Text("Audit izi · oxirgi yozuvlar", color = Navy, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 13.dp, bottom = 6.dp))
+        snapshot.audit.takeLast(8).reversed().forEach { WorkflowRecordCard(it) }
+        Text("Prototip cheklovi: bu lokal SharedPreferences demo ombori; production DB, server RBAC, bank API yoki huquqiy qaror emas.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 8.dp))
+    }
+}
+
+@Composable
+private fun WorkflowRecordCard(record: WorkflowRecord) {
+    Card(
+        Modifier.fillMaxWidth().padding(vertical = 3.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(Modifier.padding(11.dp)) {
+            Text("${record.type} · ${record.status}", color = Blue, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+            Text(record.title, color = Ink, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 3.dp))
+            Text(record.details, color = Muted, fontSize = 11.sp, lineHeight = 15.sp, modifier = Modifier.padding(top = 3.dp))
+            Text("ID: ${record.id} · Manba: ${record.source}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 4.dp))
+            Text("Event: ${record.eventId} · Signal: ${record.signalId} · Case: ${record.caseId}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 3.dp))
+            if (record.relatedIds.isNotEmpty()) {
+                Text("Bog‘langan ID: ${record.relatedIds.joinToString()}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 2.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlatformPanel(page: String) {
+    val context = LocalContext.current
+    var snapshot by remember(page) { mutableStateOf(WorkflowStore.load(context)) }
+    var message by remember { mutableStateOf<String?>(null) }
+    var cardMessage by remember { mutableStateOf<String?>(null) }
+    val stage = when (page) {
+        "Risk Engine" -> "RISK_ENGINE"
+        "Cross-Match" -> "CROSS_MATCH"
+        "Fraud Graph" -> "FRAUD_GRAPH"
+        "Timeline" -> "TIMELINE"
+        "FIN-RECOVERY" -> "FIN_RECOVERY"
+        else -> ""
+    }
+    val citizen = page == "Fuqaro oynasi"
+    val expert = page == "Mutaxassis ish joyi"
+
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), contentPadding = PaddingValues(top = 14.dp, bottom = 20.dp)) {
+        item {
+            Text(page, color = Navy, fontSize = 21.sp, fontWeight = FontWeight.ExtraBold)
+            Text("Yagona ma’lumot zanjiri · Event / Signal / Case ID", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp, bottom = 10.dp))
+            Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                    Text("Event: ${snapshot.eventId}", color = Ink, fontSize = 11.sp)
+                    Text("Signal: ${snapshot.signalId}", color = Ink, fontSize = 11.sp)
+                    Text("Case: ${snapshot.caseId}", color = Ink, fontSize = 11.sp)
+                    Text("Case holati: ${snapshot.caseStatus}", color = Blue, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("Review: ${snapshot.reviewStatus}", color = Muted, fontSize = 10.sp)
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
+        if (citizen) {
+            // Citizen card-state choices are local Case records; no card credentials are collected.
+            item {
+                Text("Fuqaro uchun tushunarli ko‘rinish", color = Navy, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text("FINZANJIR shubhali belgilarni ko‘rsatishi mumkin, lekin bu sizni firibgar yoki aybdor deb belgilamaydi. Yakuniy ko‘rib chiqish vakolatli inson tomonidan amalga oshiriladi.", color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                Text("Mening kartalarim · sintetik demo", color = Navy, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp))
+                snapshot.records.firstOrNull { it.id == "ENT-CARD-DEMO-0001" }?.let { WorkflowRecordCard(it) }
+                val cardStatus = snapshot.records.firstOrNull { it.type == "CITIZEN_CARD" }?.status ?: "NOT_SET"
+                Text("Siz belgilagan holat: $cardStatus", color = Blue, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 4.dp))
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "OWNED")
+                    cardMessage = "Demo karta o‘zingizniki deb qayd etildi."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("O‘zimniki") }
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "UNKNOWN")
+                    cardMessage = "Demo karta tanilmagan deb qayd etildi; bu ayblov emas."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Tanimayman") }
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "LOST")
+                    cardMessage = "Yo‘qotilgan holati lokal demo Case va auditga yozildi."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Yo‘qotilgan") }
+                cardMessage?.let { Text(it, color = Teal, fontSize = 10.sp, modifier = Modifier.padding(vertical = 4.dp)) }
+                snapshot.records.firstOrNull { it.type == "CITIZEN_CARD" }?.let { WorkflowRecordCard(it) }
+                Text("Karta raqami, hisob rekviziti yoki CVV saqlanmaydi. Bu yozuv faqat umumiy ma’lumot modelidagi demo karta obyektidir; bank bilan real sinxronlash yoki bloklash bajarilmaydi.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 6.dp))
+                listOf(
+                    "Mening kartalarim — o‘zimniki, tanimayman yoki yo‘qotilgan holatlarini qayd etish uchun mo‘ljallangan; hozircha bank bilan real sinxronlash yo‘q.",
+                    "Xavfsizlik — OTP, PIN, CVV va parollarni hech kimga bermang; shubhali havolalarga kirmang.",
+                    "Murojaat — hodisa yuz bersa bankning rasmiy aloqa kanaliga murojaat qiling va murojaat raqamini saqlang.",
+                    "Shaffoflik — signalning sababi va noaniqliklari tushuntirilishi kerak; noto‘g‘ri ma’lumotni tuzatish inson ko‘rigi orqali amalga oshiriladi."
+                ).forEach { line ->
+                    Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                        Text(line, color = Ink, fontSize = 12.sp, lineHeight = 17.sp, modifier = Modifier.padding(12.dp))
+                    }
+                }
+                Text("Bu fuqaro interfeysining birinchi demo ko‘rinishi. Karta ro‘yxati, e’tiroz yuborish va bankdan ma’lumot olish hali real xizmat sifatida ulanmagan.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 8.dp))
+            }
+        } else if (expert) {
+            item {
+                Text("Mutaxassis ish joyi", color = Navy, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text("Barcha mutaxassis oynalari bitta Case ID, umumiy vaqt chizig‘i va audit yozuvlariga tayanadi. Ushbu demo autentifikatsiya yoki production RBAC emas.", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(vertical = 7.dp))
+                val actions = listOf(
+                    "RISK_ENGINE" to "Risk Engine ishga tushirish",
+                    "CROSS_MATCH" to "Cross-Match bajarish",
+                    "FRAUD_GRAPH" to "Fraud Graph tuzish",
+                    "TIMELINE" to "Timeline yangilash",
+                    "FIN_RECOVERY" to "FIN-RECOVERY yo‘riqnomasi"
+                )
+                actions.forEach { (code, label) ->
+                    OutlinedButton(onClick = {
+                        snapshot = WorkflowStore.runStage(context, code)
+                        message = "$label: demo natijasi Case tarixiga yozildi."
+                    }, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) { Text(label) }
+                }
+                message?.let { Text(it, color = Teal, fontSize = 10.sp, modifier = Modifier.padding(vertical = 6.dp)) }
+                Text("Yagona Case yozuvlari", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp))
+            }
+            items(snapshot.records.reversed()) { WorkflowRecordCard(it) }
+            item {
+                Text("Audit izi", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp))
+            }
+            items(snapshot.audit.reversed()) { WorkflowRecordCard(it) }
+        } else {
+            item {
+                val description = when (stage) {
+                    "RISK_ENGINE" -> "Risk Engine: izohlanadigan risk omillari, qarshi kontekst va noaniqlikni ko‘rsatadi. Ball hozir sintetik demo; kalibrlanmagan."
+                    "CROSS_MATCH" -> "Cross-Match: turli manbalardagi atributlar o‘rtasida ehtimoliy mosliklarni izlaydi. Moslik shaxsni aniqlash yoki ayblash emas."
+                    "FRAUD_GRAPH" -> "Fraud Graph: fuqaro, kanal, karta, hisob, telefon, qurilma/IP, qabul qiluvchi va tranzaksiya aloqalarini ko‘rsatish uchun graf yozuvlarini yaratadi."
+                    "TIMELINE" -> "Timeline: hodisa, signal, dalil, qarshi dalil, review va recovery harakatlarini yagona Case ID bo‘yicha vaqt tartibida jamlaydi."
+                    else -> "FIN-RECOVERY: hodisadan keyingi xavfsiz amallarni eslatadi va murojaat izini saqlashga yordam beradi. Pul qaytishini kafolatlamaydi."
+                }
+                Text(description, color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(vertical = 7.dp))
+                Button(onClick = {
+                    snapshot = WorkflowStore.runStage(context, stage)
+                    message = "Demo bosqichi bajarildi va umumiy Case tarixiga yozildi."
+                }, modifier = Modifier.fillMaxWidth()) { Text("Demo bosqichini bajarish") }
+                message?.let { Text(it, color = Teal, fontSize = 10.sp, modifier = Modifier.padding(top = 6.dp)) }
+                Text("Shu bosqichga tegishli yozuvlar", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 12.dp, bottom = 5.dp))
+            }
+            val types = when (stage) {
+                "RISK_ENGINE" -> setOf("RISK_ASSESSMENT")
+                "CROSS_MATCH" -> setOf("CROSS_MATCH", "UNKNOWN")
+                "FRAUD_GRAPH" -> setOf("GRAPH_NODE", "GRAPH_EDGE")
+                "TIMELINE" -> setOf("TIMELINE")
+                else -> setOf("RECOVERY_CASE")
+            }
+            items(snapshot.records.filter { it.type in types }.reversed()) { WorkflowRecordCard(it) }
+            if (stage == "FRAUD_GRAPH") {
+                item { Text("Umumiy modeldagi sintetik obyektlar", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)) }
+                items(snapshot.records.filter { it.type == "ENTITY" }.sortedBy { it.timestamp }) { WorkflowRecordCard(it) }
+            }
+            if (stage == "TIMELINE") {
+                item { Text("To‘liq vaqt chizig‘i", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)) }
+                items((snapshot.records + snapshot.audit).sortedBy { it.timestamp }) { WorkflowRecordCard(it) }
+            }
+            if (stage == "FIN_RECOVERY") {
+                item { Text("FIN-RECOVERY xavfsizlik yo‘riqnomasi", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp)) }
+            }
+        }
+        item {
+            Text("Cheklov: bu lokal sintetik demo. Haqiqiy bank ma’lumoti, real shaxslararo bog‘lanish, production Risk Score, avtomatik bloklash yoki pulni qaytarish amali bajarilmaydi.", color = Muted, fontSize = 10.sp, lineHeight = 14.sp, modifier = Modifier.padding(top = 12.dp))
         }
     }
 }

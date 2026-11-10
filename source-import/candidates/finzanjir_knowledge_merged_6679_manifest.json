@@ -1,0 +1,257 @@
+{
+  "project": "FINZANJIR",
+  "package": "knowledge-migration-2026-11-09",
+  "status": "MERGED_CANDIDATE_NOT_DEVICE_VERIFIED",
+  "target_asset": "app/src/main/assets/finzanjir_knowledge.json",
+  "target_namespace": "uz.finzanjir.mobile",
+  "record_count": 6679,
+  "base_v317_records": 4671,
+  "new_document_chunks": 893,
+  "canonical_layer_records": 16,
+  "layer_record_ids": [
+    "V4-L01",
+    "V4-L02",
+    "V4-L03",
+    "V4-L04",
+    "V4-L05",
+    "V4-L06",
+    "V4-L07",
+    "V4-L08",
+    "V4-L09",
+    "V4-L10",
+    "V4-L11",
+    "V4-L12",
+    "V4-L13",
+    "V4-L14",
+    "V4-L15",
+    "V4-L16"
+  ],
+  "asset_size_bytes": 8055000,
+  "asset_sha256": "301a1889ef4245eb72a4c68b7e678d842e5e5bf1a68c1507066e4801bc0051af",
+  "sources": {
+    "uploaded_documents_zip": {
+      "name": "Finzanjir konsepsiyasi va qoshimsha malumotlar hujjatlar (1).zip",
+      "sha256": "1071d39c44cce3b3fbe5e1e837471bf23ae79916c56ba1b0fc75a5523ba0141c",
+      "files": 14
+    },
+    "v317_knowledge_archive": {
+      "name": "FINZANJIR_V317_TAQQOSLASH_SOURCE.zip",
+      "sha256": "07e0333756868b4fa8d4f5562a83a16516e9dbca7ffd331dab14a9db271f62b4",
+      "base_records": 4671
+    },
+    "ai_v2_1_source_zip": {
+      "name": "FINZANJIR_GLOBAL_KNOWLEDGE_SYSTEM_2026-10-12_v2.1_SEQUENTIAL_HYBRID_AI(2).zip",
+      "sha256": "d7b20afb986a295e6e61a00bc3936891fb5e50a4158e3730d2d1ce04ae9489b3"
+    },
+    "visual_ocr_candidate_import": {
+      "records": 27,
+      "status": "candidate_not_authoritative",
+      "review_status": "needs_visual_verification",
+      "note": "OCR is partial and unverified; diagram text that implies blocking is explicitly marked as historical/conceptual, not an active FINZANJIR rule."
+    }
+  },
+  "document_import_stats": [
+    {
+      "file": "FINZANJIR_Tarixiy_Ishchi_Hujjat!.pdf",
+      "type": ".pdf",
+      "added_records": 45
+    },
+    {
+      "file": "FINZANJIR_16_QATLAM_CHUQUR_TUSHUNTIRISH_V3_TUZATILGAN.docx",
+      "type": ".docx",
+      "added_records": 47
+    },
+    {
+      "file": "FINZANJIR_16_QATLAM_TALABLAR_VA_SINOVLAR_REYESTRI.pdf",
+      "type": ".pdf",
+      "added_records": 14
+    },
+    {
+      "file": "FINZANJIR_Signal_Reyestri.docx",
+      "type": ".docx",
+      "added_records": 5
+    },
+    {
+      "file": "FINZANJIR_Kichik_Signallar.docx",
+      "type": ".docx",
+      "added_records": 10
+    },
+    {
+      "file": "FINZANJIR_Ilgor_Signallar.docx",
+      "type": ".docx",
+      "added_records": 7
+    },
+    {
+      "file": "FINZANJIR_QOSHIMCHA_AMALIY_TALABLAR.pdf",
+      "type": ".pdf",
+      "added_records": 53
+    },
+    {
+      "file": "FINZANJIR_Qoshimcha_FDP_ishchi_nusxa_01.docx",
+      "type": ".docx",
+      "added_records": 25
+    },
+    {
+      "file": "FINZANJIR_EKSPERTIZA_TUZATISH_FALSE_POSITIVE_V2.docx",
+      "type": ".docx",
+      "added_records": 9
+    },
+    {
+      "file": "FINZANJIR_Fuqaro_Xavfsizligi_TUZATILGAN.docx",
+      "type": ".docx",
+      "added_records": 25
+    },
+    {
+      "file": "FINZANJIR_BANK_INTEGRATSIYA_XAVFSIZLIK_AVTOMATLASHTIRISH_TEXNIK_ARXITEKTURA_.pdf",
+      "type": ".pdf",
+      "added_records": 163
+    },
+    {
+      "file": "FINZANJIR_AI_VA_BILIM_TIZIMI_5_HUJJAT_BIRLASHTIRILGAN_2026.pdf",
+      "type": ".pdf",
+      "added_records": 71
+    },
+    {
+      "file": "FINZANJIR_TAQDIMOT.pptx",
+      "type": ".pptx",
+      "added_records": 17
+    },
+    {
+      "file": "FINZANJIR_KONSEPSIYA_V14.pdf",
+      "type": ".pdf",
+      "added_records": 402
+    }
+  ],
+  "pdf_page_extraction": {
+    "FINZANJIR_Tarixiy_Ishchi_Hujjat!.pdf": {
+      "pages": 22,
+      "pages_with_extractable_text": 22
+    },
+    "FINZANJIR_16_QATLAM_TALABLAR_VA_SINOVLAR_REYESTRI.pdf": {
+      "pages": 4,
+      "pages_with_extractable_text": 4
+    },
+    "FINZANJIR_QOSHIMCHA_AMALIY_TALABLAR.pdf": {
+      "pages": 19,
+      "pages_with_extractable_text": 19
+    },
+    "FINZANJIR_BANK_INTEGRATSIYA_XAVFSIZLIK_AVTOMATLASHTIRISH_TEXNIK_ARXITEKTURA_.pdf": {
+      "pages": 66,
+      "pages_with_extractable_text": 66
+    },
+    "FINZANJIR_AI_VA_BILIM_TIZIMI_5_HUJJAT_BIRLASHTIRILGAN_2026.pdf": {
+      "pages": 29,
+      "pages_with_extractable_text": 29
+    },
+    "FINZANJIR_KONSEPSIYA_V14.pdf": {
+      "pages": 164,
+      "pages_with_extractable_text": 164
+    },
+    "visual_ocr_review": {
+      "embedded_pdf_images_total": 37,
+      "embedded_pdf_images_ocr_attempted": 26,
+      "standalone_diagram_images_total": 5,
+      "standalone_diagram_images_ocr_attempted": 5,
+      "ocr_candidate_records_added": 27,
+      "embedded_pdf_images_with_candidate_records": 22,
+      "standalone_diagram_images_with_candidate_records": 5
+    }
+  },
+  "policy": {
+    "new_uploaded_docs_approval": "candidate_not_authoritative",
+    "source_provenance": "preserved_per_record",
+    "aliases": "preserved_in_corpus_but_excluded_from_answer_evidence_by_new_Kotlin_retriever",
+    "author_records": "kept in common knowledge source; direct author-context queries only in current no-role prototype; no author-only login screen"
+  },
+  "limitations": [
+    "This is a knowledge corpus migration, not model fine-tuning.",
+    "New documents are candidate source material, not automatically approved authoritative policy.",
+    "V317 index source records retain their original approval states; missing states are marked unclassified.",
+    "Android APK build, install and device runtime must be verified after installation.",
+    "Visual OCR candidate records were added from 22 embedded PDF images and 5 standalone diagrams where readable text was extracted; not every embedded image was OCR-readable, and all OCR records still require visual verification."
+  ],
+  "audience_counts": {
+    "general": 4656,
+    "expert_and_author": 60,
+    "expert": 420,
+    "general_and_expert": 444
+  },
+  "visual_ocr_candidate_records": 27,
+  "verification": {
+    "retrieval_regression": {
+      "passed": 23,
+      "total": 23,
+      "method": "Kotlin BM25-equivalent ranking simulation over candidate corpus; source-aware acceptance; not Android runtime",
+      "android_runtime_verified": false
+    }
+  },
+  "activation_status": "MERGED_ASSET_REQUIRES_ANDROID_FTS4_VALIDATION",
+  "candidate_asset_sha256": "f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250",
+  "previous_active_asset_sha256": "f81cef647c4a5d22ed0ca4902debc4cc54c817adb85930e5f1a2df0b688a0848",
+  "merge_stats": {
+    "active_count": 1121,
+    "candidate_count": 5607,
+    "same_id_same_text": 31,
+    "same_id_changed_text": 18,
+    "active_only_preserved": 1072,
+    "merged_count": 6679,
+    "unique_ids": 6679
+  },
+  "legacy_versions_preserved": 18,
+  "legacy_provenance_entries": 49,
+  "merged_asset_size_bytes": 8055000,
+  "chunk_format": "JSON array chunks; concatenate parsed records in manifest order before generating the APK candidate asset",
+  "chunks": [
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_01.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_02.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_03.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_04.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_05.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_06.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_07.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_08.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_09.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_10.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_11.json",
+      "record_count": 600
+    },
+    {
+      "path": "source-import/candidates/finzanjir_knowledge_merged_6679_part_12.json",
+      "record_count": 79
+    }
+  ],
+  "note": "Candidate and active records are not automatically promoted to authoritative knowledge. Chunk files are outside app/src/main/assets and are not packaged into the APK.",
+  "candidate_asset_size_bytes": 5414649,
+  "candidate_text_characters": 3021318
+}
