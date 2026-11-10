@@ -224,6 +224,7 @@ private fun PlatformPanel(page: String) {
     val context = LocalContext.current
     var snapshot by remember(page) { mutableStateOf(WorkflowStore.load(context)) }
     var message by remember { mutableStateOf<String?>(null) }
+    var cardMessage by remember { mutableStateOf<String?>(null) }
     val stage = when (page) {
         "Risk Engine" -> "RISK_ENGINE"
         "Cross-Match" -> "CROSS_MATCH"
@@ -256,7 +257,23 @@ private fun PlatformPanel(page: String) {
                 Text("FINZANJIR shubhali belgilarni ko‘rsatishi mumkin, lekin bu sizni firibgar yoki aybdor deb belgilamaydi. Yakuniy ko‘rib chiqish vakolatli inson tomonidan amalga oshiriladi.", color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
                 Text("Mening kartalarim · sintetik demo", color = Navy, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp))
                 snapshot.records.firstOrNull { it.id == "ENT-CARD-DEMO-0001" }?.let { WorkflowRecordCard(it) }
-                Text("Karta raqami, hisob rekviziti yoki CVV saqlanmaydi. Bu yozuv faqat umumiy ma’lumot modelidagi demo karta obyektidir.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 6.dp))
+                val cardStatus = snapshot.records.firstOrNull { it.type == "CITIZEN_CARD" }?.status ?: "NOT_SET"
+                Text("Siz belgilagan holat: $cardStatus", color = Blue, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 4.dp))
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "OWNED")
+                    cardMessage = "Demo karta o‘zingizniki deb qayd etildi."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("O‘zimniki") }
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "UNKNOWN")
+                    cardMessage = "Demo karta tanilmagan deb qayd etildi; bu ayblov emas."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Tanimayman") }
+                OutlinedButton(onClick = {
+                    snapshot = WorkflowStore.updateCitizenCardStatus(context, "LOST")
+                    cardMessage = "Yo‘qotilgan holati lokal demo Case va auditga yozildi."
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Yo‘qotilgan") }
+                cardMessage?.let { Text(it, color = Teal, fontSize = 10.sp, modifier = Modifier.padding(vertical = 4.dp)) }
+                snapshot.records.firstOrNull { it.type == "CITIZEN_CARD" }?.let { WorkflowRecordCard(it) }
+                Text("Karta raqami, hisob rekviziti yoki CVV saqlanmaydi. Bu yozuv faqat umumiy ma’lumot modelidagi demo karta obyektidir; bank bilan real sinxronlash yoki bloklash bajarilmaydi.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 6.dp))
                 listOf(
                     "Mening kartalarim — o‘zimniki, tanimayman yoki yo‘qotilgan holatlarini qayd etish uchun mo‘ljallangan; hozircha bank bilan real sinxronlash yo‘q.",
                     "Xavfsizlik — OTP, PIN, CVV va parollarni hech kimga bermang; shubhali havolalarga kirmang.",
