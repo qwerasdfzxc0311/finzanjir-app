@@ -52,6 +52,17 @@ def fts_query(db: sqlite3.Connection, expression: str) -> list[str]:
     ).fetchall()
     return [row[0] for row in rows]
 
+def fts_contains(db: sqlite3.Connection, expression: str, record_id: str) -> bool:
+    row = db.execute(
+        """SELECT 1
+           FROM knowledge_fts f
+           JOIN knowledge_meta m ON m.rowid = f.docid
+           WHERE knowledge_fts MATCH ? AND m.id = ?
+           LIMIT 1""",
+        (expression, record_id),
+    ).fetchone()
+    return row is not None
+
 
 def main() -> None:
     manifest, records = load_candidate()
@@ -155,8 +166,7 @@ def main() -> None:
         terms = [t for t in re.findall(r"[\w]+", norm(old_text), flags=re.UNICODE) if len(t) >= 4]
         if not terms:
             continue
-        hits = fts_query(db, '"' + terms[0].replace('"', '""') + '"')
-        if record["id"] not in hits:
+        if not fts_contains(db, '"' + terms[0].replace('"', '""') + '"', record["id"]):
             raise AssertionError(f"Historical alias did not return canonical ID: {record['id']}")
         historical_alias_checks += 1
     if historical_alias_checks != 18:
