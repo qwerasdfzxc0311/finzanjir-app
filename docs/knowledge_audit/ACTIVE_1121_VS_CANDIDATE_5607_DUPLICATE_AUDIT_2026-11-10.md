@@ -34,3 +34,24 @@ Migratsiya faylining SHA-256:
 5,607 yozuvli fayl hali Android aktiv asseti bilan almashtirilmadi. Sababi: eski 1,121 yozuvdan 1,072 tasi migratsiya nomzodida yo'q, shuningdek 18 ta ID bo'yicha matn versiyasi farqi bor. To'g'ridan-to'g'ri overwrite ma'lumot yo'qotishiga olib kelishi mumkin.
 
 BM25 qo'shilmaydi. Android retrieval indeksi SQLite FTS4 bo'lib qoladi. Korpus birlashtirish alohida, SHA/count/ID tekshiruvlaridan o'tgandan keyin bajariladi.
+
+
+## 2026-11-10 — 6,679 yozuvli birlashtirilgan candidate tayyorlandi
+
+Mavjud aktiv 1,121 yozuvli Android asset va Library'dagi SHA-256 bilan tasdiqlangan 5,607 yozuvli candidate qayta birlashtirildi. Yakuniy invariantlar:
+
+- Candidate: 5,607; aktiv oldingi asset: 1,121.
+- Bir xil ID va bir xil matn: 31; eski provenance birlashtirildi.
+- Bir xil ID, matni o'zgargan: 18; eski matn `legacy_versions` va `search_aliases` ichida saqlandi.
+- Faqat eski aktiv assetda bo'lgan yozuv: 1,072; saqlandi.
+- Yakuniy noyob ID: 6,679; takror ID: 0.
+- Tarixiy versiya: 18; oldingi provenance yozuvi: 49.
+- Ichki exact-text duplicate guruhlari: 3; avtomatik o'chirilmadi.
+
+Birlashtirilgan candidate GitHub'da 12 ta JSON bo'lagida saqlandi:
+`source-import/candidates/finzanjir_knowledge_merged_6679_part_01.json` ... `part_12.json`.
+
+Birlashtirilgan JSONni qayta yig'ish uchun SHA-256:
+`301a1889ef4245eb72a4c68b7e678d842e5e5bf1a68c1507066e4801bc0051af`
+
+Muhim: bo'laklar `app/src/main/assets` tashqarisida. APKning aktiv 1,121 yozuvli asseti va uning manifesti o'zgartirilmadi. 6,679 yozuvli candidate hali APKga kiritilmagan. SQLite FTS4 regression tekshiruvi CI orqali bajarilishi kerak; bu natija Samsung qurilmadagi runtime sinovi o'rnini bosmaydi.
