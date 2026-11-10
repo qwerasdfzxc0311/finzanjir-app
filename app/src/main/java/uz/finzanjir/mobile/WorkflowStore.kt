@@ -103,6 +103,35 @@ object WorkflowStore {
         snapshot(state)
     }
 
+    fun updateCitizenCardStatus(context: Context, status: String): WorkflowSnapshot = synchronized(lock) {
+        require(status in setOf("OWNED", "UNKNOWN", "LOST")) { "Noma’lum karta holati" }
+        val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val state = try { prefs.getString(KEY_STATE, null)?.let { JSONObject(it) } ?: seed() }
+            catch (_: Exception) { seed() }
+        ensureEntityChain(state)
+        val records = state.getJSONArray("records")
+        for (index in records.length() - 1 downTo 0) {
+            if (records.optJSONObject(index)?.optString("id") == "CARD-DEMO-0001") records.remove(index)
+        }
+        val now = System.currentTimeMillis()
+        val details = when (status) {
+            "OWNED" -> "Fuqaro sintetik demo kartani o‘ziniki deb belgiladi. Real karta raqami yoki bank rekviziti saqlanmaydi."
+            "UNKNOWN" -> "Fuqaro kartani tanimaydi deb belgiladi. Bu shubha qaydi; firibgarlik hukmi yoki avtomatik bloklash emas."
+            else -> "Fuqaro demo kartani yo‘qotilgan deb belgiladi. Real bank bloklashi bajarilmaydi; fuqaro bankning rasmiy kanaliga murojaat qilishi kerak."
+        }
+        records.put(recordJson("CARD-DEMO-0001", "CITIZEN_CARD", status,
+            "Mening kartalarim holati yangilandi", details, "CITIZEN_DEMO", now,
+            state.optString("event_id"), state.optString("signal_id"), state.optString("case_id"),
+            listOf("ENT-CARD-DEMO-0001", state.optString("case_id"))))
+        state.getJSONArray("audit").put(recordJson("AUD-" + UUID.randomUUID().toString(),
+            "AUDIT", "RECORDED", "Fuqaro karta holatini belgiladi",
+            "CARD-DEMO-0001: $status. Bu faqat lokal sintetik demo qaydi.",
+            "CITIZEN_DEMO", now, state.optString("event_id"), state.optString("signal_id"),
+            state.optString("case_id"), listOf("CARD-DEMO-0001", state.optString("case_id"))))
+        prefs.edit().putString(KEY_STATE, state.toString()).apply()
+        snapshot(state)
+    }
+
     fun runStage(context: Context, stage: String): WorkflowSnapshot = synchronized(lock) {
         require(stage in setOf("RISK_ENGINE", "CROSS_MATCH", "FRAUD_GRAPH", "TIMELINE", "FIN_RECOVERY")) {
             "Noma’lum platforma bosqichi"
@@ -188,6 +217,7 @@ object WorkflowStore {
     private fun ensureEntityChain(state: JSONObject): Boolean {
         val records = state.optJSONArray("records") ?: JSONArray().also { state.put("records", it) }
         val existing = (0 until records.length()).mapNotNull { records.optJSONObject(it)?.optString("id") }.toSet()
+        state.put("workflow_schema_version", 2)
         val eventId = state.optString("event_id", "EVT-DEMO-0001")
         val signalId = state.optString("signal_id", "SIG-DEMO-0001")
         val caseId = state.optString("case_id", "CASE-DEMO-0001")
@@ -241,6 +271,7 @@ object WorkflowStore {
                         "GRAPH_NODE" -> entities.map { it.first }
                         "GRAPH_EDGE" -> listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001", "ENT-RECIPIENT-DEMO-0001", "ENT-TRANSACTION-DEMO-0001")
                         "RECOVERY_CASE" -> listOf(eventId, signalId, caseId)
+                        "CITIZEN_CARD" -> listOf("ENT-CARD-DEMO-0001", caseId)
                         else -> emptyList()
                     }
                     if (links.isNotEmpty()) {
@@ -290,6 +321,7 @@ object WorkflowStore {
     private fun seed(): JSONObject {
         val now = System.currentTimeMillis()
         val state = JSONObject()
+            .put("workflow_schema_version", 2)
             .put("event_id", "EVT-DEMO-0001")
             .put("signal_id", "SIG-DEMO-0001")
             .put("case_id", "CASE-DEMO-0001")
