@@ -227,7 +227,11 @@ object FinzanjirKnowledgeBase {
                     val rowId = metaInsert.executeInsert()
                     ftsInsert.clearBindings()
                     ftsInsert.bindLong(1, rowId)
-                    val searchable = normalize(r.text + " " + r.id + " " + r.sourceSection + " " + r.recordType + " " + r.domain)
+                    // Legacy text aliases remain searchable without creating duplicate records.
+                    val searchable = normalize(
+                        r.text + " " + r.searchAliases.joinToString(" ") + " " + r.id + " " +
+                            r.sourceSection + " " + r.recordType + " " + r.domain
+                    )
                     ftsInsert.bindString(2, searchable)
                     ftsInsert.executeInsert()
                     searchable.split(" ").filter { it.length >= 3 && it.length <= 32 }.distinct().forEach { term ->
@@ -257,7 +261,8 @@ object FinzanjirKnowledgeBase {
         var sourceId: String = "unknown", var sourceVersion: String = "unknown",
         var sourceSection: String = "unknown", var sourcePath: String = "unknown",
         var recordType: String = "unknown", var audience: String = "general",
-        var domain: String = "unclassified", var language: String = "und"
+        var domain: String = "unclassified", var language: String = "und",
+        var searchAliases: List<String> = emptyList()
     )
 
     private fun readRecord(reader: JsonReader): RawRecord {
@@ -276,11 +281,34 @@ object FinzanjirKnowledgeBase {
                 "audience" -> r.audience = readScalar(reader)
                 "domain" -> r.domain = readScalar(reader)
                 "source_language", "language" -> r.language = readScalar(reader)
+                "search_aliases" -> r.searchAliases = readStringArray(reader)
                 else -> reader.skipValue()
             }
         }
         reader.endObject()
         return r
+    }
+
+    private fun readStringArray(reader: JsonReader): List<String> {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return emptyList()
+        }
+        if (reader.peek() != JsonToken.BEGIN_ARRAY) {
+            reader.skipValue()
+            return emptyList()
+        }
+        val values = ArrayList<String>()
+        reader.beginArray()
+        while (reader.hasNext()) {
+            when (reader.peek()) {
+                JsonToken.STRING, JsonToken.NUMBER -> values.add(reader.nextString())
+                JsonToken.NULL -> reader.nextNull()
+                else -> reader.skipValue()
+            }
+        }
+        reader.endArray()
+        return values
     }
 
     private fun readScalar(reader: JsonReader): String = when (reader.peek()) {
