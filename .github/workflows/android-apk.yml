@@ -8,6 +8,13 @@ on:
       - '*.gradle.kts'
       - 'gradle.properties'
       - '.github/workflows/android-apk.yml'
+  pull_request:
+    branches: [main, ai-core-lightweight-fts4-2026-11-10]
+    paths:
+      - 'app/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/android-apk.yml'
 permissions:
   contents: read
 jobs:
