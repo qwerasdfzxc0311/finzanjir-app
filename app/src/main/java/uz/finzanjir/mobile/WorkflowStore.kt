@@ -218,10 +218,17 @@ object WorkflowStore {
     private fun ensureEntityChain(state: JSONObject): Boolean {
         val records = state.optJSONArray("records") ?: JSONArray().also { state.put("records", it) }
         val existing = (0 until records.length()).mapNotNull { records.optJSONObject(it)?.optString("id") }.toSet()
-        state.put("workflow_schema_version", 2)
-        val eventId = state.optString("event_id", "EVT-DEMO-0001")
-        val signalId = state.optString("signal_id", "SIG-DEMO-0001")
-        val caseId = state.optString("case_id", "CASE-DEMO-0001")
+        var changed = false
+        if (state.optInt("workflow_schema_version", 0) != 2) {
+            state.put("workflow_schema_version", 2)
+            changed = true
+        }
+        val eventId = state.optString("event_id").ifBlank { "EVT-DEMO-0001" }
+        val signalId = state.optString("signal_id").ifBlank { "SIG-DEMO-0001" }
+        val caseId = state.optString("case_id").ifBlank { "CASE-DEMO-0001" }
+        if (state.optString("event_id").isBlank()) { state.put("event_id", eventId); changed = true }
+        if (state.optString("signal_id").isBlank()) { state.put("signal_id", signalId); changed = true }
+        if (state.optString("case_id").isBlank()) { state.put("case_id", caseId); changed = true }
         val entities = listOf(
             Triple("ENT-CITIZEN-DEMO-0001", "Fuqaro", "Fuqaro uchun sintetik demo tuguni; haqiqiy shaxs ma’lumoti yo‘q."),
             Triple("ENT-CHANNEL-DEMO-0001", "Kanal", "To‘lov kanali uchun sintetik tugun."),
@@ -233,7 +240,6 @@ object WorkflowStore {
             Triple("ENT-RECIPIENT-DEMO-0001", "Qabul qiluvchi", "Qabul qiluvchi shaxs yoki hisobining haqiqiy ma’lumoti yo‘q."),
             Triple("ENT-TRANSACTION-DEMO-0001", "Tranzaksiya", "Tranzaksiya summasi yoki real bank yozuvi yo‘q.")
         )
-        var changed = false
         val now = System.currentTimeMillis()
         entities.forEachIndexed { index, entity ->
             if (entity.first !in existing) {
