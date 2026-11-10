@@ -88,6 +88,71 @@ object WorkflowStore {
         snapshot(state)
     }
 
+    fun runStage(context: Context, stage: String): WorkflowSnapshot = synchronized(lock) {
+        require(stage in setOf("RISK_ENGINE", "CROSS_MATCH", "FRAUD_GRAPH", "TIMELINE", "FIN_RECOVERY")) {
+            "Noma’lum platforma bosqichi"
+        }
+        val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val state = try { prefs.getString(KEY_STATE, null)?.let { JSONObject(it) } ?: seed() }
+            catch (_: Exception) { seed() }
+        val now = System.currentTimeMillis()
+        val suffix = now.toString()
+        val records = state.getJSONArray("records")
+        val audit = state.getJSONArray("audit")
+        fun add(id: String, type: String, status: String, title: String, details: String, source: String) {
+            records.put(recordJson(id, type, status, title, details, source, now))
+        }
+        when (stage) {
+            "RISK_ENGINE" -> {
+                // Deliberately fixed synthetic score: this demonstrates explanation, not calibrated risk.
+                state.put("demo_risk_score", 62)
+                state.put("demo_risk_band", "YUQORI · DEMO")
+                add("RSK-$suffix", "RISK_ASSESSMENT", "DEMO_ONLY",
+                    "Izohlanadigan xavf bahosi: 62/100",
+                    "Sintetik misol. Omillar: vaqt ketma-ketligi bo‘yicha mos kelmaslik (+24); qurilma atributi mosligi (+18); ma’lumot yetishmasligi (+20). Qarshi kontekst: qurilma umumiy foydalanishda bo‘lishi mumkin. Ball kalibrlanmagan, haqiqiy fuqaro yoki tranzaksiyaga tatbiq etilmaydi.",
+                    "DEMO_RISK_ENGINE")
+            }
+            "CROSS_MATCH" -> {
+                add("XMT-$suffix", "CROSS_MATCH", "CANDIDATE_LINKS",
+                    "Sintetik Cross-Match natijasi",
+                    "2 ta ehtimoliy atribut mosligi va 1 ta qarshi moslik topildi. Moslik shaxs aynan bir xil degani emas; manba, vaqt va mustaqil tasdiq talab qilinadi.",
+                    "DEMO_CROSS_MATCH")
+                add("XMU-$suffix", "UNKNOWN", "UNRESOLVED",
+                    "Cross-Match noaniqligi",
+                    "Bir xil qurilma yoki tarmoqdan bir nechta fuqaro foydalanishi mumkin. Aloqa yakuniy identifikatsiya emas.",
+                    "DEMO_CROSS_MATCH")
+            }
+            "FRAUD_GRAPH" -> {
+                add("GRF-$suffix", "GRAPH_NODE", "SYNTHETIC",
+                    "Graf tugunlari: karta · hisob · qurilma · IP · qabul qiluvchi",
+                    "Barcha tugunlar namoyish uchun yaratilgan. Tugunlar orasidagi aloqa faqat tekshiruv yo‘nalishini ko‘rsatadi.",
+                    "DEMO_FRAUD_GRAPH")
+                add("GRE-$suffix", "GRAPH_EDGE", "CANDIDATE",
+                    "Graf qirralari: vaqt va atribut mosligi",
+                    "2 ta sintetik qirra ko‘rsatildi. Umumiy qurilma yoki IP egalik/aybdorlikni isbotlamaydi.",
+                    "DEMO_FRAUD_GRAPH")
+            }
+            "TIMELINE" -> {
+                add("TLN-$suffix", "TIMELINE", "GENERATED",
+                    "Case vaqt chizig‘i yangilandi",
+                    "Event, Signal, dalillar, Cross-Match va Human Review yozuvlari vaqt tamg‘asi bo‘yicha bitta Case ID ostida jamlanadi.",
+                    "DEMO_TIMELINE")
+            }
+            "FIN_RECOVERY" -> {
+                add("REC-$suffix", "RECOVERY_CASE", "GUIDANCE_ONLY",
+                    "FIN-RECOVERY yo‘riqnomasi yaratildi",
+                    "1) Kartani chiqargan bankning rasmiy kanaliga zudlik bilan murojaat qilish. 2) Bankdan tranzaksiyani tekshirish va mavjud bo‘lsa nizolash tartibini so‘rash. 3) Murojaat raqami va vaqtini saqlash. 4) Firibgarlik gumoni bo‘lsa vakolatli organlarga xabar berish. 5) OTP, PIN va CVVni hech kimga bermaslik. Pul qaytishi kafolatlanmaydi.",
+                    "DEMO_FIN_RECOVERY")
+            }
+        }
+        audit.put(recordJson("AUD-$suffix", "AUDIT", "RECORDED",
+            "$stage bosqichi bajarildi",
+            "Case ${state.optString("case_id")} uchun sintetik demo yozuvi qo‘shildi.",
+            "LOCAL_DEMO", now))
+        prefs.edit().putString(KEY_STATE, state.toString()).apply()
+        snapshot(state)
+    }
+
     private fun seed(): JSONObject {
         val now = System.currentTimeMillis()
         val state = JSONObject()
