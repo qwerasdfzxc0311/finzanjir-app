@@ -50,8 +50,11 @@ object WorkflowStore {
                 seed().also { prefs.edit().putString(KEY_STATE, it.toString()).apply() }
             }
         }
-        val changed = ensureEntityChain(state) || removeLegacyStageDuplicates(state)
-        if (changed) prefs.edit().putString(KEY_STATE, state.toString()).apply()
+        val entityLinksChanged = ensureEntityChain(state)
+        val duplicateCleanupChanged = removeLegacyStageDuplicates(state)
+        if (entityLinksChanged || duplicateCleanupChanged) {
+            prefs.edit().putString(KEY_STATE, state.toString()).apply()
+        }
         snapshot(state)
     }
 
@@ -66,6 +69,7 @@ object WorkflowStore {
             prefs.getString(KEY_STATE, null)?.let { JSONObject(it) } ?: seed()
         } catch (_: Exception) { seed() }
 
+        ensureEntityChain(state)
         val now = System.currentTimeMillis()
         val reviewId = "REV-" + UUID.randomUUID().toString()
         val nextCaseStatus = when (decision) {
@@ -207,6 +211,43 @@ object WorkflowStore {
                     entity.second, entity.third, "SYNTHETIC_ENTITY", now + index,
                     eventId, signalId, caseId, listOf(nextId)))
                 changed = true
+            }
+        }
+
+        // Backfill explicit links for older records without deleting or rewriting their content.
+        val audit = state.optJSONArray("audit") ?: JSONArray()
+        listOf(records, audit).forEach { array ->
+            for (index in 0 until array.length()) {
+                val item = array.optJSONObject(index) ?: continue
+                if (item.optString("event_id").isBlank()) {
+                    item.put("event_id", eventId); changed = true
+                }
+                if (item.optString("signal_id").isBlank()) {
+                    item.put("signal_id", signalId); changed = true
+                }
+                if (item.optString("case_id").isBlank()) {
+                    item.put("case_id", caseId); changed = true
+                }
+                val currentLinks = item.optJSONArray("related_ids")
+                if (currentLinks == null || currentLinks.length() == 0) {
+                    val links = when (item.optString("type")) {
+                        "EVENT" -> listOf("ENT-TRANSACTION-DEMO-0001", signalId)
+                        "SIGNAL" -> listOf(eventId, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")
+                        "EVIDENCE", "COUNTER_EVIDENCE", "UNKNOWN" ->
+                            listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")
+                        "HUMAN_REVIEW", "AUDIT" -> listOf(eventId, signalId, caseId)
+                        "RISK_ASSESSMENT" -> listOf(eventId, signalId, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")
+                        "CROSS_MATCH" -> listOf(signalId, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")
+                        "GRAPH_NODE" -> entities.map { it.first }
+                        "GRAPH_EDGE" -> listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001", "ENT-RECIPIENT-DEMO-0001", "ENT-TRANSACTION-DEMO-0001")
+                        "RECOVERY_CASE" -> listOf(eventId, signalId, caseId)
+                        else -> emptyList()
+                    }
+                    if (links.isNotEmpty()) {
+                        item.put("related_ids", JSONArray(links))
+                        changed = true
+                    }
+                }
             }
         }
         return changed
