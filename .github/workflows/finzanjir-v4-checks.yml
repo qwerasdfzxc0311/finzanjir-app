@@ -1,0 +1,88 @@
+name: FINZANJIR v4 checks
+
+on:
+  push:
+    branches:
+      - finzanjir-v4-unified-workflow-uz
+    paths:
+      - "finzanjir_v4/**"
+      - ".github/workflows/finzanjir-v4-checks.yml"
+  pull_request:
+    branches:
+      - finzanjir-v4-unified-workflow-uz
+    paths:
+      - "finzanjir_v4/**"
+      - ".github/workflows/finzanjir-v4-checks.yml"
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install runtime requirements
+        run: python -m pip install -r requirements.txt
+      - name: Compile v4 source
+        run: python -m compileall -q finzanjir_v4
+      - name: Streamlit UI smoke test
+        run: |
+          python - <<'PY'
+          from streamlit.testing.v1 import AppTest
+          app = AppTest.from_file("finzanjir_v4/app.py", default_timeout=30).run()
+          if app.exception:
+              raise AssertionError("\\n".join(str(item) for item in app.exception))
+          assert len(app.selectbox) >= 1, "Top-level navigation was not rendered"
+          assert "Bosh sahifa" in str(app.selectbox[0].value), "Public home page was not rendered"
+          pages = [
+              "Bosh sahifa", "Boshqaruv paneli", "Sun’iy bank laboratoriyasi",
+              "Yagona ish jarayoni", "Signallar reyestri", "16 qatlam", "FINZANJIR AI",
+              "Case markazi", "Human Review", "Banklararo tahlil (sintetik)",
+              "KPI dashboard", "Fuqaro uchun tushuntirish", "Audit jurnali",
+              "Qatlamlararo xarita", "Sintetik sinovlar", "Atamalar va cheklovlar",
+          ]
+          for page in pages:
+              app.selectbox[0].select(page).run()
+              if app.exception:
+                  raise AssertionError(f"Page failed: {page}\\n" + "\\n".join(str(item) for item in app.exception))
+          PY
+      - name: Run AI knowledge and safety regression tests
+        run: python -m unittest discover -s finzanjir_v4 -p 'test_*.py' -v
+      - name: Verify public interface and AI boundaries
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          app = Path("finzanjir_v4/app.py").read_text(encoding="utf-8")
+          assistant = Path("finzanjir_v4/ai_assistant.py").read_text(encoding="utf-8")
+          knowledge = Path("finzanjir_v4/knowledge_uz.json").read_text(encoding="utf-8")
+          manifest = Path("finzanjir_v4/knowledge_manifest.json").read_text(encoding="utf-8")
+          requirements = Path("requirements.txt").read_text(encoding="utf-8")
+          forbidden = (
+              "sqlite3", "save_feedback(", "review_case(", "update_case_status(",
+              "delete_case(", "st.data_editor(", "st.file_uploader("
+          )
+          found = [item for item in forbidden if item in app]
+          assert not found, f"Public app contains persistent/business write paths: {found}"
+          assert "tavily" not in assistant.lower(), "v4 assistant must not use Tavily"
+          assert "GEMINI_API_KEY" not in app and "AIza" not in app + assistant, "Possible API key literal found"
+          assert "st.text_area(" in app and "st.button(" in app, "AI question input/action missing"
+          assert "google_search" in assistant, "Google Search grounding is missing"
+          assert "store=False" in assistant, "Gemini Interactions must disable server-side storage"
+          import json
+          records = json.loads(knowledge)
+          manifest_data = json.loads(manifest)
+          assert len(records) == manifest_data["record_count"], "Knowledge manifest record count mismatch"
+          assert len(records) >= 130, "Knowledge corpus unexpectedly small"
+          chapters = [row for row in records if row.get("record_type") == "book_chapter_summary_candidate"]
+          page_chunks = [row for row in records if row.get("record_type") == "book_page_candidate"]
+          assert len(chapters) == 24, "Expected 24 project chapter summaries"
+          assert len(page_chunks) == 820, "Expected 820 source-page text chunks"
+          assert all(row.get("approval") == "candidate_not_authoritative" for row in records), "Candidate record was promoted without approval"
+          assert all(row.get("source_id") and row.get("source_version") and row.get("source_section") for row in records), "Knowledge provenance is incomplete"
+          for layer_number in range(1, 17):
+              assert f"L{layer_number:02d}" in knowledge, f"Missing knowledge record for L{layer_number:02d}"
+          print("Read-only business-data boundary, Gemini/Search path, and 16-layer KB checks passed.")
+          PY

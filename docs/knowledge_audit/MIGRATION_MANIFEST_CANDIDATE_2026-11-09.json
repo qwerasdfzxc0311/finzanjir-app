@@ -1,0 +1,61 @@
+{
+  "project": "FINZANJIR",
+  "package": "knowledge-migration-audit-2026-11-09",
+  "status": "CANDIDATE_NOT_APK_VERIFIED",
+  "target_record_count": 5607,
+  "ai_v2_1_record_count": 4656,
+  "ai_v2_1_ids_preserved": 4656,
+  "new_document_chunks": 893,
+  "canonical_layer_records": 16,
+  "id_duplicates": 0,
+  "exact_normalized_text_duplicate_groups": 3,
+  "records_in_exact_duplicate_groups": 6,
+  "approval_counts": {
+    "not_auto_promoted": 300,
+    "candidate": 812,
+    "index_only": 881,
+    "unclassified": 2097,
+    "author_visible_on_direct_request": 5,
+    "author_confirmed_project_philosophy": 12,
+    "candidate_not_authoritative": 1458,
+    "verified_source_candidate; current legal text must be rechecked before legal advice": 15
+  },
+  "audience_counts": {
+    "general": 4656,
+    "general_and_expert": 444,
+    "expert": 420,
+    "expert_and_author": 60
+  },
+  "asset_sha256": "f3457b372c5e7f79a0875603cb33987a7720f96061c1ac23ea038b69f2dfb250",
+  "ai_v2_1_sha256": "dbab49e8cff3e935cb43f83038a154dba28475835462958451b0002bdfc76c06",
+  "known_visual_gaps": {
+    "pdf_pages_text_extracted": 304,
+    "embedded_pdf_images": 37,
+    "embedded_images_ocr_attempted": 17,
+    "standalone_diagram_images_ocr_attempted": 5,
+    "ocr_results_merged_into_knowledge_asset": false
+  },
+  "note": "This manifest describes the 5,607-record candidate only. GitHub's active Android asset remains 1,121 records until tools/activate_5607_knowledge.sh is run with the exact SHA-verified JSON and the updated asset is committed.",
+  "visual_ocr_candidate_records": 27,
+  "embedded_pdf_images_ocr_attempted": 26,
+  "embedded_pdf_images_with_candidate_records": 22,
+  "standalone_diagram_images_with_candidate_records": 5,
+  "retrieval_regression": {
+    "passed": 17,
+    "total": 17,
+    "method": "Python sqlite3 FTS5 simulation over the 5,607-record candidate; bounded lexical evidence selection; not Android FTS4 runtime"
+  },
+  "legacy_retrieval_regression": {
+    "passed": 23,
+    "total": 23,
+    "method": "Kotlin BM25-equivalent ranking simulation with source-aware acceptance; not Android runtime"
+  },
+  "mobile_core": {
+    "retrieval": "SQLite FTS4",
+    "ranking": "bounded simple term coverage and phrase match; no BM25",
+    "answer_synthesis": "local deterministic evidence sentence selection",
+    "full_corpus_in_ram": false,
+    "mandatory_model_download": false
+  },
+  "activation_status": "CANDIDATE_NOT_ACTIVE_ANDROID_ASSET"
+}

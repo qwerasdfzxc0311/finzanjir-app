@@ -1,0 +1,20 @@
+[
+  {
+    "normalized_text_sha256": "203f0bb9a96a6643f8f5685f5997dca022510e4697fc8fdfa1a54889ef433a37",
+    "record_ids": ["C24M-437c6a158087de", "C24M-42c383cdae7fe7"],
+    "source_ids": ["V317_SOURCE_INDEX", "V317_SOURCE_INDEX"],
+    "text": "Multilingual expressions: uz=population | kaa=population | kk=population | ru=population | en=population. source_type: MODEL_KNOWLEDGE_CANDIDATE. authority: candidate_learning. approval: candidate"
+  },
+  {
+    "normalized_text_sha256": "4d701864a8cf6fdd8b659a721a6c304623e3109df9e8e8688d3e2662cfce4be9",
+    "record_ids": ["C24M-9328dfd2b4592a", "C24M-a51bf4f3ba5cc0"],
+    "source_ids": ["V317_SOURCE_INDEX", "V317_SOURCE_INDEX"],
+    "text": "Multilingual expressions: uz=migration | kaa=migration | kk=migration | ru=migration | en=migration. source_type: MODEL_KNOWLEDGE_CANDIDATE. authority: candidate_learning. approval: candidate"
+  },
+  {
+    "normalized_text_sha256": "ba00212fc42131856a1f73d9f4778c30080ed5e42631f5561c6a4b5dcb31a382",
+    "record_ids": ["C24M-d37cbf19583db9", "C24M-db8a506fd3a669"],
+    "source_ids": ["V317_SOURCE_INDEX", "V317_SOURCE_INDEX"],
+    "text": "Multilingual expressions: uz=cloud | kaa=cloud | kk=cloud | ru=cloud | en=cloud. source_type: MODEL_KNOWLEDGE_CANDIDATE. authority: candidate_learning. approval: candidate"
+  }
+]

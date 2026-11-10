@@ -1,0 +1,233 @@
+[
+  {
+    "id": "FZ24-61bb2e79bc62e1",
+    "text": "FINZANJIR — raqamli moliyaviy xavfsizlik platformasi konsepsiyasi; mavjud bank va to‘lov tizimlarini almashtirmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-7617799e9c8a03",
+    "text": "FINZANJIRning maqsadi xavf signallarini imkon qadar erta aniqlash, kontekstlash, tushuntirish, audit izini saqlash va qonuniy recovery jarayonini qo‘llab-quvvatlash",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-641842224e9de7",
+    "text": "Master Flow konseptual ravishda ma’lumot/signallar → Validation → Normalization → Risk Engine → Cross-Match → Fraud Graph → Risk Signal/Explainability → Case Management → Human/Bank Review → Protection/Recovery → vakolatli natija → Audit/KPI → Feedback",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-1d82be6db19171",
+    "text": "Master Flow kelajakdagi to‘liq platforma modelidir; hozirgi prototipda real bank API, real-time Data Exchange, Production monitoring va to‘liq avtomatik orchestration mavjud deb da’vo qilinmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-27d282456c6526",
+    "text": "Risk Engine ruxsat etilgan signallarni kontekst va bog‘liqlik bilan tahlil qilib, qo‘shimcha tekshiruv zarurati haqida risk kontekstini shakllantirishga xizmat qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-9af1970d1a4943",
+    "text": "Risk Score signal mavjudligi, ishonchliligi va umumiy risk darajasini ifodalovchi analitik mexanizm; ballning o‘zi yakuniy qaror yoki firibgarlik isboti emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-71ad6dd5f5ec34",
+    "text": "Fraud Graph hodisalar, qurilma, tarmoq, tranzaksiya, karta, hisob yoki qabul qiluvchi kabi qonuniy mavjud obyektlar orasidagi bog‘liqliklarni ko‘rishni osonlashtiradi; shaxsni avtomatik aybdor qilmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-1db21d3bc5a4dc",
+    "text": "Case Management signal va kontekstni tekshiruvga yaroqli hodisa sifatida boshqarish, izlarni saqlash va vakolatli ko‘rib chiqishga tayyorlashga xizmat qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-4afa53ae99c992",
+    "text": "Human/Bank Review avtomatik signalni vakolatli ko‘rib chiqishdan ajratadi; risk signali yakuniy huquqiy hukm emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-45de13c42bdea1",
+    "text": "FIN-RECOVERY hodisadan keyin zararni kamaytirish, qonuniy nizolash/murojaat, izlarni saqlash va recovery imkoniyatlarini muvofiqlashtirish yo‘nalishidir",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-d23d6299f8e1b9",
+    "text": "Explainable Risk “nega signal berildi?” savoliga asosiy indikatorlar, vaqt, manba va model/rule konteksti bilan audit qilinadigan tushuntirish berishga yo‘naltiriladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-a1bf2d05a3589f",
+    "text": "Asosiy tamoyil: shubhali signal ≠ firibgar/aybdor. Risk indikatori yoki Case yakuniy huquqiy xulosa emas",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-6e61f0fcde2fc1",
+    "text": "FINZANJIR OTP, CVV/CVC, PIN, parol yoki boshqa maxfiy credentiallarni so‘rash uchun mo‘ljallanmagan",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-1f1119e4890c65",
+    "text": "Ichki bilim yetarli bo‘lmasa, FINZANJIR faktni uydirmasligi, xavfsiz cheklangan javob berishi yoki ishonchli/rasmiy manbaga yo‘naltirishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-7a297a3e5609f0",
+    "text": "AI FINZANJIRning barcha qismi emas; u odam bilan muloqot, tushuntirish, bilimdan foydalanish, yo‘naltirish va o‘rganish qatlamini kuchaytiruvchi komponent",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-49ebb208c785dc",
+    "text": "Authoritative KB rasmiy bilimni saqlaydi; Secondary Learning KB AI o‘rgangan candidate materialni alohida saqlaydi. AI Authoritative KBni o‘zi o‘zgartirmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-c8d765f18dbf51",
+    "text": "False Positive xavfsiz holatning xavfli deb belgilanilishi; u foydalanuvchi tajribasi va operator yuklamasiga ta’sir qiladi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-810b1f6770c13a",
+    "text": "False Negative xavfli holatning o‘tkazib yuborilishi; pilot va ground-truth orqali alohida o‘lchanishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-ffbe522b3691d7",
+    "text": "87/100 kabi qiymatlar prototipdagi sintetik/demo qiymat bo‘lishi mumkin; real model aniqligi yoki firibgarlik ehtimoli sifatida talqin qilinmaydi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-998082633dc408",
+    "text": "FINZANJIR real bank ma’lumotlari, real pul yoki maxfiy credentiallarga ega deb taqdim etilmasligi kerak; bunday integratsiya qonuniy va texnik talablarga bog‘liq",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-9711afe12cadd7",
+    "text": "Hodisalardan keyingi feedback, regression, audit va mutaxassis xulosalari kelajakdagi qoidalar/model/knowledge yangilanishlariga asos bo‘lishi mumkin",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-534f2f478527e3",
+    "text": "Risk baholash bitta signal bilan tugamaydi; hodisa, kanal, qurilma, identifikatsiya, tranzaksiya konteksti va bog‘liq signallar birgalikda ko‘rilishi mumkin",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-4eb36bb26b8842",
+    "text": "FINZANJIR bank yoki to‘lov tashkilotining o‘rnini bosuvchi tizim emas; u ruxsat etilgan integratsiya va jarayonlarni qo‘llab-quvvatlovchi xavfsizlik/risk platformasi konsepsiyasidir",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FZ24-dd3a91ae8ccf05",
+    "text": "FINZANJIRni tushuntirishda avval “nima”, “muammo”, “qanday ishlaydi”, “nima qilmaydi”, “hozirgi prototip chegarasi” va “kelajak” ketma-ketligi berilishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-evidence",
+    "text": "Har bir xavf signali yoki xulosani imkon qadar manba, dalil va tushuntirish bilan bog‘lash; bitta signalni ayb isboti deb qabul qilmaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-human_review",
+    "text": "Muhim tekshiruv va vakolatli natijalarni inson/bank review jarayoniga qoldirish; AI yakuniy huquqiy hukm chiqarmasligi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-prototype_boundary",
+    "text": "Hozirgi prototipdagi mavjud imkoniyatlar bilan kelajakdagi MVP/Pilot/Production integratsiyasini alohida ko‘rsatish; real bank API yoki production integratsiyasini mavjud deb da’vo qilmaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-fallback",
+    "text": "Dalil yetarli bo‘lmasa faktni to‘qimaslik, noaniqlikni ochiq aytish, savolni aniqlashtirish yoki ishonchli manbani tekshirishga yo‘naltirish",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-privacy",
+    "text": "Maxfiylik, data minimization, qonuniylik va ruxsat tamoyillarini hisobga olish; keraksiz maxfiy ma’lumotlarni so‘ramaslik",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-current_data",
+    "text": "Hozirgi vaqtga bog‘liq ma’lumotlarni statik bilimdan ajratish; sana, manba va yangilanish vaqtini talab qilish",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-risk_verdict",
+    "text": "Yuqori risk yoki shubhali signal mijozni avtomatik ravishda firibgar yoki aybdor qilmaydi. Signal qo‘shimcha tekshiruv uchun kontekstdir; dalil, qarama-qarshi dalil, graph va vakolatli review orqali baholanadi",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-bank_boundary",
+    "text": "FINZANJIR mavjud bank tizimlarini almashtirmaydi. Bank/to‘lov tashkilotlari bilan real integratsiya qonuniy API, ruxsat etilgan ma’lumot almashinuvi, xavfsizlik, huquqiy asos va audit talablariga bog‘liq; hozirgi prototipni production integratsiya deb ko‘rsatmaslik kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  },
+  {
+    "id": "FINZ-P-uncertainty",
+    "text": "AI yetarli dalil bo‘lmasa bilmayman deb ochiq aytishi, manbani tekshirishi va faktni uydirmasligi kerak. Bilmay qolgan holatda aniqlik so‘rashi yoki ishonchli manbaga yo‘naltirishi kerak",
+    "language": "uz",
+    "approval": "candidate_not_authoritative",
+    "source_package": "FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip"
+  }
+]

@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0",
+  "knowledge_base_version": "0.4.0",
+  "branch": "finzanjir-v4-unified-workflow-uz",
+  "updated_date": "2026-11-09",
+  "record_count": 957,
+  "approval_policy": "All records are candidate_not_authoritative. No record is promoted to authoritative knowledge by this prototype.",
+  "records_by_type": {
+    "legacy_candidate": 33,
+    "layer_catalog_candidate": 16,
+    "project_concept_candidate": 22,
+    "ai_architecture_candidate": 42,
+    "book_chapter_summary_candidate": 24,
+    "book_page_candidate": 820
+  },
+  "sources": [
+    {
+      "source_id": "SRC-V317-LEGACY-KB",
+      "name": "Legacy v3 Uzbek knowledge JSON",
+      "path": "finzanjir_v3/knowledge_uz.json",
+      "version": "V317 legacy import",
+      "limitations": "Original per-record section/version provenance was not preserved in that JSON."
+    },
+    {
+      "source_id": "SRC-V4-LAYER-CATALOG",
+      "name": "FINZANJIR v4 16-layer catalogue",
+      "path": "finzanjir_v4/LAYER_CATALOG_SOURCE_UZ.md",
+      "version": "V1",
+      "limitations": "Catalogue rows describe requirements and intended controls, not verified implementation."
+    },
+    {
+      "source_id": "SRC-V4-ARCH",
+      "name": "FINZANJIR v4 architecture blueprint",
+      "path": "finzanjir_v4/ARCHITECTURE_BLUEPRINT_UZ.md",
+      "version": "v4 repository snapshot",
+      "limitations": "Project architecture proposal; not proof of production behavior."
+    },
+    {
+      "source_id": "SRC-AI-ARCH-V1",
+      "name": "FINZANJIR AI internal architecture",
+      "path": "Library PDF extracts: FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "V1 / V14 source sections",
+      "limitations": "Design proposal and explanation; not an APK implementation audit."
+    },
+    {
+      "source_id": "SRC-AI-KB-V1",
+      "name": "FINZANJIR knowledge base and memory architecture",
+      "path": "Library PDF extracts: FINZANJIR_Yagona_Tizim_Kitobi_2026.pdf",
+      "version": "V1",
+      "limitations": "Logical governance proposal; not a deployed knowledge vault."
+    },
+    {
+      "source_id": "SRC-AI-EVAL-V1",
+      "name": "FINZANJIR AI reliability and independent evaluation",
+      "path": "Library PDF extracts: FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "V1",
+      "limitations": "Evaluation methodology proposal; no target metrics are claimed as achieved."
+    },
+    {
+      "source_id": "SRC-V317-AUDIT",
+      "name": "V317 AI corpus audit",
+      "path": "FINZANJIR_AI_Korpus_Audit_V317_2026-10-29.csv",
+      "version": "2026-10-29",
+      "limitations": "Static audit snapshot; counts are not an approved/active knowledge count."
+    },
+    {
+      "source_id": "SRC-V4-CODE",
+      "name": "FINZANJIR v4 AI source implementation",
+      "path": "finzanjir_v4/ai_assistant.py and app.py",
+      "version": "v4 repository snapshot",
+      "limitations": "Source-level implementation only; live Gemini and Google Search deployment still requires Secrets and runtime validation."
+    },
+    {
+      "source_id": "SRC-YAGONA-25B",
+      "name": "FINZANJIR Yagona Tizim Kitobi — 25 bobli integratsiyalashgan ishchi kitob",
+      "path": "FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf",
+      "version": "2026 integrated working book",
+      "limitations": "PDF sahifalari 5–331 (24 bob) matn sifatida 820 provenance-linked segmentga ajratildi. 25-bobdagi shaxsiy muallif biografiyasi ommaviy KBga kiritilmadi. Diagramma/rasmlar va ayrim murakkab jadvallar matn ekstraksiyasida to‘liq saqlanmasligi mumkin."
+    }
+  ],
+  "known_gaps": [
+    "25 bobli integratsiyalashgan kitobning PDF sahifalari 5–331 (1–24-boblar) 820 matn segmentiga ajratildi; 25-bobdagi shaxsiy muallif biografiyasi ataylab chiqarib tashlandi.",
+    "PDF matn ekstraksiyasi diagramma, rasm va ayrim murakkab jadval tuzilishini to‘liq saqlamasligi mumkin; muhim vizual sahifalar alohida ko‘rik talab qiladi.",
+    "Asl V14 alohida PDF sifatida sahifa-paragraf crosswalk bilan import qilinmagan; uning asosiy mazmuni integratsiyalashgan kitobning 1–24-boblarida aks etadi.",
+    "Original V8 texnik arxitektura hujjati alohida, to‘liq import qilinmagan; integratsiyalashgan kitobdagi texnik arxitektura bo‘limlari mavjud.",
+    "Original FINZANJIR_AI.zip v0.6.0 va uning asl knowledge/source registry fayllari Library qidiruvida topilmadi; V317 audit readiness hujjati ularni berilmagan deb qayd etadi.",
+    "V317 auditidagi 4 671 yozuv to‘liq ko‘chirilmagan; faqat AI arxitekturasi va auditdan tanlangan 9 ta yozuv bor.",
+    "33 ta legacy v3 yozuvining ayrimlarida asl section/page/version provenance saqlanmagan; ular candidate maqomida qoladi.",
+    "Retrieval lexical va synonym-based; embedding/vector semantic search, R@k/P@k gold benchmark va to‘liq typo/morphology bahosi hali yo‘q.",
+    "PDF diagramma/OCR importi, duplicate/conflict boshqaruv UI, authoritative bilimga tasdiqli promotion workflow va mustaqil retrieval benchmark hali implementatsiya qilinmagan.",
+    "Barcha 957 yozuv candidate_not_authoritative; hozircha authoritative/approved bilim yozuvi yo‘q."
+  ],
+  "privacy_scope": {
+    "public_kb": "Contains project design, requirements, technical concepts and chapter summaries only. Private author biography, sensitive personal history and conversation memory are intentionally excluded.",
+    "user_queries": "The v4 AI interface does not persist user questions in its project knowledge database.",
+    "external_provider": "Each Gemini Interactions API request sets store=false to disable server-side Interaction storage. The user question and selected knowledge snippets are still transmitted to Google for processing; Google Search grounding may query public web sources. Provider service/security processing remains subject to Google's terms."
+  }
+}
