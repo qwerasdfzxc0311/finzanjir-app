@@ -32,7 +32,8 @@ data class WorkflowSnapshot(
 )
 
 /**
- * One local synthetic workflow shared by Jarayon, Signallar, Case and Human Review.
+ * One local synthetic workflow shared by citizen, analyst and review workspaces.
+ * Every record carries the same Event/Signal/Case keys plus explicit related record IDs.
  * This is a prototype store, not production RBAC, a bank connection or a real case system.
  */
 object WorkflowStore {
