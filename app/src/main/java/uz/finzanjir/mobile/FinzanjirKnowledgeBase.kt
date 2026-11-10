@@ -32,7 +32,7 @@ object FinzanjirKnowledgeBase {
     private const val ASSET = "finzanjir_knowledge.json"
     private const val MANIFEST = "knowledge_manifest.json"
     private const val DB_NAME = "finzanjir_knowledge_v6.db"
-    private const val DB_VERSION = 2
+    private const val DB_VERSION = 3
     private const val MAX_CANDIDATES = 48
     private const val MAX_ANSWER_RECORDS = 6
 
