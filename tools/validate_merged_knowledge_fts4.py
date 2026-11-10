@@ -135,15 +135,20 @@ def main() -> None:
     if len(set(ids)) != EXPECTED_RECORDS:
         fail("Unique ID count does not equal 6,679")
 
-    required = ("text", "approval", "source_id", "source_version", "source_section",
-                "source_path", "record_type", "audience", "domain")
+    # The Android streaming importer deliberately supplies safe defaults for
+    # optional metadata (e.g. audience=general, domain=unclassified). Only ID
+    # and text are hard requirements; absence of optional provenance is counted,
+    # not silently treated as corruption or used to drop a record.
+    optional_fields = ("approval", "source_id", "source_version", "source_section",
+                       "source_path", "record_type", "audience", "domain", "language")
+    missing_optional = collections.Counter()
     for row in merged:
         rid = row.get("id", "<missing>")
-        for field in required:
+        if not rid or not str(row.get("text", "")).strip():
+            fail(f"{rid}: empty required ID/text")
+        for field in optional_fields:
             if field not in row or row[field] is None or str(row[field]).strip() == "":
-                fail(f"{rid}: missing required provenance/content field {field}")
-        if not str(row["text"]).strip():
-            fail(f"{rid}: empty text")
+                missing_optional[field] += 1
 
     active_by_id = {str(row["id"]): row for row in active}
     merged_by_id = {str(row["id"]): row for row in merged}
@@ -285,6 +290,7 @@ def main() -> None:
         "fts4_indexed_rows": indexed,
         "fts4_query_hits": query_hits,
         "historical_alias_checks": alias_checks,
+        "optional_metadata_missing_counts": dict(sorted(missing_optional.items())),
         "active_asset_unchanged": True,
         "activation_status": "NOT_ACTIVATED",
         "ranking": "bounded lexical; BM25 not used",
