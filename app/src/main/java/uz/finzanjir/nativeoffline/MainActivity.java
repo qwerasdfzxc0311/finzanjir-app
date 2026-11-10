@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
         addText(page,22,true); addText("Bu 2-noyabrdagi birinchi FINZANJIR prototipining native Android demo talqini. Haqiqiy bank tizimiga ulanmagan.",13,false);
         if(page.equals(pages[0])) bank(); else if(page.equals(pages[1])) operator(); else if(page.equals(pages[2])) citizen(); else if(page.equals(pages[3])) chain(); else if(page.equals(pages[4])) kpi(); else audit();
     }
+    private String joinReasons(ArrayList<String> items){ StringBuilder b=new StringBuilder(); for(String item:items){ if(b.length()>0)b.append(", "); b.append(item); } return b.toString(); }
     private void bank(){
         addText("Sun'iy Bank (L14)",18,true);
         button("➕ 1 ta demo tranzaksiya yaratish",()->{
@@ -55,7 +56,7 @@ public class MainActivity extends Activity {
                 if(amount>10000000){score+=40;reasons.add("Katta summa");}
                 if(device.equals("nomalum_qurilma")){score+=40;reasons.add("Noma'lum qurilma");}
                 if(place.equals("Chet_el")){score+=30;reasons.add("Chet eldan");}
-                if(score>=70){String cid="CASE-"+(1000+r.nextInt(9000));db.save(cid,id,amount,device,place,score,String.join(", ",reasons),"OPEN","","Karta → Qurilma → Tranzaksiya → Joy");db.log("Case ochildi: "+cid,"L08: Case boshqaruvi");}
+                if(score>=70){String cid="CASE-"+(1000+r.nextInt(9000));db.save(cid,id,amount,device,place,score,joinReasons(reasons),"OPEN","","Karta → Qurilma → Tranzaksiya → Joy");db.log("Case ochildi: "+cid,"L08: Case boshqaruvi");}
                 else db.log("O'tdi: "+id,"L07: Avtomatlashtirish");
             }
             show(); addText("Natija: "+id+" | summa: "+amount+" | risk: "+score+"/100",15,true);
