@@ -54,7 +54,7 @@ Dalil:
 - Android asos branchi `finzanjir-android-v1` dagi `app/src/main/assets/knowledge_manifest.json` `record_count: 1121` deb ko‘rsatadi.
 - Shu manifestdagi turlar yig‘indisi ham 1,121: 33 legacy + 16 layer catalog + 22 project concept + 42 AI architecture + 24 chapter summary + 820 book page + 164 V14 page.
 - V317 active index uchun 4,671 soni ZIP-2 auditida qayd etilgan. Bu alohida korpus.
-- Audit branch Android asos branchidan 15 commit oldinda, 0 commit ortda; branchlararo diffda faqat 9 ta `docs/knowledge_audit/` hujjati qo‘shilgan. Android kodi va assetlari o‘zgarmagan.
+- Audit branch Android asos branchidan 16 commit oldinda, 0 commit ortda; branchlararo diffda faqat 9 ta `docs/knowledge_audit/` hujjati qo‘shilgan. Android kodi va assetlari o‘zgarmagan.
 
 Shu sababli ushbu faylning nomi va 4,671 haqidagi jumlalar V317 active indexga moslab tuzatildi. Bu jadval **ZIP-1 → V317 aggregate lexical crosswalk** hisoblanadi. **ZIP-1 → Android APKning 1,121 yozuvi bo‘yicha item-by-item crosswalk hali bajarilmagan.** 447/524/221 sonlarini Android import isboti sifatida ishlatmaslik kerak.
 
