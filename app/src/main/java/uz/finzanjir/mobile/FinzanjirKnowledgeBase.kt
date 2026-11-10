@@ -136,8 +136,20 @@ object FinzanjirKnowledgeBase {
         val answer = modeIntro + citizenHelp + (if (Regex("\\brecal\\b", RegexOption.IGNORE_CASE).containsMatchIn(question))
             "Yuklangan manbalarda “ReCAL” nomli alohida modul yoki qisqartma mustaqil ta’riflanmagan. Quyidagi dalillar faqat risk modelini qayta kalibrlash (recalibration) mavzusiga yaqin; uni FIN-RECOVERY bilan tenglashtirmayman.\\n\\n" + baseAnswer
         else baseAnswer) + conflictBlock
-        val sources = selected.map { c ->
-            val r = c.record
+        // Exact-text duplicates remain separate source records in SQLite.
+        // Collapse repeated answer text, but retain every matching provenance row.
+        val provenance = LinkedHashMap<String, Record>()
+        selected.forEach { candidate ->
+            val matchingSources = queryMeta(
+                database,
+                "SELECT m.* FROM knowledge_meta m WHERE m.body=?",
+                arrayOf(candidate.record.text)
+            )
+            matchingSources.forEach { source -> provenance.putIfAbsent(source.id, source) }
+            rows.filter { normalize(it.text) == normalize(candidate.record.text) }
+                .forEach { source -> provenance.putIfAbsent(source.id, source) }
+        }
+        val sources = provenance.values.map { r ->
             r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
                 r.sourceSection + " | " + r.sourcePath + " | " + r.approval
         }.distinct()
