@@ -53,12 +53,17 @@ jobs:
       - name: Run Android SQLite FTS4 instrumentation test
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 30
           target: google_apis
           arch: x86_64
-          profile: pixel_6
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -wipe-data
           disable-animations: true
-          script: gradle --no-daemon connectedCandidateAndroidTest
+          emulator-boot-timeout: 900
+          script: |
+            adb wait-for-device
+            adb shell getprop sys.boot_completed
+            gradle --no-daemon connectedCandidateAndroidTest
 
       - name: Upload isolated candidate APK
         uses: actions/upload-artifact@v4
