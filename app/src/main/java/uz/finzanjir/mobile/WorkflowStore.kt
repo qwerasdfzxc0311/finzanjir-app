@@ -46,6 +46,9 @@ object WorkflowStore {
                 seed().also { prefs.edit().putString(KEY_STATE, it.toString()).apply() }
             }
         }
+        if (removeLegacyStageDuplicates(state)) {
+            prefs.edit().putString(KEY_STATE, state.toString()).apply()
+        }
         snapshot(state)
     }
 
@@ -96,6 +99,7 @@ object WorkflowStore {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val state = try { prefs.getString(KEY_STATE, null)?.let { JSONObject(it) } ?: seed() }
             catch (_: Exception) { seed() }
+        removeLegacyStageDuplicates(state)
         val now = System.currentTimeMillis()
         val suffix = now.toString()
         val records = state.getJSONArray("records")
@@ -160,6 +164,40 @@ object WorkflowStore {
             "LOCAL_DEMO", now))
         prefs.edit().putString(KEY_STATE, state.toString()).apply()
         snapshot(state)
+    }
+
+    /**
+     * One local Case is stored in this demo. Older builds appended a fresh synthetic
+     * result every time a stage button was tapped. Keep the newest result per
+     * synthetic stage/type, while preserving every Human Review and audit event.
+     */
+    private fun removeLegacyStageDuplicates(state: JSONObject): Boolean {
+        val records = state.optJSONArray("records") ?: return false
+        val stageSources = setOf(
+            "DEMO_RISK_ENGINE", "DEMO_CROSS_MATCH", "DEMO_FRAUD_GRAPH",
+            "DEMO_TIMELINE", "DEMO_FIN_RECOVERY"
+        )
+        val latest = LinkedHashMap<String, JSONObject>()
+        val preserved = ArrayList<JSONObject>()
+        for (index in 0 until records.length()) {
+            val item = records.optJSONObject(index) ?: continue
+            val source = item.optString("source")
+            if (source !in stageSources) {
+                preserved.add(item)
+            } else {
+                val key = item.optString("type") + "|" + source
+                val current = latest[key]
+                if (current == null || item.optLong("timestamp") >= current.optLong("timestamp")) {
+                    latest[key] = item
+                }
+            }
+        }
+        val rebuilt = JSONArray()
+        preserved.forEach { rebuilt.put(it) }
+        latest.values.sortedBy { it.optLong("timestamp") }.forEach { rebuilt.put(it) }
+        val changed = rebuilt.length() != records.length()
+        if (changed) state.put("records", rebuilt)
+        return changed
     }
 
     private fun seed(): JSONObject {
