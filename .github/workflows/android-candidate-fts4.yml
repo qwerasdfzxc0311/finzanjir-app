@@ -23,7 +23,7 @@ permissions:
 jobs:
   candidate-android:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 50
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,22 +50,123 @@ jobs:
       - name: Build isolated candidate APK
         run: gradle --no-daemon assembleCandidate
 
-      - name: Run Android SQLite FTS4 instrumentation test
-        uses: ReactiveCircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_2
-          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -wipe-data
-          disable-animations: true
-          emulator-boot-timeout: 900
-          script: |
-            adb wait-for-device
-            adb shell getprop sys.boot_completed
-            gradle --no-daemon connectedCandidateAndroidTest
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          if [ -e /dev/kvm ]; then
+            echo "KVM device is available."
+            ls -l /dev/kvm
+          else
+            echo "::warning::/dev/kvm is unavailable; emulator will use software CPU emulation."
+          fi
+
+      - name: Boot Android emulator and run SQLite FTS4 instrumentation tests
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort | tail -n 1)"
+          AVDMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort | tail -n 1)"
+          if [ -z "$SDKMANAGER" ] || [ -z "$AVDMANAGER" ]; then
+            echo "::error::Android SDK command-line tools were not found under $ANDROID_HOME"
+            exit 1
+          fi
+          export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$(dirname "$SDKMANAGER"):$PATH"
+
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
+
+          echo "Creating a clean API 30 x86_64 Google APIs emulator."
+          printf 'no\n' | "$AVDMANAGER" create avd --force --name finzanjir-ci-api30 --package "system-images;android-30;google_apis;x86_64" --device "pixel_2"
+
+          if [ -e /dev/kvm ]; then
+            ACCEL_ARGS=(-accel on)
+          else
+            ACCEL_ARGS=(-accel off)
+          fi
+
+          EMULATOR_LOG="$RUNNER_TEMP/finzanjir-emulator.log"
+          adb start-server
+          emulator -avd finzanjir-ci-api30 -port 5554 -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -no-snapshot-save -wipe-data -no-metrics "${ACCEL_ARGS[@]}" >"$EMULATOR_LOG" 2>&1 &
+          EMULATOR_PID=$!
+
+          cleanup() {
+            status=$?
+            if [ "$status" -ne 0 ]; then
+              echo "::group::Android emulator diagnostics"
+              echo "--- emulator process ---"
+              ps -p "$EMULATOR_PID" -f || true
+              echo "--- adb devices ---"
+              adb devices -l || true
+              echo "--- emulator log (last 250 lines) ---"
+              tail -n 250 "$EMULATOR_LOG" || true
+              echo "--- Android logcat (last 500 lines) ---"
+              adb -s emulator-5554 logcat -d -t 500 2>/dev/null || true
+              echo "::endgroup::"
+            fi
+            adb -s emulator-5554 emu kill >/dev/null 2>&1 || true
+            kill "$EMULATOR_PID" >/dev/null 2>&1 || true
+            exit "$status"
+          }
+          trap cleanup EXIT
+
+          echo "Waiting for ADB device connection."
+          adb -s emulator-5554 wait-for-device
+
+          echo "Waiting for Android framework boot completion."
+          boot_ready=0
+          for attempt in $(seq 1 180); do
+            boot_value="$(timeout 12s adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+            sdk_value="$(timeout 12s adb -s emulator-5554 shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' || true)"
+            if [ "$boot_value" = "1" ] && [ "$sdk_value" = "30" ]; then
+              boot_ready=1
+              echo "Android boot completed; API level is $sdk_value."
+              break
+            fi
+            if (( attempt % 12 == 0 )); then
+              echo "Boot wait $attempt/180: boot=$boot_value api=$sdk_value"
+            fi
+            sleep 5
+          done
+          if [ "$boot_ready" -ne 1 ]; then
+            echo "::error::Android framework did not report a completed API 30 boot within 15 minutes."
+            exit 1
+          fi
+
+          echo "Waiting for Package Manager and Settings services to respond."
+          services_ready=0
+          for attempt in $(seq 1 120); do
+            package_result="$(timeout 12s adb -s emulator-5554 shell cmd package list packages 2>/dev/null | head -n 1 || true)"
+            settings_result="$(timeout 12s adb -s emulator-5554 shell settings get global airplane_mode_on 2>/dev/null | tr -d '\r' || true)"
+            if [ -n "$package_result" ] && [[ "$package_result" == package:* ]] && [[ "$settings_result" =~ ^[01]$ ]]; then
+              services_ready=1
+              echo "Package Manager and Settings are responding."
+              break
+            fi
+            if (( attempt % 12 == 0 )); then
+              echo "Service wait $attempt/120: package='${package_result:0:100}' settings='$settings_result'"
+            fi
+            sleep 5
+          done
+          if [ "$services_ready" -ne 1 ]; then
+            echo "::error::Android Package Manager / Settings did not become ready within 10 minutes."
+            exit 1
+          fi
+
+          adb -s emulator-5554 shell settings put global window_animation_scale 0
+          adb -s emulator-5554 shell settings put global transition_animation_scale 0
+          adb -s emulator-5554 shell settings put global animator_duration_scale 0
+          echo "Final device verification:"
+          adb -s emulator-5554 shell getprop ro.build.version.sdk
+          adb -s emulator-5554 shell cmd package list packages | head -n 5
+
+          ANDROID_SERIAL=emulator-5554 gradle --no-daemon connectedCandidateAndroidTest
 
       - name: Upload isolated candidate APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: finzanjir-android-6679-fts4-candidate
