@@ -12,7 +12,11 @@ data class WorkflowRecord(
     val title: String,
     val details: String,
     val source: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val eventId: String,
+    val signalId: String,
+    val caseId: String,
+    val relatedIds: List<String>
 )
 
 data class WorkflowSnapshot(
@@ -46,9 +50,8 @@ object WorkflowStore {
                 seed().also { prefs.edit().putString(KEY_STATE, it.toString()).apply() }
             }
         }
-        if (removeLegacyStageDuplicates(state)) {
-            prefs.edit().putString(KEY_STATE, state.toString()).apply()
-        }
+        val changed = ensureEntityChain(state) || removeLegacyStageDuplicates(state)
+        if (changed) prefs.edit().putString(KEY_STATE, state.toString()).apply()
         snapshot(state)
     }
 
@@ -79,14 +82,18 @@ object WorkflowStore {
             "Mutaxassis ko‘rigi qayd etildi",
             cleanReason,
             "DEMO_REVIEWER",
-            now
+            now,
+            state.optString("event_id"), state.optString("signal_id"), state.optString("case_id"),
+            listOf(state.optString("event_id"), state.optString("signal_id"), state.optString("case_id"))
         ))
         state.getJSONArray("audit").put(recordJson(
             "AUD-" + UUID.randomUUID().toString(), "AUDIT", "RECORDED",
             "Human Review holati o‘zgardi",
             "Case ${state.getString("case_id")}: ${decision}. Sabab: ${cleanReason}",
             "DEMO_REVIEWER",
-            now
+            now,
+            state.optString("event_id"), state.optString("signal_id"), state.optString("case_id"),
+            listOf(state.optString("event_id"), state.optString("signal_id"), state.optString("case_id"))
         ))
         prefs.edit().putString(KEY_STATE, state.toString()).apply()
         snapshot(state)
@@ -99,21 +106,24 @@ object WorkflowStore {
         val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val state = try { prefs.getString(KEY_STATE, null)?.let { JSONObject(it) } ?: seed() }
             catch (_: Exception) { seed() }
+        ensureEntityChain(state)
         removeLegacyStageDuplicates(state)
         val now = System.currentTimeMillis()
-        val suffix = now.toString()
         val records = state.getJSONArray("records")
         val audit = state.getJSONArray("audit")
-        fun upsert(id: String, type: String, status: String, title: String, details: String, source: String) {
+        val caseKey = state.optString("case_id", "CASE-DEMO-0001")
+        val eventKey = state.optString("event_id", "EVT-DEMO-0001")
+        val signalKey = state.optString("signal_id", "SIG-DEMO-0001")
+        fun upsert(id: String, type: String, status: String, title: String, details: String, source: String, relatedIds: List<String> = emptyList()) {
             // One canonical record per stage and Case; reruns update instead of duplicating.
             for (index in records.length() - 1 downTo 0) {
                 if (records.optJSONObject(index)?.optString("id") == id) records.remove(index)
             }
-            records.put(recordJson(id, type, status, title, details, source, now))
+            records.put(recordJson(id, type, status, title, details, source, now,
+                eventKey, signalKey, caseKey, relatedIds))
         }
-        val caseKey = state.optString("case_id", "CASE-DEMO-0001")
-        fun add(stagePrefix: String, type: String, status: String, title: String, details: String, source: String) {
-            upsert(stagePrefix + "-" + caseKey, type, status, title, details, source)
+        fun add(stagePrefix: String, type: String, status: String, title: String, details: String, source: String, relatedIds: List<String> = emptyList()) {
+            upsert(stagePrefix + "-" + caseKey, type, status, title, details, source, relatedIds)
         }
         when (stage) {
             "RISK_ENGINE" -> {
@@ -123,47 +133,83 @@ object WorkflowStore {
                 add("RSK", "RISK_ASSESSMENT", "DEMO_ONLY",
                     "Izohlanadigan xavf bahosi: 62/100",
                     "Sintetik misol. Omillar: vaqt ketma-ketligi bo‘yicha mos kelmaslik (+24); qurilma atributi mosligi (+18); ma’lumot yetishmasligi (+20). Qarshi kontekst: qurilma umumiy foydalanishda bo‘lishi mumkin. Ball kalibrlanmagan, haqiqiy fuqaro yoki tranzaksiyaga tatbiq etilmaydi.",
-                    "DEMO_RISK_ENGINE")
+                    "DEMO_RISK_ENGINE", listOf(eventKey, signalKey, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001"))
             }
             "CROSS_MATCH" -> {
                 add("XMT", "CROSS_MATCH", "CANDIDATE_LINKS",
                     "Sintetik Cross-Match natijasi",
                     "2 ta ehtimoliy atribut mosligi va 1 ta qarshi moslik topildi. Moslik shaxs aynan bir xil degani emas; manba, vaqt va mustaqil tasdiq talab qilinadi.",
-                    "DEMO_CROSS_MATCH")
+                    "DEMO_CROSS_MATCH", listOf(signalKey, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001"))
                 add("XMU", "UNKNOWN", "UNRESOLVED",
                     "Cross-Match noaniqligi",
                     "Bir xil qurilma yoki tarmoqdan bir nechta fuqaro foydalanishi mumkin. Aloqa yakuniy identifikatsiya emas.",
-                    "DEMO_CROSS_MATCH")
+                    "DEMO_CROSS_MATCH", listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001", "ENT-CITIZEN-DEMO-0001"))
             }
             "FRAUD_GRAPH" -> {
                 add("GRF", "GRAPH_NODE", "SYNTHETIC",
                     "Graf tugunlari: karta · hisob · qurilma · IP · qabul qiluvchi",
                     "Barcha tugunlar namoyish uchun yaratilgan. Tugunlar orasidagi aloqa faqat tekshiruv yo‘nalishini ko‘rsatadi.",
-                    "DEMO_FRAUD_GRAPH")
+                    "DEMO_FRAUD_GRAPH", listOf("ENT-CITIZEN-DEMO-0001", "ENT-CHANNEL-DEMO-0001", "ENT-CARD-DEMO-0001", "ENT-ACCOUNT-DEMO-0001", "ENT-PHONE-DEMO-0001", "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001", "ENT-RECIPIENT-DEMO-0001", "ENT-TRANSACTION-DEMO-0001"))
                 add("GRE", "GRAPH_EDGE", "CANDIDATE",
                     "Graf qirralari: vaqt va atribut mosligi",
                     "2 ta sintetik qirra ko‘rsatildi. Umumiy qurilma yoki IP egalik/aybdorlikni isbotlamaydi.",
-                    "DEMO_FRAUD_GRAPH")
+                    "DEMO_FRAUD_GRAPH", listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001", "ENT-RECIPIENT-DEMO-0001", "ENT-TRANSACTION-DEMO-0001"))
             }
             "TIMELINE" -> {
                 add("TLN", "TIMELINE", "GENERATED",
                     "Case vaqt chizig‘i yangilandi",
                     "Event, Signal, dalillar, Cross-Match va Human Review yozuvlari vaqt tamg‘asi bo‘yicha bitta Case ID ostida jamlanadi.",
-                    "DEMO_TIMELINE")
+                    "DEMO_TIMELINE", (0 until records.length()).mapNotNull { records.optJSONObject(it)?.optString("id") }.take(80))
             }
             "FIN_RECOVERY" -> {
                 add("REC", "RECOVERY_CASE", "GUIDANCE_ONLY",
                     "FIN-RECOVERY yo‘riqnomasi yaratildi",
                     "1) Kartani chiqargan bankning rasmiy kanaliga zudlik bilan murojaat qilish. 2) Bankdan tranzaksiyani tekshirish va mavjud bo‘lsa nizolash tartibini so‘rash. 3) Murojaat raqami va vaqtini saqlash. 4) Firibgarlik gumoni bo‘lsa vakolatli organlarga xabar berish. 5) OTP, PIN va CVVni hech kimga bermaslik. Pul qaytishi kafolatlanmaydi.",
-                    "DEMO_FIN_RECOVERY")
+                    "DEMO_FIN_RECOVERY", listOf(eventKey, signalKey, caseKey))
             }
         }
         audit.put(recordJson("AUD-" + UUID.randomUUID().toString(), "AUDIT", "RECORDED",
             "$stage bosqichi bajarildi",
             "Case ${state.optString("case_id")} uchun sintetik demo yozuvi qo‘shildi.",
-            "LOCAL_DEMO", now))
+            "LOCAL_DEMO", now, eventKey, signalKey, caseKey,
+            listOf(eventKey, signalKey, caseKey)))
         prefs.edit().putString(KEY_STATE, state.toString()).apply()
         snapshot(state)
+    }
+
+    /**
+     * Add the synthetic entity chain to older local workflow snapshots without
+     * replacing existing Event, Signal, Case, evidence, review or audit records.
+     */
+    private fun ensureEntityChain(state: JSONObject): Boolean {
+        val records = state.optJSONArray("records") ?: JSONArray().also { state.put("records", it) }
+        val existing = (0 until records.length()).mapNotNull { records.optJSONObject(it)?.optString("id") }.toSet()
+        val eventId = state.optString("event_id", "EVT-DEMO-0001")
+        val signalId = state.optString("signal_id", "SIG-DEMO-0001")
+        val caseId = state.optString("case_id", "CASE-DEMO-0001")
+        val entities = listOf(
+            Triple("ENT-CITIZEN-DEMO-0001", "Fuqaro", "Fuqaro uchun sintetik demo tuguni; haqiqiy shaxs ma’lumoti yo‘q."),
+            Triple("ENT-CHANNEL-DEMO-0001", "Kanal", "To‘lov kanali uchun sintetik tugun."),
+            Triple("ENT-CARD-DEMO-0001", "Karta", "Karta identifikatori saqlanmaydi; bu faqat sintetik obyekt."),
+            Triple("ENT-ACCOUNT-DEMO-0001", "Hisob", "Hisob raqami yoki bank rekviziti saqlanmaydi."),
+            Triple("ENT-PHONE-DEMO-0001", "Telefon", "Telefon raqami saqlanmaydi; faqat obyekt turi ko‘rsatiladi."),
+            Triple("ENT-DEVICE-DEMO-0001", "Qurilma", "Qurilma atributlari namoyish uchun sintetik."),
+            Triple("ENT-IP-DEMO-0001", "IP", "IP manzili saqlanmaydi; bu sintetik graf tuguni."),
+            Triple("ENT-RECIPIENT-DEMO-0001", "Qabul qiluvchi", "Qabul qiluvchi shaxs yoki hisobining haqiqiy ma’lumoti yo‘q."),
+            Triple("ENT-TRANSACTION-DEMO-0001", "Tranzaksiya", "Tranzaksiya summasi yoki real bank yozuvi yo‘q.")
+        )
+        var changed = false
+        val now = System.currentTimeMillis()
+        entities.forEachIndexed { index, entity ->
+            if (entity.first !in existing) {
+                val nextId = entities.getOrNull(index + 1)?.first ?: eventId
+                records.put(recordJson(entity.first, "ENTITY", "SYNTHETIC_NODE",
+                    entity.second, entity.third, "SYNTHETIC_ENTITY", now + index,
+                    eventId, signalId, caseId, listOf(nextId)))
+                changed = true
+            }
+        }
+        return changed
     }
 
     /**
@@ -214,42 +260,67 @@ object WorkflowStore {
             .put("audit", JSONArray())
 
         val records = state.getJSONArray("records")
+        val eventId = state.getString("event_id")
+        val signalId = state.getString("signal_id")
+        val caseId = state.getString("case_id")
         records.put(recordJson("EVT-DEMO-0001", "EVENT", "SYNTHETIC",
             "Namoyish hodisasi qayd etildi",
             "To‘lovga oid sintetik hodisa. Haqiqiy fuqaro, karta yoki bank ma’lumoti ishlatilmagan.",
-            "LOCAL_DEMO", now - 300000))
+            "LOCAL_DEMO", now - 300000, eventId, signalId, caseId, listOf("ENT-TRANSACTION-DEMO-0001", signalId)))
         records.put(recordJson("SIG-DEMO-0001", "SIGNAL", "OBSERVATION_ONLY",
             "Qurilma va vaqt ketma-ketligi bo‘yicha tekshiruv signali",
             "Signal tekshirish indikatori; firibgarlik isboti yoki ayblov emas.",
-            "SYNTHETIC_RULE_DEMO", now - 240000))
+            "SYNTHETIC_RULE_DEMO", now - 240000, eventId, signalId, caseId, listOf(eventId, "ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")))
         records.put(recordJson("EVD-DEMO-0001", "EVIDENCE", "CANDIDATE",
             "Tasdiqlovchi kontekst",
             "Qurilma atributlari orasida moslik borligi haqidagi sintetik kuzatuv; mustaqil tasdiq talab etiladi.",
-            "SYNTHETIC_SOURCE_A", now - 180000))
+            "SYNTHETIC_SOURCE_A", now - 180000, eventId, signalId, caseId, listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")))
         records.put(recordJson("CEV-DEMO-0001", "COUNTER_EVIDENCE", "CANDIDATE",
             "Qarshi dalil",
             "Qurilma oilaviy yoki umumiy foydalanishda bo‘lishi mumkin; atribut mosligi shaxsni aniqlamaydi.",
-            "SYNTHETIC_SOURCE_B", now - 120000))
+            "SYNTHETIC_SOURCE_B", now - 120000, eventId, signalId, caseId, listOf("ENT-DEVICE-DEMO-0001", "ENT-CITIZEN-DEMO-0001")))
         records.put(recordJson("UNK-DEMO-0001", "UNKNOWN", "UNRESOLVED",
             "Aniqlashtirilmagan ma’lumot",
             "Qurilma hodisa vaqtida kimning nazoratida bo‘lgani noma’lum.",
-            "NOT_PROVIDED", now - 60000))
+            "NOT_PROVIDED", now - 60000, eventId, signalId, caseId, listOf("ENT-DEVICE-DEMO-0001", "ENT-IP-DEMO-0001")))
+        val entityChain = listOf(
+            Triple("ENT-CITIZEN-DEMO-0001", "Fuqaro", "Fuqaro uchun sintetik demo tuguni; haqiqiy shaxs ma’lumoti yo‘q."),
+            Triple("ENT-CHANNEL-DEMO-0001", "Kanal", "To‘lov kanali uchun sintetik tugun."),
+            Triple("ENT-CARD-DEMO-0001", "Karta", "Karta identifikatori saqlanmaydi; bu faqat sintetik obyekt."),
+            Triple("ENT-ACCOUNT-DEMO-0001", "Hisob", "Hisob raqami yoki bank rekviziti saqlanmaydi."),
+            Triple("ENT-PHONE-DEMO-0001", "Telefon", "Telefon raqami saqlanmaydi; faqat obyekt turi ko‘rsatiladi."),
+            Triple("ENT-DEVICE-DEMO-0001", "Qurilma", "Qurilma atributlari namoyish uchun sintetik."),
+            Triple("ENT-IP-DEMO-0001", "IP", "IP manzili saqlanmaydi; bu sintetik graf tuguni."),
+            Triple("ENT-RECIPIENT-DEMO-0001", "Qabul qiluvchi", "Qabul qiluvchi shaxs yoki hisobining haqiqiy ma’lumoti yo‘q."),
+            Triple("ENT-TRANSACTION-DEMO-0001", "Tranzaksiya", "Tranzaksiya summasi yoki real bank yozuvi yo‘q.")
+        )
+        entityChain.forEachIndexed { index, entity ->
+            val nextId = entityChain.getOrNull(index + 1)?.first ?: eventId
+            records.put(recordJson(entity.first, "ENTITY", "SYNTHETIC_NODE",
+                entity.second, entity.third, "SYNTHETIC_ENTITY", now - 45000 + index * 1000,
+                eventId, signalId, caseId, listOf(nextId)))
+        }
         state.getJSONArray("audit").put(recordJson(
             "AUD-SEED-0001", "AUDIT", "CREATED",
             "Sintetik demo oqimi yaratildi",
-            "Bitta Event, Signal va Case ID barcha tegishli oynalarda umumiy ishlatiladi.",
-            "SYSTEM_DEMO", now
+            "Event, Signal, Case va fuqaro → kanal → karta → hisob → telefon → qurilma/IP → qabul qiluvchi → tranzaksiya zanjiri bitta umumiy modelga bog‘langan.",
+            "SYSTEM_DEMO", now, eventId, signalId, caseId,
+            listOf(eventId, signalId, caseId)
         ))
         return state
     }
 
     private fun recordJson(
         id: String, type: String, status: String, title: String,
-        details: String, source: String, timestamp: Long
+        details: String, source: String, timestamp: Long,
+        eventId: String = "", signalId: String = "", caseId: String = "",
+        relatedIds: List<String> = emptyList()
     ) = JSONObject()
         .put("id", id).put("type", type).put("status", status)
         .put("title", title).put("details", details)
         .put("source", source).put("timestamp", timestamp)
+        .put("event_id", eventId).put("signal_id", signalId).put("case_id", caseId)
+        .put("related_ids", JSONArray(relatedIds))
 
     private fun snapshot(state: JSONObject): WorkflowSnapshot {
         fun readRecords(key: String): List<WorkflowRecord> {
@@ -259,7 +330,13 @@ object WorkflowStore {
                 WorkflowRecord(
                     item.optString("id"), item.optString("type"), item.optString("status"),
                     item.optString("title"), item.optString("details"), item.optString("source"),
-                    item.optLong("timestamp")
+                    item.optLong("timestamp"),
+                    item.optString("event_id").ifBlank { state.optString("event_id") },
+                    item.optString("signal_id").ifBlank { state.optString("signal_id") },
+                    item.optString("case_id").ifBlank { state.optString("case_id") },
+                    (item.optJSONArray("related_ids") ?: JSONArray()).let { links ->
+                        (0 until links.length()).map { links.optString(it) }.filter { it.isNotBlank() }
+                    }
                 )
             }
         }
