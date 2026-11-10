@@ -1,0 +1,28 @@
+name: FINZANJIR knowledge merge safety checks
+
+on:
+  push:
+    branches: [integrated-workflow-foundation-2026-11-10]
+    paths:
+      - 'tools/merge_knowledge_assets.py'
+      - 'tools/test_merge_knowledge_assets.py'
+      - 'docs/knowledge_audit/ACTIVE_1121_VS_CANDIDATE_5607_DUPLICATE_AUDIT_2026-11-10.md'
+  pull_request:
+    branches: [ai-core-lightweight-fts4-2026-11-10]
+    paths:
+      - 'tools/merge_knowledge_assets.py'
+      - 'tools/test_merge_knowledge_assets.py'
+      - 'docs/knowledge_audit/ACTIVE_1121_VS_CANDIDATE_5607_DUPLICATE_AUDIT_2026-11-10.md'
+  workflow_dispatch:
+
+jobs:
+  merge-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run provenance-preserving merge tests
+        working-directory: tools
+        run: python -m unittest -v test_merge_knowledge_assets.py
