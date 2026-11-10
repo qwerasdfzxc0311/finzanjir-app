@@ -114,7 +114,7 @@ jobs:
           trap cleanup EXIT
 
           echo "Waiting for ADB device connection."
-          adb -s emulator-5554 wait-for-device
+          timeout 180s adb -s emulator-5554 wait-for-device
 
           echo "Waiting for Android framework boot completion."
           boot_ready=0
@@ -161,7 +161,7 @@ jobs:
           adb -s emulator-5554 shell settings put global animator_duration_scale 0
           echo "Final device verification:"
           adb -s emulator-5554 shell getprop ro.build.version.sdk
-          adb -s emulator-5554 shell cmd package list packages | head -n 5
+          adb -s emulator-5554 shell cmd package list packages | sed -n '1,5p'
 
           ANDROID_SERIAL=emulator-5554 gradle --no-daemon connectedCandidateAndroidTest
 
