@@ -168,7 +168,7 @@ object FinzanjirKnowledgeBase {
             val lines = ArrayList<String>()
             lines += r.id + " | " + r.sourceId + " | " + r.sourceVersion + " | " +
                 r.sourceSection + " | " + r.sourcePath + " | " + r.approval
-            val oldSources = JSONArray(r.legacyProvenanceJson)
+            val oldSources = safeArray(r.legacyProvenanceJson)
             for (i in 0 until oldSources.length()) {
                 val old = oldSources.optJSONObject(i) ?: continue
                 lines += "LEGACY_PROVENANCE | " + old.optString("id") + " | " +
@@ -176,7 +176,7 @@ object FinzanjirKnowledgeBase {
                     old.optString("source_section") + " | " + old.optString("source_path") +
                     " | " + old.optString("snapshot")
             }
-            val versions = JSONArray(r.legacyVersionsJson)
+            val versions = safeArray(r.legacyVersionsJson)
             for (i in 0 until versions.length()) {
                 val version = versions.optJSONObject(i) ?: continue
                 val old = version.optJSONObject("provenance") ?: JSONObject()
@@ -495,6 +495,12 @@ object FinzanjirKnowledgeBase {
         }
         if (i < a.length || j < b.length) edits++
         return edits <= 1
+    }
+
+    private fun safeArray(json: String): JSONArray = try {
+        JSONArray(json)
+    } catch (_: Exception) {
+        JSONArray()
     }
 
     private fun queryMeta(database: SQLiteDatabase, sql: String, args: Array<String>): List<Record> {
