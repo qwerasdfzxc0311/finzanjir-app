@@ -55,3 +55,16 @@ Birlashtirilgan JSONni qayta yig'ish uchun SHA-256:
 `301a1889ef4245eb72a4c68b7e678d842e5e5bf1a68c1507066e4801bc0051af`
 
 Muhim: bo'laklar `app/src/main/assets` tashqarisida. APKning aktiv 1,121 yozuvli asseti va uning manifesti o'zgartirilmadi. 6,679 yozuvli candidate hali APKga kiritilmagan. SQLite FTS4 regression tekshiruvi CI orqali bajarilishi kerak; bu natija Samsung qurilmadagi runtime sinovi o'rnini bosmaydi.
+
+
+## 2026-11-10 — umumiy operatsion model V2
+
+- `WorkflowRecord` endi `event_id`, `signal_id`, `case_id` va `related_ids` maydonlarini olib yuradi.
+- Sintetik bog'lanish zanjiri: fuqaro → kanal → karta → hisob → telefon → qurilma → IP → qabul qiluvchi → tranzaksiya.
+- Eski lokal SharedPreferences yozuvlariga `workflow_schema_version=2` va yetishmayotgan ID bog'lanishlari qo'shimcha migratsiya bilan to'ldiriladi; mavjud yozuvlar o'chirilmaydi.
+- Risk Engine, Cross-Match, Fraud Graph, Timeline, FIN-RECOVERY va Human Review natijalari bir xil Event/Signal/Case kontekstiga yoziladi.
+- Timeline operational yozuvlar bilan audit yozuvlarini birga vaqt bo'yicha ko'rsatadi.
+- Fuqaro oynasidagi Mening kartalarim demo holatlari (OWNED / UNKNOWN / LOST) umumiy Case va auditga yoziladi. Karta raqami, hisob rekviziti yoki CVV yig'ilmaydi.
+- Barcha bog'lanishlar sintetik. Bu real shaxs identifikatsiyasi, bank API yoki avtomatik bloklash emas.
+
+Android APK build va Samsung qurilmasidagi runtime tekshiruvi ushbu o'zgarishlar uchun hali tasdiqlanmagan. PR #6 Draft holatida qoladi.
