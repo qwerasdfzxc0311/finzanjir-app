@@ -3,6 +3,7 @@ package uz.finzanjir.mobile
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.UUID
 
 data class WorkflowRecord(
     val id: String,
@@ -60,7 +61,7 @@ object WorkflowStore {
         } catch (_: Exception) { seed() }
 
         val now = System.currentTimeMillis()
-        val reviewId = "REV-" + now.toString()
+        val reviewId = "REV-" + UUID.randomUUID().toString()
         val nextCaseStatus = when (decision) {
             "SUPPORTED_FOR_FURTHER_CHECK" -> "REVIEW_SUPPORTED_NOT_VERDICT"
             "NOT_SUPPORTED" -> "REVIEW_NOT_SUPPORTED"
@@ -78,7 +79,7 @@ object WorkflowStore {
             now
         ))
         state.getJSONArray("audit").put(recordJson(
-            "AUD-" + now.toString(), "AUDIT", "RECORDED",
+            "AUD-" + UUID.randomUUID().toString(), "AUDIT", "RECORDED",
             "Human Review holati o‘zgardi",
             "Case ${state.getString("case_id")}: ${decision}. Sabab: ${cleanReason}",
             "DEMO_REVIEWER",
@@ -99,53 +100,61 @@ object WorkflowStore {
         val suffix = now.toString()
         val records = state.getJSONArray("records")
         val audit = state.getJSONArray("audit")
-        fun add(id: String, type: String, status: String, title: String, details: String, source: String) {
+        fun upsert(id: String, type: String, status: String, title: String, details: String, source: String) {
+            // One canonical record per stage and Case; reruns update instead of duplicating.
+            for (index in records.length() - 1 downTo 0) {
+                if (records.optJSONObject(index)?.optString("id") == id) records.remove(index)
+            }
             records.put(recordJson(id, type, status, title, details, source, now))
+        }
+        val caseKey = state.optString("case_id", "CASE-DEMO-0001")
+        fun add(stagePrefix: String, type: String, status: String, title: String, details: String, source: String) {
+            upsert(stagePrefix + "-" + caseKey, type, status, title, details, source)
         }
         when (stage) {
             "RISK_ENGINE" -> {
                 // Deliberately fixed synthetic score: this demonstrates explanation, not calibrated risk.
                 state.put("demo_risk_score", 62)
                 state.put("demo_risk_band", "YUQORI · DEMO")
-                add("RSK-$suffix", "RISK_ASSESSMENT", "DEMO_ONLY",
+                add("RSK", "RISK_ASSESSMENT", "DEMO_ONLY",
                     "Izohlanadigan xavf bahosi: 62/100",
                     "Sintetik misol. Omillar: vaqt ketma-ketligi bo‘yicha mos kelmaslik (+24); qurilma atributi mosligi (+18); ma’lumot yetishmasligi (+20). Qarshi kontekst: qurilma umumiy foydalanishda bo‘lishi mumkin. Ball kalibrlanmagan, haqiqiy fuqaro yoki tranzaksiyaga tatbiq etilmaydi.",
                     "DEMO_RISK_ENGINE")
             }
             "CROSS_MATCH" -> {
-                add("XMT-$suffix", "CROSS_MATCH", "CANDIDATE_LINKS",
+                add("XMT", "CROSS_MATCH", "CANDIDATE_LINKS",
                     "Sintetik Cross-Match natijasi",
                     "2 ta ehtimoliy atribut mosligi va 1 ta qarshi moslik topildi. Moslik shaxs aynan bir xil degani emas; manba, vaqt va mustaqil tasdiq talab qilinadi.",
                     "DEMO_CROSS_MATCH")
-                add("XMU-$suffix", "UNKNOWN", "UNRESOLVED",
+                add("XMU", "UNKNOWN", "UNRESOLVED",
                     "Cross-Match noaniqligi",
                     "Bir xil qurilma yoki tarmoqdan bir nechta fuqaro foydalanishi mumkin. Aloqa yakuniy identifikatsiya emas.",
                     "DEMO_CROSS_MATCH")
             }
             "FRAUD_GRAPH" -> {
-                add("GRF-$suffix", "GRAPH_NODE", "SYNTHETIC",
+                add("GRF", "GRAPH_NODE", "SYNTHETIC",
                     "Graf tugunlari: karta · hisob · qurilma · IP · qabul qiluvchi",
                     "Barcha tugunlar namoyish uchun yaratilgan. Tugunlar orasidagi aloqa faqat tekshiruv yo‘nalishini ko‘rsatadi.",
                     "DEMO_FRAUD_GRAPH")
-                add("GRE-$suffix", "GRAPH_EDGE", "CANDIDATE",
+                add("GRE", "GRAPH_EDGE", "CANDIDATE",
                     "Graf qirralari: vaqt va atribut mosligi",
                     "2 ta sintetik qirra ko‘rsatildi. Umumiy qurilma yoki IP egalik/aybdorlikni isbotlamaydi.",
                     "DEMO_FRAUD_GRAPH")
             }
             "TIMELINE" -> {
-                add("TLN-$suffix", "TIMELINE", "GENERATED",
+                add("TLN", "TIMELINE", "GENERATED",
                     "Case vaqt chizig‘i yangilandi",
                     "Event, Signal, dalillar, Cross-Match va Human Review yozuvlari vaqt tamg‘asi bo‘yicha bitta Case ID ostida jamlanadi.",
                     "DEMO_TIMELINE")
             }
             "FIN_RECOVERY" -> {
-                add("REC-$suffix", "RECOVERY_CASE", "GUIDANCE_ONLY",
+                add("REC", "RECOVERY_CASE", "GUIDANCE_ONLY",
                     "FIN-RECOVERY yo‘riqnomasi yaratildi",
                     "1) Kartani chiqargan bankning rasmiy kanaliga zudlik bilan murojaat qilish. 2) Bankdan tranzaksiyani tekshirish va mavjud bo‘lsa nizolash tartibini so‘rash. 3) Murojaat raqami va vaqtini saqlash. 4) Firibgarlik gumoni bo‘lsa vakolatli organlarga xabar berish. 5) OTP, PIN va CVVni hech kimga bermaslik. Pul qaytishi kafolatlanmaydi.",
                     "DEMO_FIN_RECOVERY")
             }
         }
-        audit.put(recordJson("AUD-$suffix", "AUDIT", "RECORDED",
+        audit.put(recordJson("AUD-" + UUID.randomUUID().toString(), "AUDIT", "RECORDED",
             "$stage bosqichi bajarildi",
             "Case ${state.optString("case_id")} uchun sintetik demo yozuvi qo‘shildi.",
             "LOCAL_DEMO", now))
