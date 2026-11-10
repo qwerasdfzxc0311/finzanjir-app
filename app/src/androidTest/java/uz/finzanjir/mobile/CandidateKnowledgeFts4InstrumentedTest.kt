@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CandidateKnowledgeFts4InstrumentedTest {
 
+    // These assertions run inside the isolated candidate app, not the production debug APK.
     @Test
     fun operationalModulesShareEventSignalCaseAndCitizenAuditState() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
