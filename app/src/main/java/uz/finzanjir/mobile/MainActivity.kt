@@ -211,6 +211,10 @@ private fun WorkflowRecordCard(record: WorkflowRecord) {
             Text(record.title, color = Ink, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 3.dp))
             Text(record.details, color = Muted, fontSize = 11.sp, lineHeight = 15.sp, modifier = Modifier.padding(top = 3.dp))
             Text("ID: ${record.id} · Manba: ${record.source}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 4.dp))
+            Text("Event: ${record.eventId} · Signal: ${record.signalId} · Case: ${record.caseId}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 3.dp))
+            if (record.relatedIds.isNotEmpty()) {
+                Text("Bog‘langan ID: ${record.relatedIds.joinToString()}", color = Muted, fontSize = 9.sp, modifier = Modifier.padding(top = 2.dp))
+            }
         }
     }
 }
@@ -250,6 +254,9 @@ private fun PlatformPanel(page: String) {
             item {
                 Text("Fuqaro uchun tushunarli ko‘rinish", color = Navy, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text("FINZANJIR shubhali belgilarni ko‘rsatishi mumkin, lekin bu sizni firibgar yoki aybdor deb belgilamaydi. Yakuniy ko‘rib chiqish vakolatli inson tomonidan amalga oshiriladi.", color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
+                Text("Mening kartalarim · sintetik demo", color = Navy, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp))
+                snapshot.records.firstOrNull { it.id == "ENT-CARD-DEMO-0001" }?.let { WorkflowRecordCard(it) }
+                Text("Karta raqami, hisob rekviziti yoki CVV saqlanmaydi. Bu yozuv faqat umumiy ma’lumot modelidagi demo karta obyektidir.", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(bottom = 6.dp))
                 listOf(
                     "Mening kartalarim — o‘zimniki, tanimayman yoki yo‘qotilgan holatlarini qayd etish uchun mo‘ljallangan; hozircha bank bilan real sinxronlash yo‘q.",
                     "Xavfsizlik — OTP, PIN, CVV va parollarni hech kimga bermang; shubhali havolalarga kirmang.",
@@ -312,9 +319,13 @@ private fun PlatformPanel(page: String) {
                 else -> setOf("RECOVERY_CASE")
             }
             items(snapshot.records.filter { it.type in types }.reversed()) { WorkflowRecordCard(it) }
+            if (stage == "FRAUD_GRAPH") {
+                item { Text("Umumiy modeldagi sintetik obyektlar", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)) }
+                items(snapshot.records.filter { it.type == "ENTITY" }.sortedBy { it.timestamp }) { WorkflowRecordCard(it) }
+            }
             if (stage == "TIMELINE") {
                 item { Text("To‘liq vaqt chizig‘i", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)) }
-                items(snapshot.records.sortedBy { it.timestamp }) { WorkflowRecordCard(it) }
+                items((snapshot.records + snapshot.audit).sortedBy { it.timestamp }) { WorkflowRecordCard(it) }
             }
             if (stage == "FIN_RECOVERY") {
                 item { Text("FIN-RECOVERY xavfsizlik yo‘riqnomasi", color = Navy, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp)) }
