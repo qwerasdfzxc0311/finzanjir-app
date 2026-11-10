@@ -58,7 +58,7 @@ object FinzanjirKnowledgeBase {
     private class DbHelper(context: Context) :
         SQLiteOpenHelper(context.applicationContext, DB_NAME, null, DB_VERSION) {
         override fun onCreate(db: SQLiteDatabase) {
-            db.execSQL("""CREATE TABLE knowledge_meta(
+            db.execSQL("""CREATE TABLE IF NOT EXISTS knowledge_meta(
                 _id INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, body TEXT NOT NULL, approval TEXT NOT NULL,
                 source_id TEXT NOT NULL, source_version TEXT NOT NULL, source_section TEXT NOT NULL,
                 source_path TEXT NOT NULL, record_type TEXT NOT NULL, audience TEXT NOT NULL,
