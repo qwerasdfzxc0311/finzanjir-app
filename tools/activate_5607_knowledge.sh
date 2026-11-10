@@ -34,6 +34,39 @@ if len(visual) != 27: raise SystemExit(f"Expected 27 visual OCR candidates; foun
 print(f"PASS: {len(rows)} records, unique IDs, 16 layer records, {len(visual)} visual OCR candidates.")
 PY
 
+# Strict no-loss gate: the new corpus must contain every currently active record
+# under the same ID and with the same normalized text. Otherwise stop; do not
+# silently discard, rename, or duplicate legacy knowledge.
+python3 - "$TARGET" "$SOURCE_JSON" <<'PY'
+import json, sys, re, unicodedata, os
+active_path, candidate_path = sys.argv[1:]
+if not os.path.isfile(active_path):
+    raise SystemExit("Active Android asset is missing; refusing automatic activation.")
+with open(active_path, encoding="utf-8") as f: active = json.load(f)
+with open(candidate_path, encoding="utf-8") as f: candidate = json.load(f)
+by_id = {r.get("id"): r for r in candidate}
+def norm(value):
+    value = unicodedata.normalize("NFKC", str(value or "")).lower()
+    value = value.replace("ʻ", "'").replace("’", "'").replace("‘", "'").replace("`", "'")
+    return re.sub(r"\s+", " ", value).strip()
+missing, conflicts = [], []
+for old in active:
+    rid = old.get("id")
+    new = by_id.get(rid)
+    if new is None:
+        missing.append(rid or "<missing-id>")
+    elif norm(old.get("text")) != norm(new.get("text")):
+        conflicts.append(rid)
+if missing or conflicts:
+    print(f"ACTIVE RECORDS: {len(active)}")
+    print(f"NOT PRESERVED BY SAME ID: {len(missing)}")
+    print(f"SAME-ID TEXT CONFLICTS: {len(conflicts)}")
+    if missing: print("Missing IDs (first 30): " + ", ".join(missing[:30]))
+    if conflicts: print("Conflicting IDs (first 30): " + ", ".join(conflicts[:30]))
+    raise SystemExit("NO-LOSS GATE FAILED. Active asset was not modified. Resolve crosswalk manually.")
+print(f"PASS: all {len(active)} active records preserved by identical ID and normalized text.")
+PY
+
 TMP_ASSET="$TARGET.tmp"
 TMP_MANIFEST="$MANIFEST.tmp"
 BACKUP_DIR="$ROOT/.knowledge-backups/$(date +%Y%m%d_%H%M%S)"
