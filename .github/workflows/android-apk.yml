@@ -9,7 +9,7 @@ on:
       - 'gradle.properties'
       - '.github/workflows/android-apk.yml'
   pull_request:
-    branches: [main]
+    branches: [ai-core-lightweight-fts4-2026-11-10, main]
     paths:
       - 'app/**'
       - '*.gradle.kts'
