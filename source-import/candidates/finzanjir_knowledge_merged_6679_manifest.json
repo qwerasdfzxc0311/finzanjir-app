@@ -26,8 +26,7 @@
     "V4-L15",
     "V4-L16"
   ],
-  "text_characters": 3021318,
-  "asset_size_bytes": 5414649,
+  "asset_size_bytes": 8055000,
   "asset_sha256": "301a1889ef4245eb72a4c68b7e678d842e5e5bf1a68c1507066e4801bc0051af",
   "sources": {
     "uploaded_documents_zip": {
@@ -252,5 +251,7 @@
       "record_count": 79
     }
   ],
-  "note": "Candidate and active records are not automatically promoted to authoritative knowledge. Chunk files are outside app/src/main/assets and are not packaged into the APK."
+  "note": "Candidate and active records are not automatically promoted to authoritative knowledge. Chunk files are outside app/src/main/assets and are not packaged into the APK.",
+  "candidate_asset_size_bytes": 5414649,
+  "candidate_text_characters": 3021318
 }
