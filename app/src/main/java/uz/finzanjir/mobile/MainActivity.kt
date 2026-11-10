@@ -252,6 +252,7 @@ private fun PlatformPanel(page: String) {
             Spacer(Modifier.height(10.dp))
         }
         if (citizen) {
+            // Citizen card-state choices are local Case records; no card credentials are collected.
             item {
                 Text("Fuqaro uchun tushunarli ko‘rinish", color = Navy, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text("FINZANJIR shubhali belgilarni ko‘rsatishi mumkin, lekin bu sizni firibgar yoki aybdor deb belgilamaydi. Yakuniy ko‘rib chiqish vakolatli inson tomonidan amalga oshiriladi.", color = Ink, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(vertical = 8.dp))
