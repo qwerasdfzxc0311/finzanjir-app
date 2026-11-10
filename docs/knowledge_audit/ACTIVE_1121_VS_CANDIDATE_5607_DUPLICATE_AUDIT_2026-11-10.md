@@ -68,3 +68,14 @@ Muhim: bo'laklar `app/src/main/assets` tashqarisida. APKning aktiv 1,121 yozuvli
 - Barcha bog'lanishlar sintetik. Bu real shaxs identifikatsiyasi, bank API yoki avtomatik bloklash emas.
 
 Android APK build va Samsung qurilmasidagi runtime tekshiruvi ushbu o'zgarishlar uchun hali tasdiqlanmagan. PR #6 Draft holatida qoladi.
+
+
+## Ixtiyoriy metadata bo'shliqlari — CI qaydi
+
+FTS4 candidate validator quyidagi ixtiyoriy maydonlar manba yozuvlarida yo'qligini qayd etdi:
+
+- `audience`: 1,072 yozuvda yo'q.
+- `domain`: 1,072 yozuvda yo'q.
+- `language`: 5,607 yozuvda yo'q.
+
+Importer mavjud bo'lmagan qiymatlarni taxmin bilan to'ldirmaydi: mos ravishda `general`, `unclassified`, `und` xavfsiz standartlari ishlatiladi. Barcha 6,679 yozuv FTS4 indeksiga kiritiladi. Biroq audience/domain/language bo'yicha keyingi filtrlash aniqligi uchun metadata faqat asl manbalar asosida alohida boyitilishi kerak; bu bosqichda avtomatik til yoki domen tasnifi qilinmaydi.
