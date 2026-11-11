@@ -1,5 +1,7 @@
 # ZIP1 → V317 active index: keng qamrovli dastlabki leksik crosswalk
 
+> **Audit aniqligi (2026-11-11):** ushbu fayl nomidagi `ANDROID` so‘zi tarixiy nomlash xatosi. Bu hujjatdagi 4,671 yozuvli taqqoslash nishoni V317 active indexidir. Android APK manifestidagi 1,121 yozuv uchun alohida item-by-item crosswalk hali bajarilmagan.
+
 ## Audit chegarasi
 ZIP1 dagi 14 ta hujjatning 1,216 ta birliklari (DOCX paragraf/jadval qatori, PDF sahifasi, PPTX slaydi) V317 active indexidagi 4,671 yozuv bilan leksik usulda solishtirildi. Bu **qidiruv dalili**, semantik to‘liqlik yoki kodda ishlash isboti emas. Yuqori/qisman moslik importni, talab bajarilganini yoki mustaqil tasdiqni anglatmaydi. Moslik topilmasligi ham mazmun loyihada umuman yo‘q degani emas.
 
