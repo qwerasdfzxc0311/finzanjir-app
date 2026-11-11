@@ -93,3 +93,49 @@ Bundan alohida `content_type` va `record_status` saqlanadi. Masalan, “muallif 
 - V14 mundarijasidagi 10-bob SINBAD va ATMOS yo‘nalishlarini tilga oladi. Foydalanuvchining amaldagi loyiha chegarasiga muvofiq, bu bob faol FINZANJIR bilimlar bazasiga ko‘chirilmaydi; manba arxivda o‘z holicha qoladi.
 - V14’ning muallif profili va loyiha pasporti sahifalarida shaxsiy aloqa ma’lumotlari bor. Android manifesti V14’ning 164 sahifasi ommaviy candidate yozuvlari sifatida import qilinganini ko‘rsatadi. Shuning uchun ommaviy AI qidiruvi va mualliflikni ko‘rsatishdan oldin shaxsiy aloqa maydonlari bo‘yicha alohida maxfiylik auditi talab qilinadi.
 - Mualliflikni ko‘rsatish mumkin, lekin muallifning shaxsiy aloqa ma’lumotlarini umumiy bilim qidiruvida chiqarish avtomatik ravishda ruxsat etilgan deb olinmaydi. Alohida muallif-only yoki ruxsat bilan ko‘rsatiladigan qatlam dizayni ko‘rib chiqiladi.
+
+
+## 9. 2026-11-11 audit verification — Android manifest, privacy scope va branch ajratilishi
+
+### 9.1. Branch holati
+
+GitHub branch endpoint va compare natijasi qayta tekshirildi:
+
+- Audit branch HEAD: `4b631bea57380fbe1b504615e1cac43261408e13`.
+- Android asos branch HEAD: `f38e0b7253c915e50f84ffe1053a9e40aec12733`.
+- Compare: audit branch Android branchdan 18 commit oldinda, 0 commit ortda.
+- Compare ro‘yxatidagi 9 ta o‘zgargan faylning barchasi `docs/knowledge_audit/` ichida. `app/` kodi yoki Android assetlari o‘zgarmagan.
+
+### 9.2. Android manifest bo‘yicha qayta tasdiqlangan faktlar
+
+Android asos branchidagi `app/src/main/assets/knowledge_manifest.json`:
+
+- Git blob SHA: `a946e6292d4b1bd65b570b414a70694107f5e2c1`.
+- `record_count = 1121`.
+- `records_by_type` yig‘indisi ham 1,121: 33 + 16 + 22 + 42 + 24 + 820 + 164.
+- Manifestdagi `branch` qiymati `finzanjir-v4-unified-workflow-uz`, holbuki real Android asos branch `finzanjir-android-v1`. Bu metadata nomuvofiqligi; Android branchda tuzatilmadi.
+- 1,121 yozuvning barchasi `candidate_not_authoritative` siyosati ostida. Bu muallif tasdig‘i yoki mustaqil ekspert tasdig‘i emas.
+
+### 9.3. Maxfiylik va yozuv maqomi bo‘yicha tasdiqlangan xavf
+
+Manifestning umumiy `privacy_scope.public_kb` bayonoti V14ning 164 sahifasidan olingan muallif/loyiha tarixi parchalarini ham ommaviy KB ichida saqlashini, muallif-only panel yo‘qligini va barcha qidiruv natijalari tashrif buyuruvchilarga ko‘rinishini aytadi.
+
+Android `FinzanjirKnowledgeBase.kt` fayli bo‘yicha kod ko‘rigi:
+
+- `Record` modeli faqat ID, text, approval, source ID/version/section/path va record type maydonlarini o‘qiydi.
+- `author_attestation`, `independent_review`, `language`, `privacy_scope/access_scope` maydonlari ushbu modelda yo‘q.
+- Qidiruv `load(context)` orqali yuklangan barcha yozuvlarni token mosligi bilan saralaydi; privacy/access scope bo‘yicha filtr ko‘rinmadi.
+- Javob manba satrlarida approval ko‘rsatiladi, ammo muallif tasdig‘i va mustaqil tekshiruv alohida aks ettirilmaydi.
+
+Bu **tasdiqlangan privacy/governance xavfi**: V14 sahifalaridagi muallifga oid yoki shaxsiy ma’lumotlar umumiy qidiruvda chiqishi ehtimoli bor. Hozircha hech qanday ma’lumot o‘chirilmadi yoki APK kodi o‘zgartirilmadi. Keyingi crosswalkda bunday yozuvlar `restricted_review` sifatida belgilanib, muallifga oid savollarga cheklangan ko‘rsatish siyosati alohida ishlab chiqilishi kerak. Faqat umumiy manifest bayonoti asosida har bir yozuvning aniq maxfiylik maqomi aniqlangan deb bo‘lmaydi.
+
+### 9.4. Hali ochiq qolgan ishlar
+
+1. Asl ZIP-1 va ZIP-2 fayllari ushbu seansda Library ZIP ro‘yxatida topilmadi; shu sababli asl baytlar, checksumlar va PPTX/PNG vizual lokatorlari qayta tekshirilmadi.
+2. ZIP-1dagi 17 PPTX slaydi va 6 PNG uchun alohida source locator/crosswalk hali yo‘q.
+3. V317 188 FINZANJIR-domain yozuvlari bilan ZIP-1 source birliklari item-by-item bog‘lanmagan.
+4. Android 1,121 yozuvi bilan item-by-item crosswalk hali bajarilmagan.
+5. Katta `finzanjir_knowledge.json` aktivining to‘liq yozuv darajasidagi tekshiruvi ushbu seansda bajarilmadi; kod modeli faqat ayrim governance maydonlarini o‘qimasligi tasdiqlandi.
+6. Merge ledger tayyor emas; bilim integratsiyasi va ishlaydigan kod o‘zgarishi taqiqlangan holatda qoladi.
+
+**Qaror:** audit davom etadi. Muallif/private ma’lumotlarning public qidiruvga chiqish xavfi va manifest branch nomuvofiqligi qayd etildi. Asosiy Android/V3/V4/main branchlarga tegilmadi.
