@@ -103,7 +103,7 @@ GitHub branch endpoint va compare natijasi qayta tekshirildi:
 
 - Audit branch HEAD: `4b631bea57380fbe1b504615e1cac43261408e13`.
 - Android asos branch HEAD: `f38e0b7253c915e50f84ffe1053a9e40aec12733`.
-- Compare: audit branch Android branchdan 18 commit oldinda, 0 commit ortda.
+- Compare: audit branch Android asos branchidan kelib chiqqan; tekshiruv paytida `behind_by=0`. O‘zgarishlar ro‘yxati faqat 9 ta `docs/knowledge_audit/` hujjatidan iborat edi. Commitlar soni keyingi audit yozuvlari bilan o‘zgarishi mumkin, shu sababli barqaror identifikator sifatida branch HEAD va common base SHA ishlatiladi.
 - Compare ro‘yxatidagi 9 ta o‘zgargan faylning barchasi `docs/knowledge_audit/` ichida. `app/` kodi yoki Android assetlari o‘zgarmagan.
 
 ### 9.2. Android manifest bo‘yicha qayta tasdiqlangan faktlar
