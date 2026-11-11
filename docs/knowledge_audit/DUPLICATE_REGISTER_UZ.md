@@ -14,7 +14,7 @@ Normalizatsiya qilingan text maydoni bo‘yicha 2 ta aynan takror guruh (4 yozuv
 | Risk Engine nima | mlq_23aef1293514a4a8 | HTML-Q-dc9797c26352cb14d8d2 | Bitta canonical ta’rifga bog‘lash mumkin; ikkala ID va source provenance saqlansin |
 | Fraud Graph nima | mlq_d17d42035fdf1edb | HTML-Q-b192a16b977a7a77d0d8 | Bitta canonical ta’rifga bog‘lash mumkin; ikkala ID va source provenance saqlansin |
 
-## 2. V317 Android active index — 4,671 yozuv
+## 2. V317 ZIP-2 ichidagi Android active index — 4,671 yozuv (joriy Kotlin/Compose APK emas)
 
 Takrorlangan ID: **0 ta**.
 
@@ -47,3 +47,6 @@ Normalizatsiya qilingan text maydoni bo‘yicha 3 ta aynan takror guruh (6 yozuv
 4. Qarama-qarshi bayonotlar duplicate emas; ular contradicts yoki supersedes munosabati bilan saqlanadi.
 5. Har bir merge uchun oldingi va keyingi yozuvlar soni, ID xaritasi va checksum saqlanadi.
 6. Importdan keyin source recordlar soni kamayishi mumkin bo‘lsa ham, hech qanday mazmun/manba yo‘qolmaganini merge ledger orqali tekshirish shart.
+
+
+**Aniqlik (2026-11-11):** bu bo‘limdagi 4,671 yozuv V317 ZIP-2 ichidagi eski Android paket indeksidir. Joriy `finzanjir-android-v1` APK manifesti 1,121 yozuvni ko‘rsatadi; uning dublikatlari alohida tekshirilmagan.
