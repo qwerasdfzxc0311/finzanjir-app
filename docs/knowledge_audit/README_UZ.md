@@ -126,6 +126,9 @@ Android `FinzanjirKnowledgeBase.kt` fayli bo‘yicha kod ko‘rigi:
 - `author_attestation`, `independent_review`, `language`, `privacy_scope/access_scope` maydonlari ushbu modelda yo‘q.
 - Qidiruv `load(context)` orqali yuklangan barcha yozuvlarni token mosligi bilan saralaydi; privacy/access scope bo‘yicha filtr ko‘rinmadi.
 - Javob manba satrlarida approval ko‘rsatiladi, ammo muallif tasdig‘i va mustaqil tekshiruv alohida aks ettirilmaydi.
+- `MainActivity.kt` ichidagi `KnowledgeAssistant` har bir javob kartasida `Holat: ${result.confidence}` va `result.notice` ni takrorlaydi; doimiy yuqori maqom paneli yo‘q. Asosiy TopAppBar faqat FINZANJIR nomi va prototip sarlavhasini ko‘rsatadi.
+- `confidence` yorlig‘i `FinzanjirKnowledgeBase.kt` dagi oddiy token-overlap balli (`best.first().second >= 5`) asosida `MOS YOZUV TOPILDI` yoki `QISMAN MOSLIK` bo‘ladi. Bu kalibrlangan ishonch/aniqlik ko‘rsatkichi emas.
+
 
 Bu **tasdiqlangan privacy/governance xavfi**: V14 sahifalaridagi muallifga oid yoki shaxsiy ma’lumotlar umumiy qidiruvda chiqishi ehtimoli bor. Hozircha hech qanday ma’lumot o‘chirilmadi yoki APK kodi o‘zgartirilmadi. Keyingi crosswalkda bunday yozuvlar `restricted_review` sifatida belgilanib, muallifga oid savollarga cheklangan ko‘rsatish siyosati alohida ishlab chiqilishi kerak. Faqat umumiy manifest bayonoti asosida har bir yozuvning aniq maxfiylik maqomi aniqlangan deb bo‘lmaydi.
 
