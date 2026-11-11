@@ -45,7 +45,7 @@ Tekshirilgan arxiv tarkibi:
 
 - 224 fayl.
 - `unified_candidate_cards_full_source.json`: 7,053 yozuv.
-- Android ichidagi `unified_knowledge_index.json`: 4,671 yozuv.
+- V317 ZIP-2 arxividagi eski Android paket ichidagi `unified_knowledge_index.json`: 4,671 yozuv (joriy `finzanjir-android-v1` Kotlin/Compose APK indeksi emas).
 - Ikki JSON ro‘yxatida ham takrorlangan ID topilmadi.
 - Source archive’da normalizatsiya qilingan matn bo‘yicha 2 ta aynan takror guruh (jami 4 yozuv) aniqlandi: “Risk Engine nima” va “Fraud Graph nima” juftlari.
 - Active index’da 3 ta aynan takror guruh (jami 6 yozuv) aniqlandi: population, migration va cloud ifodalarining takrorlari.
@@ -112,3 +112,6 @@ PDF ichidagi sahifa rasmlari alohida ko‘rildi; oddiy matn ekstraksiyasi bilan 
 6. Author attestation, independent review, content type, record status va privacy/access scope mustaqil maydonlarda bo‘lishi.
 7. Bilim soni kamaygan ko‘rinsa, merge ledger orqali oldingi yozuvlarning har biri qaysi canonical IDga bog‘langanini ko‘rsatish; manbasiz yo‘qolgan yozuv bo‘lmasligi.
 8. Asl matn va hosila yozuvlar uchun hash/checksum hamda import hisoboti qayta tiklanadigan bo‘lishi.
+
+
+**Aniqlik (2026-11-11):** ZIP-2 ichidagi 4,671 yozuvli `unified_knowledge_index.json` V317 paketining ichki indeksi. Uni joriy Kotlin/Compose Android APKning 1,121 yozuvli `knowledge_manifest.json` bilan bir xil korpus deb qabul qilmaslik kerak.
