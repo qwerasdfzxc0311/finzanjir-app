@@ -11,11 +11,11 @@
 - Keyingi bo'limlarda qatlamlararo nazorat zanjiri, noto'g'ri signal/bank xabari misoli, ustuvorlik, hujjatlashtirish shabloni, KPI, 15 bobga nisbatan audit va ekspertlar bilan kelishiladigan masalalar bor.
 - 16 qatlam bo'limlari paragraf oralig'i bo'yicha ajratildi; jadval qatorlari ham alohida manba birliklari sifatida saqlanishi kerak.
 
-## 2. Android bilim bazasi bilan solishtirish
+## 2. V317 active index bilan solishtirish (Android APK emas)
 **Natija: partial / source-provenance-missing — to'liq import tasdiqlanmadi.**
 
 Tekshiruv:
-- Android faol indeksida 4,671 yozuv bor.
+- V317 active indexida 4,671 yozuv bor. Bu Android APK indeksi emas; Android asos branchidagi `knowledge_manifest.json` alohida 1,121 yozuvni ko‘rsatadi.
 - Indeks bo'yicha ushbu DOCX nomi yoki 16_QATLAM manba belgisi bilan bevosita bog'langan yozuv topilmadi.
 - source maydonida aynan shu fayl ko'rsatilgan yozuv topilmadi.
 - Matn o'xshashligi asosida ayrim umumiy mavzular (provenance, data quality, risk/uncertainty, human review, governance, privacy, incident response, testing, bank integration) bilan bog'liq yozuvlar bor. Lekin ular mustaqil 16 qatlam hujjatining barcha matni, cheklovlari va lokatorlari saqlanganini isbotlamaydi.
@@ -53,3 +53,8 @@ Tekshiruv:
 5. Keyingi qadam — 16 qatlamning har birini talab/test/qaror IDlari va Android kod dalillari bilan alohida tekshirish.
 
 **Audit cheklovi:** bu crosswalk statik fayl/indeks/kod tekshiruvidir. U ekspert tasdig'i, bank tasdig'i, real API sinovi yoki telefon runtime testi emas.
+
+
+## 7. 2026-11-11 audit correction — indeks nomi
+
+Oldingi matndagi “Android bilim bazasi” sarlavhasi noto‘g‘ri bo‘lgan: 4,671 yozuvli korpus V317 active indexidir. Android APK manifestidagi 1,121 yozuv boshqa korpus. Shu sababli 16 qatlam hujjati bo‘yicha bu natija faqat V317 active index bilan dastlabki solishtirish hisoblanadi; Android 1,121 yozuvi bilan item-by-item crosswalk hali bajarilmagan. Hech qanday yozuv merge qilinmadi yoki o‘chirilmadi.
