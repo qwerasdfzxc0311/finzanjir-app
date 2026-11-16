@@ -53,7 +53,7 @@ Tekshirilgan arxiv tarkibi:
 - Active index’dagi metadata to‘liqligi notekis: 860 yozuvda `kind/authority/approval/language` maydonlari yo‘q; 1,070 yozuv `unclassified_knowledge_record`; 540 domain `unclassified`; 1,681 til `und`.
 - Active index’da 515 umumiy ensiklopediya yozuvi bor; ular FINZANJIR maxsus firibgarlik/bank qoidalari bilan aralashtirilmaydi.
 - 2,000 regression savol/tarix yozuvlari test korpusi bo‘lib qoladi, faol javob bilimiga ko‘chirilmaydi.
-- V317’da 188 `authoritative_project_source` turidagi yozuv borligi ularning hammasi mustaqil ekspert yoki bank tomonidan tasdiqlanganini anglatmaydi; har birining provenance va approval maydoni alohida tekshiriladi.
+- V317 active indexida `domain=finzanjir` bo‘lgan 188 yozuv qayd etilgan. Bu 188 yozuvning `kind`, `approval` va `authority` taqsimoti aralash; ularni 188 ta `authoritative_project_source` deb atash hozirgi audit dalillari bilan tasdiqlanmaydi. Field semantikasi bo‘yicha 2026-11-16 qo‘shimcha tekshiruvni ushbu hujjatning 10-bo‘limiga qarang.
 - 15 `verified_source_candidate` huquqiy matn yozuvi ham amaldagi huquqiy maslahat sifatida berilishidan oldin rasmiy manbada qayta tekshirilishi kerak.
 
 ## 4. ZIP-1 va ZIP-2 o‘rtasidagi dublikat siyosati
@@ -115,3 +115,43 @@ PDF ichidagi sahifa rasmlari alohida ko‘rildi; oddiy matn ekstraksiyasi bilan 
 
 
 **Aniqlik (2026-11-11):** ZIP-2 ichidagi 4,671 yozuvli `unified_knowledge_index.json` V317 paketining ichki indeksi. Uni joriy Kotlin/Compose Android APKning 1,121 yozuvli `knowledge_manifest.json` bilan bir xil korpus deb qabul qilmaslik kerak.
+
+
+## 10. 2026-11-16 — V317 dagi 188 yozuv soni va authority field semantikasi
+
+### Tekshiruv doirasi
+
+Ushbu qo‘shimcha faqat audit branchidagi mavjud ikki hujjatni o‘zaro solishtiradi:
+
+- `V317_FINZANJIR_DOMAIN_AUDIT_UZ.md` (Git blob SHA: `b1b129a9e816547f4bda24de2af07c330be4a004`);
+- ushbu `ZIP_CROSSWALK_FINDINGS_UZ.md` faylining oldingi 3-bo‘limi.
+
+Asl ZIP-2 va uning xom JSON fayllari ushbu yugurishda mavjud emas. Shu sababli bu field-level raw-data audit emas, mavjud audit artefaktlari o‘rtasidagi son va atama reconciliation hisoblanadi.
+
+### Mavjud audit dalillaridagi 188 sonining ma’nosi
+
+V317 domen auditi 188 yozuvni **active index ichida `domain=finzanjir` bo‘lgan yozuvlar** sifatida ta’riflaydi. Shu hujjatdagi taqsimotlar:
+
+- `kind`: 14 ta kategoriya; yig‘indisi 188;
+- `approval`: candidate 134, unclassified 40, author_confirmed_project_philosophy 10, author_visible_on_direct_request 4; yig‘indisi 188;
+- `authority`: candidate_learning 75, source_unclassified 40, source_derived_candidate 33, author_provided 14, model_generated_candidate 10, index_metadata 8, project_source_synthesis 5, source_derived_or_architecture_candidate 3; yig‘indisi 188.
+
+Demak, V317 domen auditidagi 188 yozuv bir xil maqomdagi authoritative bilimlar emas. Masalan, 134 ta approval candidate, 40 ta unclassified; authority bo‘yicha esa faqat 14 ta yozuv author_provided deb qayd etilgan. Muallif taqdim etganlik ham mustaqil ekspert yoki bank tasdig‘i degani emas.
+
+### Nomuvofiqlik va ehtiyotkor talqin
+
+Ushbu faylning avvalgi 3-bo‘limida 188 yozuv `authoritative_project_source` turidagi yozuvlar deb atalgan. Biroq V317 domen auditining ko‘rsatilgan `kind` ro‘yxatida bunday kategoriya yo‘q; 188 soni esa `domain=finzanjir` filtri bo‘yicha berilgan. Bu ikki atama bir xil field yoki bir xil selection predicate ekanini mavjud hujjatlar isbotlamaydi.
+
+**Hozirgi xavfsiz talqin:** 188 — V317 active indexidagi FINZANJIR-domain yozuvlari soni (avvalgi audit hujjatida qayd etilgan). Uni 188 ta `authoritative_project_source`, 188 ta ekspert tasdiqlagan bilim yoki 188 ta ZIP-1 manbasiga bog‘langan yozuv deb ishlatmaslik kerak. Field nomi yoki count scope xatosi bo‘lishi mumkin; asl ZIP-2 JSON tekshirilmaguncha bu nomuvofiqlik `unresolved_count_field_semantics` holatida qoladi.
+
+### Xom ZIP-2 qayta mavjud bo‘lgach bajariladigan tekshiruv
+
+1. `unified_knowledge_index.json` va `unified_candidate_cards_full_source.json` ichidagi barcha yozuvlarni raw JSON bo‘yicha qayta o‘qish.
+2. `domain=finzanjir`, `kind`, `type`, `authority`, `approval`, `source_status` maydonlarini alohida sanash; null/missing qiymatlarni alohida ko‘rsatish.
+3. 188 count qaysi field/predicate bilan hosil bo‘lishini qayta bajariladigan skript va input checksum bilan tasdiqlash.
+4. 188 domain yozuvini original ID bo‘yicha ZIP-1 source units va Android 1,121 manifest yozuvlari bilan alohida crosswalk qilish.
+5. Muallif-only, test-only, model-generated, general-encyclopedia va historical yozuvlarni FINZANJIR active knowledge qatlamidan ajratilgan holda saqlash.
+
+### Qaror
+
+Hech qanday V317 yozuvi o‘zgartirilmadi, o‘chirilmadi yoki birlashtirilmadi. ZIP-1/ZIP-2 source ma’lumotlari va Android APKga import qilinmadi. 2,000 regression savol/test yozuvlari test-only bo‘lib qoladi. Integratsiya bloklangan holatda.
