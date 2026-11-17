@@ -155,3 +155,34 @@ Ushbu faylning avvalgi 3-bo‘limida 188 yozuv `authoritative_project_source` tu
 ### Qaror
 
 Hech qanday V317 yozuvi o‘zgartirilmadi, o‘chirilmadi yoki birlashtirilmadi. ZIP-1/ZIP-2 source ma’lumotlari va Android APKga import qilinmadi. 2,000 regression savol/test yozuvlari test-only bo‘lib qoladi. Integratsiya bloklangan holatda.
+
+
+## 11. 2026-11-17 — asl ZIP manbalari mavjudligi va branch ancestry tekshiruvi
+
+### Manba mavjudligi tekshiruvi
+
+Ushbu yugurishda Library ichidagi ZIP turidagi fayllar ro‘yxati to‘liq sahifalandi: **95 ta ZIP** qaytdi, keyingi sahifa cursor’i qolmadi. Quyidagi ikki aniq nom ro‘yxatda topilmadi:
+
+- `Finzanjir konsepsiyasi va qoshimsha malumotlar hujjatlar (1).zip` — ZIP-1 sifatida avval qayd etilgan;
+- `FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip` — ZIP-2 sifatida avval qayd etilgan.
+
+Aniq nom bo‘yicha Library qidiruvi ham mos asl arxivni qaytarmadi. Library’da boshqa ko‘plab FINZANJIR ZIP arxivlari bor, jumladan `Finzanjir vlar joylangan.zip`; lekin ularning hech biri ZIP-1 yoki ZIP-2 o‘rniga qabul qilinmadi. Fayl nomi o‘xshashligi yoki FINZANJIR mavzusi bir xil manba ekanini isbotlamaydi.
+
+Suhbat fayllari ro‘yxatida `FINZANJIR_BILIM_AUDIT_BATCH_2026-11-09.zip` nomli audit hosila paketi ikki marta ko‘rinadi. Ikkala file reference uchun ham `files.materialize` xizmati “downloadable backing file yetarli emas” deb qaytardi. Joriy ishchi konteynerda ham asl ZIP yoki audit ZIP baytlari mavjud emas. Shuning uchun ushbu yugurishda oldingi audit paketining ZIP CRC, SHA-256, JSONL sonlari va matn hajmlari xom baytlar asosida qayta hisoblanmadi. Oldingi hisobotlardagi sonlar tarixiy audit natijalari bo‘lib qoladi; ular bugungi yangi checksum tekshiruvi sifatida ko‘rsatilmaydi.
+
+### GitHub branch ancestry va chegaralar
+
+- Audit branch HEAD ushbu tekshiruvda `74cc04aa672205142909445f19e88e174757dba3` commitiga **identical** deb tasdiqlandi.
+- `finzanjir-android-v1` bilan compare: audit branch **31 commit oldinda, 0 commit ortda**; 14 ta branchlararo faylning barchasi `docs/knowledge_audit/` ichida.
+- `finzanjir-v3-synthetic-ai-uz` va `finzanjir-v4-unified-workflow-uz` bilan compare natijalarida Android app fayllari ham ko‘rinadi. Bu u branchlar bilan tarixiy base/ancestry farqidir; audit branchning Android’dan keyingi delta ro‘yxatiga app fayllari kirmaydi. Bu yugurishda V3/V4 branchlariga yozuv kiritilmadi.
+- `main` bilan compare branchlar tarixining ajralganini ko‘rsatadi: audit branch common base’dan keyin o‘z yo‘nalishida, `main` esa audit branchga kirmagan ikki commitga ega. `main` dagi `948827beb0cac8a7910d7ccd8b2cfcfe5a8cec50` commit eski “5,607 yozuvli migratsiya auditi” faylini qo‘shgan, `7023a858746ce1b0d1c17df9288fdc25d09d3f4f` esa uni main’dan olib tashlagan. Bu tarixiy audit nusxasi joriy tasdiqlangan ZIP-1/ZIP-2 manbasi yoki faol integratsiya dalili emas. Undagi BM25 va 5,607 yozuv haqidagi da’volar ushbu auditda qayta tasdiqlanmadi va APKga ko‘chirilmaydi.
+
+### Qaror va keyingi ish
+
+1. ZIP-1/ZIP-2 o‘rniga boshqa arxiv tanlanmaydi.
+2. Asl ikki arxiv qayta mavjud bo‘lmaguncha ularning checksumlari, ichki fayl ro‘yxati, sahifa/paragraf/jadval/slayd lokatorlari va item-by-item crosswalk tekshirilgan deb aytilmaydi.
+3. Audit hosila ZIP ham raw bytes bilan qayta olinmaguncha uning avvalgi hash/count qiymatlari faqat oldingi hisobotga tegishli deb belgilanadi.
+4. Main branchdagi tarixiy migratsiya auditi alohida tarixiy artefakt bo‘lib qoladi; undan kod, BM25, yozuvlar yoki approval holatlari ko‘chirilmadi.
+5. Hech qanday bilim birlashtirilmadi/o‘chirilmadi; APK, Android assetlari, V3, V4 va main o‘zgartirilmadi.
+
+**Natija:** bugungi tekshiruv manba mavjudligi va Git branch ancestry auditidir. U ZIP-1/ZIP-2 mazmunini qayta tekshirgan hisoblanmaydi; merge ledger hali tayyor emas, integratsiya bloklangan.
