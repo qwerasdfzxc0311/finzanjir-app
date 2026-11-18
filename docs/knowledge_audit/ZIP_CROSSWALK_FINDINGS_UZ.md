@@ -172,8 +172,8 @@ Suhbat fayllari ro‘yxatida `FINZANJIR_BILIM_AUDIT_BATCH_2026-11-09.zip` nomli 
 
 ### GitHub branch ancestry va chegaralar
 
-- Audit branch HEAD ushbu tekshiruvda `74cc04aa672205142909445f19e88e174757dba3` commitiga **identical** deb tasdiqlandi.
-- `finzanjir-android-v1` bilan compare: audit branch **31 commit oldinda, 0 commit ortda**; 14 ta branchlararo faylning barchasi `docs/knowledge_audit/` ichida.
+- 2026-11-17 yugurishidagi audit branch HEAD `74cc04aa672205142909445f19e88e174757dba3` edi. 2026-11-18 tekshiruvida `042aedead8c1112809dc4e03d91d21c7e2dfe319` joriy audit branch HEAD bilan **identical** ekani, oldingi HEADdan esa aynan 1 commit oldinda ekani tasdiqlandi.
+- `finzanjir-android-v1` bilan compare: audit branch **32 commit oldinda, 0 commit ortda**; 14 ta branchlararo faylning barchasi `docs/knowledge_audit/` ichida va barchasi `added` holatida.
 - `finzanjir-v3-synthetic-ai-uz` va `finzanjir-v4-unified-workflow-uz` bilan compare natijalarida Android app fayllari ham ko‘rinadi. Bu u branchlar bilan tarixiy base/ancestry farqidir; audit branchning Android’dan keyingi delta ro‘yxatiga app fayllari kirmaydi. Bu yugurishda V3/V4 branchlariga yozuv kiritilmadi.
 - `main` bilan compare branchlar tarixining ajralganini ko‘rsatadi: audit branch common base’dan keyin o‘z yo‘nalishida, `main` esa audit branchga kirmagan ikki commitga ega. `main` dagi `948827beb0cac8a7910d7ccd8b2cfcfe5a8cec50` commit eski “5,607 yozuvli migratsiya auditi” faylini qo‘shgan, `7023a858746ce1b0d1c17df9288fdc25d09d3f4f` esa uni main’dan olib tashlagan. Bu tarixiy audit nusxasi joriy tasdiqlangan ZIP-1/ZIP-2 manbasi yoki faol integratsiya dalili emas. Undagi BM25 va 5,607 yozuv haqidagi da’volar ushbu auditda qayta tasdiqlanmadi va APKga ko‘chirilmaydi.
 
@@ -186,3 +186,24 @@ Suhbat fayllari ro‘yxatida `FINZANJIR_BILIM_AUDIT_BATCH_2026-11-09.zip` nomli 
 5. Hech qanday bilim birlashtirilmadi/o‘chirilmadi; APK, Android assetlari, V3, V4 va main o‘zgartirilmadi.
 
 **Natija:** bugungi tekshiruv manba mavjudligi va Git branch ancestry auditidir. U ZIP-1/ZIP-2 mazmunini qayta tekshirgan hisoblanmaydi; merge ledger hali tayyor emas, integratsiya bloklangan.
+
+
+## 12. 2026-11-18 — yordamchi arxiv identifikatsiyasi va branch delta qayta tekshiruvi
+
+### Asl ZIP-1/ZIP-2 mavjudligi va yordamchi arxivni ajratish
+
+- Library ro‘yxatining barcha 3 sahifasi ko‘rib chiqildi; aniq ZIP-1 va ZIP-2 nomlari topilmadi. Shu nomlar bo‘yicha Library qidiruvi ham mos asl arxivni qaytarmadi.
+- Joriy suhbat fayllari ro‘yxati bo‘sh. Shu yugurishda asl ZIP-1, ZIP-2 yoki 2026-11-09 audit hosila ZIP faylining xom baytlari mavjud emas.
+- Library’dagi `Finzanjir vlar joylangan.zip` alohida yordamchi arxiv sifatida faqat identifikatsiya uchun ochildi; ZIP-1/ZIP-2 o‘rniga ishlatilmadi. Uning hajmi **16,052,379 bayt**, SHA-256 qiymati **2294f3b54f85258b75efb95059b6d8d100717aec9167906ceefcb507ff83b390**. Ichida **66 ta element** bor: **63 HTML** va **3 JSON**; ichki ZIP fayllari soni **0**. ZIP-1, ZIP-2 yoki audit hosila ZIP nomiga mos ichki fayl topilmadi.
+- Shuning uchun bu yordamchi arxiv asl ZIP-1/ZIP-2ni o‘z ichiga olgan konteyner emas. Undagi HTML/JSON materiallar ushbu auditda ZIP-1/ZIP-2 manbasi yoki Android bilimlariga qo‘shilmadi.
+
+### Branch holati va compare natijalarini to‘g‘ri talqin qilish
+
+- `042aedead8c1112809dc4e03d91d21c7e2dfe319` commiti audit branch HEAD bilan `identical` deb tekshirildi. Oldingi qayd etilgan `74cc04aa672205142909445f19e88e174757dba3` HEADdan audit branch aynan 1 commit oldinda; bu commit faqat `docs/knowledge_audit/ZIP_CROSSWALK_FINDINGS_UZ.md` faylini yangilagan.
+- `finzanjir-android-v1` (`f38e0b7253c915e50f84ffe1053a9e40aec12733`) bilan compare: audit branch **32 commit oldinda, 0 commit ortda**. Farqdagi **14 faylning barchasi `docs/knowledge_audit/` ichida**, barchasi yangi audit hujjatlari (`added`). Bu Android asos branchidan audit branchga kiritilgan delta uchun asosiy xavfsizlik tekshiruvidir.
+- `finzanjir-v3-synthetic-ai-uz` bilan compare: **127 oldinda / 0 ortda**, 40 fayl; `finzanjir-v4-unified-workflow-uz` bilan compare: **52 oldinda / 0 ortda**, 29 fayl. Bu kengroq ro‘yxatlarda Android/V4 fayllari ko‘rinadi, chunki V3/V4 branchlari bilan compare boshqa tarixiy merge-base’dan boshlanadi. Ularni ushbu audit yugurishida o‘zgartirilgan fayllar deb talqin qilish mumkin emas.
+- `main` bilan compare: **234 oldinda / 2 ortda**, holat `diverged`, 64 fayl. Bu tarixiy ajralishdir; main bilan merge, cherry-pick yoki PR bajarilmadi. `main`ga yozuv kiritilmadi.
+
+### Qaror
+
+Yordamchi `Finzanjir vlar joylangan.zip` asl ZIP-1/ZIP-2 emasligi ichki tarkib va checksum bilan tasdiqlandi; u manba sifatida ishlatilmadi. Android branch bilan to‘g‘ridan-to‘g‘ri delta faqat 14 audit hujjatidan iborat. V3/V4/main compare natijalari branch ancestry farqi sababli kengroq va merge uchun asos emas. Asl ZIP-1/ZIP-2 yo‘q ekan, source locator, to‘liq matn, checksum va item-by-item crosswalkni qayta tekshirish imkoni yo‘q; merge ledger tayyor emas, integratsiya bloklangan.
