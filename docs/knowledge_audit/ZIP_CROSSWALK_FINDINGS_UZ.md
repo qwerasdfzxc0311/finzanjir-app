@@ -199,10 +199,10 @@ Suhbat fayllari ro‘yxatida `FINZANJIR_BILIM_AUDIT_BATCH_2026-11-09.zip` nomli 
 
 ### Branch holati va compare natijalarini to‘g‘ri talqin qilish
 
-- `042aedead8c1112809dc4e03d91d21c7e2dfe319` commiti audit branch HEAD bilan `identical` deb tekshirildi. Oldingi qayd etilgan `74cc04aa672205142909445f19e88e174757dba3` HEADdan audit branch aynan 1 commit oldinda; bu commit faqat `docs/knowledge_audit/ZIP_CROSSWALK_FINDINGS_UZ.md` faylini yangilagan.
-- `finzanjir-android-v1` (`f38e0b7253c915e50f84ffe1053a9e40aec12733`) bilan compare: audit branch **32 commit oldinda, 0 commit ortda**. Farqdagi **14 faylning barchasi `docs/knowledge_audit/` ichida**, barchasi yangi audit hujjatlari (`added`). Bu Android asos branchidan audit branchga kiritilgan delta uchun asosiy xavfsizlik tekshiruvidir.
-- `finzanjir-v3-synthetic-ai-uz` bilan compare: **127 oldinda / 0 ortda**, 40 fayl; `finzanjir-v4-unified-workflow-uz` bilan compare: **52 oldinda / 0 ortda**, 29 fayl. Bu kengroq ro‘yxatlarda Android/V4 fayllari ko‘rinadi, chunki V3/V4 branchlari bilan compare boshqa tarixiy merge-base’dan boshlanadi. Ularni ushbu audit yugurishida o‘zgartirilgan fayllar deb talqin qilish mumkin emas.
-- `main` bilan compare: **234 oldinda / 2 ortda**, holat `diverged`, 64 fayl. Bu tarixiy ajralishdir; main bilan merge, cherry-pick yoki PR bajarilmadi. `main`ga yozuv kiritilmadi.
+- Quyidagi ahead/behind sonlari va HEAD qiymatlari **ushbu audit yozuvining birinchi commitidan oldingi snapshot** hisoblanadi. O‘sha snapshotda `042aedead8c1112809dc4e03d91d21c7e2dfe319` audit branch HEAD edi va `74cc04aa672205142909445f19e88e174757dba3` dan 1 commit oldinda edi. Birinchi audit yozuvi `4a77f59e838df76934260b25407a3cd523b7f222` commitini yaratdi; shu sababli `042a...` keyingi branch HEAD emas, tarixiy snapshot nuqtasi sifatida qaraladi.
+- O‘sha pre-write snapshotda `finzanjir-android-v1` (`f38e0b7253c915e50f84ffe1053a9e40aec12733`) bilan compare: audit branch **32 commit oldinda, 0 commit ortda**. Farqdagi **14 faylning barchasi `docs/knowledge_audit/` ichida**, barchasi yangi audit hujjatlari (`added`). Bu snapshot Android asos branchidan audit branchga kiritilgan delta uchun asosiy xavfsizlik tekshiruvidir; keyingi audit hujjat commitlari ahead hisobini oshiradi.
+- O‘sha pre-write snapshotda `finzanjir-v3-synthetic-ai-uz` bilan compare: **127 oldinda / 0 ortda**, 40 fayl; `finzanjir-v4-unified-workflow-uz` bilan compare: **52 oldinda / 0 ortda**, 29 fayl. Bu kengroq ro‘yxatlarda Android/V4 fayllari ko‘rinadi, chunki V3/V4 branchlari bilan compare boshqa tarixiy merge-base’dan boshlanadi. Ularni ushbu audit yugurishida o‘zgartirilgan fayllar deb talqin qilish mumkin emas.
+- O‘sha pre-write snapshotda `main` bilan compare: **234 oldinda / 2 ortda**, holat `diverged`, 64 fayl. Bu tarixiy ajralishdir; main bilan merge, cherry-pick yoki PR bajarilmadi. `main`ga yozuv kiritilmadi.
 
 ### Qaror
 
