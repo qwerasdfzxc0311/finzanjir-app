@@ -127,3 +127,47 @@ Yozuvdan oldingi GitHub compare:
 Ushbu commit faqat yangi audit hujjatini qo‘shish uchun mo‘ljallangan. Android, V3, V4 va main branchlariga yozuv kiritilmaydi. Android JSON, manifest, Kotlin kodi yoki APK o‘zgartirilmaydi. Build va qurilma testi bajarilmaydi.
 
 **Qaror:** 26 original ID uchun scope inventari tuzildi. Ularning matni to‘liq qayta o‘qilmagani ochiq ko‘rsatildi. Faol qidiruvdagi scope muammosi mavjud; hech qanday avtomatik o‘chirish yoki integratsiya bajarilmadi. Merge ledger tayyor emas, integratsiya bloklangan.
+
+
+## 9. 2026-11-21 — hujjat ichidagi inventarning strukturaviy qayta tekshiruvi
+
+### 9.1. 26 qatorli jadvalning ichki yaxlitligi
+
+Audit hujjatining 3-bo‘limidagi item-by-item jadval matni qayta o‘qilib, ID ustuni bo‘yicha strukturaviy tekshirildi:
+
+- Jadvaldagi data qatorlari: **26**.
+- Noyob original ID: **26**.
+- Shu jadval ichida takrorlangan ID: **0**.
+- `BOOK25-` prefiksli yozuvlar: **17**.
+- `V14-P` prefiksli yozuvlar: **9**.
+
+Bu natija faqat ushbu audit hujjatidagi jadvalning ichki arifmetikasi va ID takrorlanmasligini tasdiqlaydi. Android JSON assetidagi 1,121 yozuvni xom matn bilan qayta ochib, ushbu IDlar mavjudligini yoki har bir record textida SINBAD/ATMOS atamalari borligini bugun qayta tasdiqlash **emas**. Avvalgi record-level audit dalili o‘zining avvalgi tekshiruv sanasi bilan qoladi.
+
+### 9.2. Asl manbalar mavjudligi — 2026-11-21 Library inventari
+
+Library ro‘yxatining barcha 3 sahifasi ko‘rib chiqildi; jami **276 ta Library elementi** qayd etildi. Quyidagi aniq nomlar topilmadi:
+
+- `Finzanjir konsepsiyasi va qoshimcha malumotlar hujjatlar (1).zip` — ZIP-1;
+- `FINZANJIR_V317_SEMANTIC_GATE_PLUS_DOMAIN_EXPANSION.zip` — ZIP-2;
+- `FINZANJIR_KONSEPSIYA_V14.pdf` — crosswalk uchun ko‘rsatilgan original V14 PDF;
+- `FINZANJIR_YAGONA_YAXLIT_KITOB_25_BOB.pdf` — crosswalk uchun ko‘rsatilgan original 25 bobli kitob PDF;
+- `FINZANJIR_BILIM_AUDIT_BATCH_2026-11-09.zip` — oldingi audit hosila arxivi.
+
+Boshqa FINZANJIR nomli ZIP/DOCX/HTML/APK fayllari mavjud. Ularning nomi, hajmi yoki loyiha bilan bog‘liqligi ularni ZIP-1/ZIP-2 yoki ko‘rsatilgan original PDFlar bilan aynan bir xil deb qabul qilishga yetarli emas; ular o‘rniga ishlatilmadi. Joriy suhbat fayllari ro‘yxatida ham yuklangan manba yo‘q.
+
+### 9.3. Branch snapshot va o‘zgarish chegarasi
+
+Ushbu qo‘shimcha yozilishidan oldingi GitHub holati:
+
+- Audit branch tipidagi commit: `f0229c395b076b9420dfc51bb2b6421b4ffdbbc9`.
+- Android asos branch commit: `f38e0b7253c915e50f84ffe1053a9e40aec12733`.
+- Compare: **36 commit ahead / 0 behind**.
+- Android bilan diffdagi **16 faylning barchasi** `docs/knowledge_audit/` ichida edi.
+
+Bu snapshot ushbu bo‘lim qo‘shilishidan oldingi holatdir. Keyingi audit commitlari ahead sonini oshirishi mumkin. Ushbu qo‘shimcha faqat audit hujjatiga tegishli; Android assetlari, Kotlin kodi, manifest, V3, V4 va `main` branchlariga yozuv kiritilmaydi.
+
+### 9.4. Qaror
+
+26 qatorli inventarning ichki soni va ID noyobligi tasdiqlandi, lekin bu manba matni bilan semantik tekshiruv o‘rnini bosmaydi. Asl ZIP-1/ZIP-2 va ikkita original PDF mavjud bo‘lmagani sababli 26 yozuvning to‘liq matni, oldingi-keyingi paragraf, sahifa tasviri va source checksum bo‘yicha ko‘rik bloklangan. Scope tavsiyasi hali tavsiya bo‘lib qoladi; hech qanday yozuv o‘chirilmaydi, birlashtirilmaydi yoki faol qidiruvdan kod orqali chiqarilmaydi.
+
+**Integratsiya sharti bajarilmagan.** Merge ledger tayyor emas; Android bilimlari va ishlaydigan kodga tegilmaydi.
